@@ -1,4 +1,5 @@
-    $(document).ready(function() {        
+    $(document).ready(function() {     
+        let Fila = 10;
         function MesasActualizar(ambienteId){
             $.ajax({
                 url: 'api/get-ambiente-seleccionado/' + ambienteId,
@@ -7,8 +8,8 @@
                 success: function(ambiente) {          
                     CanvasTime()          
                     $('#restaurant-grid').empty();
-                    var rows = 8;
-                    var cols = 8;
+                    var rows= Fila;
+                    var cols= Fila;
                     var gridContainer = $('#restaurant-grid');
 
                     for (var i = 0; i < rows; i++) {
@@ -98,12 +99,12 @@
 
         function VerMesa(ambiente) {
             $('#restaurant-grid').empty();
-            var rows = 8;
-            var cols = 8;
+            var rows= Fila;
+            var cols= Fila;
             var gridContainer = $('#restaurant-grid');
 
             for (var i = 0; i < rows; i++) {
-                var row = $('<div>').addClass('row');
+                var row = $('<div style="padding: 10px; margin: 0px">').addClass('row');
 
                 for (var j = 0; j < cols; j++) {
                     var posX = i;
@@ -116,7 +117,7 @@
                     if (mesaEnPosicion) {
                         agregarMesaConEvento(mesaEnPosicion, posX, posY);
                     } else {
-                        var mesa = $('<div style="">')
+                        var mesa = $('<div>')
                             .addClass('mesa col text-center')
                             .data('mesa-id', i * cols + j + 1)
                             .data('pos-x', posX)
@@ -129,7 +130,7 @@
             }
 
             function agregarMesaConEvento(mesaEnPosicion, posX, posY) {
-                var mesa = $('<div>')
+                var mesa = $('<div style="height: 100%">')
                     .addClass('mesa col text-center')
                     .data('mesa-id', mesaEnPosicion.id)
                     .data('pos-x', posX)
@@ -137,17 +138,17 @@
 
                 if(mesaEnPosicion.estado === 'libre'){
                     if (mesaEnPosicion.NombreMesas === 'circulo') {
-                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 90%; height: 100%; border: 2px solid black; border-radius: 50%;">${mesaEnPosicion.id}</a>`);
+                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black; border-radius: 50%;">${mesaEnPosicion.id}</a>`);
                     } else if (mesaEnPosicion.NombreMesas === 'cuadrado') {
-                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 90%; height: 100%; border: 2px solid black;">${mesaEnPosicion.id}</a>`);
+                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black;">${mesaEnPosicion.id}</a>`);
                     } else {
                         mesa.text(mesaEnPosicion.NombreMesas);
                     }
                 }else{
                     if (mesaEnPosicion.NombreMesas === 'circulo') {
-                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 90%; height: 100%; border: 2px solid black; border-radius: 50%; background: #FF8080"><p style="color: white">${mesaEnPosicion.id}</p></a>`);
+                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; border-radius: 50%; background: #FF8080"><span style="color: white">${mesaEnPosicion.id}</span></a>`);
                     } else if (mesaEnPosicion.NombreMesas === 'cuadrado') {
-                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 90%; height: 100%; border: 2px solid black; background: #FF8080"><p style="color: white">${mesaEnPosicion.id}</p></a>`);
+                        mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; background: #FF8080"><span style="color: white">${mesaEnPosicion.id}</span></a>`);
                     } else {
                         mesa.text(mesaEnPosicion.NombreMesas);
                     } 
@@ -323,8 +324,8 @@
                 success: function (ambiente) {
                     CanvasTime()
                     $('#div-editar').empty();                    
-                    var rows = 8;
-                    var cols = 8;
+                    var rows= Fila;
+                    var cols= Fila;
                     var gridContainer = $('#div-editar');
                     $('#EditMesaId').val(messaID);
 
@@ -350,7 +351,7 @@
 
                                 if (mesaEnPosicion) {    
                                     if(posX == SelectX && posY == SelectY){
-                                        var mesa = $('<div style="background: red">')
+                                        var mesa = $('<div">')
                                         .addClass('editmesa col text-center')
                                         .data('mesa-id', i * cols + j + 1)
                                         .data('pos-x', posX)
@@ -482,8 +483,8 @@
                                         success: function (ambiente) {
                                             CanvasTime()
                                             $('#restaurant-grid').empty();
-                                            var rows = 8;
-                                            var cols = 8;
+                                            var rows= Fila;
+                                            var cols= Fila;
                                             var gridContainer = $('#restaurant-grid');
 
                                             for (var i = 0; i < rows; i++) {
@@ -1020,8 +1021,8 @@
                                                             <div class="card" id="CardOcupado" style="width: 100%; padding: 0px; margin: 0px;">
                                                                 <div class="card-status-start bg-primary"></div>
                                                                 <div class="card-header">
-                                                                    <div style="width: 100%; padding: 0px; margin: 0px; display: flex">
-                                                                        <div class="col-md-12 col-lg-2" style="width: 10%;">
+                                                                    <div style="width: 100%; padding: 0px; margin: 0px; display: flex;">
+                                                                        <div class="col-md-12 col-lg-2" style="width: 15%; padding-right: 10px">
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
                                                                         <div class="col-md-12 col-lg-7"  style="text-align: left;" style="width: 30%;">
@@ -1051,18 +1052,18 @@
                                                             <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
                                                                 <div class="card-status-start bg-primary"></div>
                                                                 <div class="card-header">
-                                                                    <div style="width: 100% padding: 0px; margin: 0px; display: flex;">
-                                                                        <div class="col-md-12 col-lg-2" style="width: 15%; padding-right: 10px">
+                                                                    <div style="width: 100%; padding: 0px; margin: 0px; display: flex; background: red;">
+                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-7" style="text-align: left; width: 70%; padding-right: 10px">
+                                                                        <div class="col-md-12 col-lg-7" style="text-align: left;" style="width: auto;">
                                                                             <p class="card-title">${detalle.producto.NombreProducto}</p>
                                                                             <p style="font-size: 12px">${detalle.comentario}</p>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-2" style="width: 20%; padding-right: 10px">
+                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                             <h3 class="card-title">${detalle.precio}</h3>                                                                    
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-1"  style="text-aling: right; width: 10%; padding-right: 10px; padding-top: 20px">
+                                                                        <div class="col-md-12 col-lg-1"  style="text-aling: right; width: 10%; padding-top: 20px">
                                                                             <a class="nav-link" data-bs-toggle="modal" data-bs-target="#ElminarDetalle" data-index="${index}">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -1320,8 +1321,8 @@
                             </div> 
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="col-md-12">
+                    <div class="card-body" style="margin: 0px; padding: 0px;">
+                        <div class="col-md-12" style="margin: 0px; padding: 0px;">
                             <form class="card">
                                 <div class="card-header">
                                 <h3 class="card-title">Mesa # ${mesaId}</h3>

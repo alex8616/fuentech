@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('comentario')->nullable();
             $table->string('eliminado')->nullable();
             $table->string('comentarioeliminado')->nullable();
-            $table->decimal('cantidad', 12, 2);
+            $table->Integer('cantidad');
             $table->decimal('precio', 12, 2);
             $table->decimal('total', 12, 2);
             $table->unsignedBigInteger('consumo_id')->nullable();
