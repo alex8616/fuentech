@@ -12,6 +12,7 @@ use App\Models\Pagos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ConsumoController extends Controller
 {
@@ -453,6 +454,14 @@ class ConsumoController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function GenerarComandaMesa($mesa){
+        $user = Auth::user();
+        $consumos = Consumo::with(['cliente','camarero','detalleconsumos.producto','descuentoconsumos'])->where('ambiente_mesa_id',$mesa)->where('ocupado','true')->where('TipoConsumo','Mesa')->get();
+        //return response()->json($consumos);
+        $pdf = PDF::loadView('admin.consumo.ConsumoMesaPDF',compact('consumos'))->setOptions(['defaultFont' => 'sans-serif'])->setPaper(array(0,0,320,500), 'portrait');
+        return $pdf->stream('Date.pdf');
     }
 }
 

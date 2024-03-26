@@ -4,7 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="row">
-        <div class="col-12 col-sm-8">
+        <div class="col-12 col-md-8">
             <div class="card">
                 <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs nav-fill" data-bs-toggle="tabs" role="tablist">
@@ -240,7 +240,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-4" style="margin: 0px; padding: 0px">
+        <div class="col-12 col-md-4" style="margin: 0px; padding: 0px">
             <div class="card" id="form_tabs">
                 <div class="card-header">
                     <h3 class="card-title">. . .</h3>
@@ -444,6 +444,10 @@
 <script src="{{ asset('utilidades/js/mostrador.js') }}" defer></script>
 
 <style>
+    .autocomplete-bold {
+        font-weight: bold;
+    }
+
     .ui-autocomplete {
         position: absolute; 
         cursor: default; 
@@ -530,7 +534,7 @@
         margin: 0px !important;
     }
 
-    @media only screen and (max-width: 767px) {
+    @media only screen and (max-width: 500px) {
         .mesa a{
             width: 130% !important;
             height: 130% !important;
@@ -541,6 +545,10 @@
             font-size: 12px;
         }
 
+        #EditAmbiente{
+            display: none;
+        }
+
         .mesa a.selected-btn {
             border: 8px solid #206bc4 !important;
             font-size: 14px !important;
@@ -548,6 +556,23 @@
         }
     }
 
+    @media (min-width:767 and max-width: 768px) {
+        .mesa a{
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
+        .mesa a.selected-btn {
+            border: 8px solid #206bc4 !important;
+            font-size: 14px !important;
+            height: 100% !important;
+        }
+    }
 
     
     #selected-table {

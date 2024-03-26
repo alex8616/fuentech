@@ -76,6 +76,7 @@ Route::get('/get-delivery-preparacion', [ConsumoController::class, 'GetDeliveryP
 Route::get('/get-delivery-consumo/{id}', [ConsumoController::class, 'GetDelivryCosumo']);
 Route::get('/get-consumo-preparando-delivery/{id}', [ConsumoController::class, 'GetPreparandoDelivery']);
 Route::post('/registrar-detalle-consumo-delivery', [ConsumoController::class, 'RegistrarDetalleConsumoDelivery'])->name('registrar-detalle-consumo-mostrador')->middleware('auth');
+Route::get('/get-mesa-comanda/{mesa}', [ConsumoController::class, 'GenerarComandaMesa']);
 
 Route::post('/registrar-descuento', [DescuentoConsumoController::class, 'RegistrarDescuento'])->name('registrar-descuento')->middleware('auth');
 Route::get('/get-descuento/{id}', [DescuentoConsumoController::class, 'GetDescuento'])->name('get-descuento')->middleware('auth');
@@ -89,3 +90,5 @@ Route::post('/registrar-impresora', [ConfiguracionController::class, 'RegistrarI
 Route::delete('/eliminar-impresora/{id}', [ConfiguracionController::class, 'eliminarImpresora'])->name('eliminar.impresora');
 Route::get('/obtener-count-impresoras', [ConfiguracionController::class, 'obtenerCountImpresoras']);
 Route::get('/ImpresionDate/{id}', [ConfiguracionController::class, 'ImpresionDate']);
+Route::get('/generar-pdf', [ConfiguracionController::class, 'generarPDF']);
+Route::get('/print-name', [ConfiguracionController::class, 'PrintName']);
