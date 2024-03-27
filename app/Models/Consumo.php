@@ -48,7 +48,7 @@ class Consumo extends Model
     }
 
     public function ambientemesa(){
-        return $this->belongsTo(AmbienteMesa::class);
+        return $this->belongsTo(AmbienteMesa::class, 'ambiente_mesa_id');
     }
 
     public function detalleconsumos(){
