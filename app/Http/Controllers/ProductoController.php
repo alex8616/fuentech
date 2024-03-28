@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Models\StockDate;
 use App\Models\SubCategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,10 @@ class ProductoController extends Controller
 {
     public function GetProducto(){
         $productos = Producto::get();
+        return response()->json($productos);
+    }
+    public function GetProductoStock(){
+        $productos = Producto::where('ControlStock','true')->get();
         return response()->json($productos);
     }
 
@@ -42,6 +47,8 @@ class ProductoController extends Controller
             'NombreProducto' => $request->Nombre,
             'PrecioProducto' => $request->Precio,
             'CostoProducto' => $request->Costo,
+            'CantidadStock' => 0,
+            'MinimoStock' => 0,
             'CodigoProducto' => $request->Codigo,
             'EstadoProducto' => $request->activo,
             'DescripcionProducto' => $request->Descripcion,
@@ -92,18 +99,25 @@ class ProductoController extends Controller
         return response()->json($producto);
     }
 
-    public function ActualizarProducto(Request $request){
-        $producto = Producto::with('categoria','categoria.subcategorias','proveedor')->where('id',$request->id)->first();
-        $producto->NombreProducto = $request->input("nombre");
-        $producto->PrecioProducto = $request->input("precio");
-        $producto->CostoProducto = $request->input("costo");
-        $producto->CodigoProducto = $request->input("codigo");
-        $producto->proveedor_id = $request->input("proveedor");
-        $producto->EstadoProducto = $request->input("activo");
-        $producto->ControlStock = $request->input("controlStock");
-        $producto->categoria_id = $request->input("categoria");
-        $producto->sub_categoria_id = $request->input("subcategoria");
+    public function ActualizarProductoStock(Request $request){
+        $producto = Producto::where('id',$request->id)->first();
+
+        $stockdate = StockDate::create([
+            'Cantidad' => $request->input("cantidad"),
+            'TipoStock' => "Ingreso",
+            'StockAnterior' => $producto->CantidadStock,
+            'StockActual' => $request->input("cantidad"),
+            'Diferencia' => ($producto->CantidadStock - $request->input("cantidad"))*(-1),
+            'NombreProducto' =>  $producto->NombreProducto,
+            'DetalleStock' => "Ajuste Manual - Stock Anterior ".$producto->CantidadStock." y estock actualizado ".$request->input("cantidad"),
+            'FechaStock' => now(),
+            'producto_id' => $producto->id,
+        ]);
+
+        $producto->CantidadStock = $request->input("cantidad");
+        $producto->ComentarioStock = $request->input("comentario");
+        $producto->MinimoStock = $request->input("minimo");
         $producto->save();
-        return response()->json($producto);
+        return response()->json($stockdate);
     }
 }

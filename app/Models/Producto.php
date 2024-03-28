@@ -20,6 +20,9 @@ class Producto extends Model
         'FavoritoProducto',
         'MenuOnlineProducto',
         'ImagenProducto',
+        'CantidadStock',
+        'ComentarioStock',
+        'MinimoStock',
         'proveedor_id',
         'categoria_id',
         'sub_categoria_id',
@@ -41,5 +44,13 @@ class Producto extends Model
 
     public function detalleconsumo(){
         return $this->hasMany(DetalleConsumo::class);
+    }
+
+    public function stockdate(){
+        return $this->belongsTo(StockDate::class);
+    }
+    
+    public function ingredientes(){
+        return $this->hasMany(Ingrediente::class);
     }
 }

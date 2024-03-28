@@ -29,6 +29,8 @@ Route::get('/producto-register-true/{producto}', [ProductoController::class, 'Pr
 Route::get('/producto-register-false/{producto}', [ProductoController::class, 'ProductoEstadoFalse']);
 Route::post('/actualizar-producto', [ProductoController::class, 'ActualizarProducto']);
 Route::get('/get-productos-subcategoria/{subcategoria}', [ProductoController::class, 'GetProductoSubCategoria']);
+Route::get('/get-productos-stock', [ProductoController::class, 'GetProductoStock']);
+Route::post('/actualizar-producto-stock', [ProductoController::class, 'ActualizarProductoStock']);
 
 Route::get('/get-categorias', [CategoriaController::class, 'GetCategoria']);
 Route::get('/get-subcategorias/{id}', [CategoriaController::class, 'GetSubCategoria']);

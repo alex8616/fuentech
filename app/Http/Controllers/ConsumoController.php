@@ -9,6 +9,8 @@ use App\Models\Consumo;
 use App\Models\DescuentoConsumo;
 use App\Models\DetalleConsumo;
 use App\Models\Pagos;
+use App\Models\Producto;
+use App\Models\StockDate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -73,18 +75,50 @@ class ConsumoController extends Controller
                 $cantidad = $producto['cantidad'];
                 $comentario = $producto['comentario'];
                 $precio = $producto['precio'];
-    
-                $detalleConsumo = DetalleConsumo::create([
-                    'producto_id' => $productoId,
-                    'consumo_id' => $consumoId,
-                    'fecha_venta' => now(),
-                    'comentario' => $comentario,
-                    'cantidad' => $cantidad,
-                    'precio' => $precio,
-                    'total' => $precio * $cantidad,
-                    'eliminado' => 'false',
-                    'comentarioeliminado' => '',
-                ]);
+                
+                $ExiteProducto = Producto::where('id',$productoId)->where('ControlStock','true')->first();
+                
+                if ($ExiteProducto->ControlStock == "true"){
+                    $detalleConsumo = DetalleConsumo::create([
+                        'producto_id' => $productoId,
+                        'consumo_id' => $consumoId,
+                        'fecha_venta' => now(),
+                        'comentario' => $comentario,
+                        'cantidad' => $cantidad,
+                        'precio' => $precio,
+                        'total' => $precio * $cantidad,
+                        'eliminado' => 'false',
+                        'comentarioeliminado' => '',
+                    ]);
+
+                    $stockdate = StockDate::create([
+                        'Cantidad' => $cantidad,
+                        'TipoStock' => "Salida",
+                        'StockAnterior' => $ExiteProducto->CantidadStock,
+                        'StockActual' => $ExiteProducto->CantidadStock - $cantidad,
+                        'Diferencia' => $cantidad,
+                        'NombreProducto' =>  $ExiteProducto->NombreProducto,
+                        'DetalleStock' => "Ajuste Manual - Stock Anterior ".$ExiteProducto->CantidadStock." y estock actualizado ".$cantidad,
+                        'FechaStock' => now(),
+                        'producto_id' => $ExiteProducto->id,
+                    ]);
+
+                    $nuevostock = $ExiteProducto->CantidadStock - $cantidad;
+                    $ExiteProducto->CantidadStock = $nuevostock;
+                    $ExiteProducto->save();
+                }else{
+                    $detalleConsumo = DetalleConsumo::create([
+                        'producto_id' => $productoId,
+                        'consumo_id' => $consumoId,
+                        'fecha_venta' => now(),
+                        'comentario' => $comentario,
+                        'cantidad' => $cantidad,
+                        'precio' => $precio,
+                        'total' => $precio * $cantidad,
+                        'eliminado' => 'false',
+                        'comentarioeliminado' => '',
+                    ]);
+                } 
     
                 $consumo = Consumo::findOrFail($consumoId);
                 $consumo->subTotal += $precio * $cantidad;
@@ -129,6 +163,8 @@ class ConsumoController extends Controller
 
     public function deleteDetalleConsumo(Request $request, $detalle){
         $detalleConsumo = DetalleConsumo::findOrFail($detalle);
+        $productoId = $detalleConsumo->producto_id;
+
         if ($detalleConsumo->eliminado == 'true') {
             return response()->json(['message' => 'El DetalleConsumo ya fue eliminado.']);
         }
@@ -147,6 +183,27 @@ class ConsumoController extends Controller
                 $consumo->total = $consumo->total - $consumo->subTotal;
                 $consumo->save();
                 $subTotal = $consumo->subTotal;
+
+                $ExiteProducto = Producto::where('id',$productoId)->where('ControlStock','true')->first();
+                
+                if ($ExiteProducto->ControlStock == "true"){
+                    $stockdate = StockDate::create([
+                        'Cantidad' => $detalleConsumo->cantidad,
+                        'TipoStock' => "Cancelada",
+                        'StockAnterior' => $ExiteProducto->CantidadStock,
+                        'StockActual' => $ExiteProducto->CantidadStock + $detalleConsumo->cantidad,
+                        'Diferencia' => $detalleConsumo->cantidad,
+                        'NombreProducto' =>  $ExiteProducto->NombreProducto,
+                        'DetalleStock' => "Ajuste Cancelada - Stock Anterior ".$ExiteProducto->CantidadStock." y estock actualizado ".$detalleConsumo->cantidad,
+                        'FechaStock' => now(),
+                        'producto_id' => $ExiteProducto->id,
+                    ]);
+
+                    $nuevostock = $ExiteProducto->CantidadStock + $detalleConsumo->cantidad;
+                    $ExiteProducto->CantidadStock = $nuevostock;
+                    $ExiteProducto->save();
+                    
+                }
 
                 $descuentoPorcentaje = DescuentoConsumo::where('consumo_id',$consumo->id)->get();
                 foreach ($descuentoPorcentaje as $descuento) {

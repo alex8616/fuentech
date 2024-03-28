@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('ControlStock')->nullable();
             $table->enum('MenuOnlineProducto', ['true', 'false'])->default('false');
             $table->string('ImagenProducto')->nullable();
+            $table->Integer('CantidadStock')->nullable();
+            $table->string('ComentarioStock')->nullable();
+            $table->Integer('MinimoStock')->nullable();
 
             $table->enum('FavoritoProducto', ['true', 'false'])->default('false')->nullable();
 

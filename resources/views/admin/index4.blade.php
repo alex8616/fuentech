@@ -191,16 +191,133 @@
                             </div>
                         </div>                    
                     </div>
-                    <div class="tab-pane" id="tabs-controlstock" role="tabpanel">
+                    <div class="tab-pane" id="tabs-controlstock" role="tabpanel">                        
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Base info</h3>
+                            <div class="card-header" style="width: 100%; background-color: #1d2736">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-12 col-sm-8">
+                                        <h3 class="card-title" style="color: white; font-weight: bold;">CONTROL DE STOCK</h3>
+                                    </div>
+                                    <div class="col-12 col-sm-4" style="text-align: right;">
+                                        <a class="btn" id="addproductos">+ PRODUCTOS</a>
+                                        <a class="btn" id="exportproductos" style="padding-left: 25px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder-share" width="24" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 19h-8a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v4" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="datagrid">
                                     <div class="datagrid-item">
-                                        <div class="datagrid-title">Registrar</div>
-                                        <div class="datagrid-content">Third Party</div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12" style="width: 100%; background: #F5F7F8; padding-top: 10px; padding-bottom: 10px">
+                                                <div class="row" style="background: #F5F7F8;">
+                                                    <div class="col-2 col-md-1" style="border-right: 2px solid #E6E6E6;">
+                                                        <center>
+                                                            <div class="icon-container">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-filter">
+                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                    <path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" />
+                                                                </svg>
+                                                            </div>
+                                                        </center>
+                                                    </div>
+                                                    <div class="col-10 col-md-11" style="padding-bottom: 12px;">
+                                                        <div class="row" style="background: #F5F7F8;">
+                                                            <div class="col-md-4">
+                                                                <select name="" id="" class="form-control">
+                                                                    <option value="">Proveedor</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <input type="text" placeholder="Producto o Ingrediente" class="form-control"/>
+                                                            </div>                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 col-md-1" style="border-top: 2px solid #E6E6E6; border-right: 2px solid #E6E6E6;">
+                                                        <center>
+                                                            <div class="icon-container">
+                                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                                            </div>
+                                                        </center>
+                                                    </div>
+                                                    <div class="col-10 col-md-11" style="border-top: 2px solid #E6E6E6;">
+                                                        <div class="row" style="padding-top: 8px;">
+                                                            <div class="col-10 col-md-3">
+                                                                <label class="form-check" style="margin-right: 20px;">
+                                                                    <input class="form-check-input" type="checkbox" style="width: 25px; height: 25px;">
+                                                                    <span class="form-check-label" style="padding: 5px;">Disponibles</span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-10 col-md-3">
+                                                                <label class="form-check" style="margin-right: 20px;">
+                                                                    <input class="form-check-input" type="checkbox" style="width: 25px; height: 25px;">
+                                                                    <span class="form-check-label" style="padding: 5px;">Poco Stock</span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-10 col-md-3">
+                                                                <label class="form-check" style="margin-right: 20px;">
+                                                                    <input class="form-check-input" type="checkbox" style="width: 25px; height: 25px;">
+                                                                    <span class="form-check-label" style="padding: 5px;">Agotados</span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-10 col-md-3">
+                                                                <label class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" style="width: 25px; height: 25px;">
+                                                                    <span class="form-check-label" style="padding: 5px;">Sin Stock Definido</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12" style="width: 100%; padding-top: 15px; margin: 0px;">
+                                                <div class="row">
+                                                    <div class="col-12 col-sm-6">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <span>PRODUCTOS</span>
+                                                            </div>
+                                                            <div class="table-responsive" id="tabla-stockproducto">
+                                                                <table class="table table-vcenter card-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                        <th>Producto</th>
+                                                                        <th>Stock</th>
+                                                                        <th>Disponibles</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-6">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <span>INGREDIENTES</span>
+                                                            </div>
+                                                            <div class="table-responsive" id="tabla-stockingredientes">
+                                                                <table class="table table-vcenter card-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                        <th>Ingrediente</th>
+                                                                        <th>Stock</th>
+                                                                        <th>Disponibles</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +402,18 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
 <script src="{{ asset('utilidades/js/productos.js') }}" defer></script>
+<script src="{{ asset('utilidades/js/categorias.js') }}" defer></script>
 <style>
+    .icon-container {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-container svg {
+        width: 100%;
+        height: 100%;
+    }
+
     #tabla-productos .categoria-fila:hover {
         background-color: #FE8F8F;
     }
@@ -294,6 +422,12 @@
     }
     .selected {
         background-color: #FF0303;
+    }
+    .hovered{
+        background-color: #fd7;
+    }
+    .tableproducseleccionado{
+        background-color: #fd7;
     }
     .star-label {
         cursor: pointer;
@@ -343,127 +477,175 @@
 </style>
 @livewireStyles
 <script>
-    $(document).ready(function() {  
-        MostrarTablaCategoria();
+    function MostrarTablaProductStock(){
+        $.ajax({
+            url: 'api/get-productos-stock',
+            type: 'GET',
+            success: function(data) {
+                $('#tabla-stockproducto tbody').empty();
+                $.each(data, function(index, producto) {
+                    var borderStyle = (producto.MinimoStock > 0) ? 'border-left: 4px solid green;' : 'border-left: 4px solid red;';
+                    var row = '<tr style="' + borderStyle + '">' +
+                        '<td hidden>' + producto.id + '</td>' +
+                        '<td>' + producto.NombreProducto + '</td>' +
+                        '<td>' + (producto.CantidadStock ? producto.CantidadStock : '-') + '</td>' +
+                        '<td>' + (producto.CantidadStock ? producto.CantidadStock : '-') + '</td>' +
+                        '</tr>';
+                    $('#tabla-stockproducto tbody').append(row);
+                });
 
-        document.getElementById('addpcategorias').addEventListener('click', function() {
-            cargarCategorias();
-            var formTabsDiv = document.getElementById('form_tabs');
-            formTabsDiv.innerHTML = `
-            <form id="form-register-product">
-                <div class="card-header">
-                    <h3 class="card-title">Registrar Producto</h3>
-                </div>
-                <div class="card-body">
-                    <div class="card-body">
-                        <div class="mb-3 row">
-                            <label class="col-3 col-form-label required">Nombre</label>
-                            <div class="col">
-                            <input type="text" class="form-control" id="CategoriaNombre" name="CategoriaNombre">
-                            </div>
+                agregarEventosTabla();
+
+                $('#tabla-stockproducto tbody').on('click', 'tr', function() {
+                    var id = $(this).find('td:first').text();
+                    $.ajax({
+                        url: '/api/get-productos-seleccionado/' + id,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            console.log(data)
+                            InformacionProductoStock(data);
+                        },
+                        error: function(error) {
+                            console.error('Error al recuperar datos de producto:', error);
+                        }
+                    });
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    function agregarEventosTabla() {
+        $('#tabla-stockproducto tbody tr').hover(function() {
+            $(this).addClass('hovered');
+        }, function() {
+            $(this).removeClass('hovered');
+        });
+        $('#tabla-stockproducto tbody tr').click(function() {
+            $('#tabla-stockproducto tbody tr').removeClass('tableproducseleccionado');
+            $(this).addClass('tableproducseleccionado').siblings().removeClass('tableproducseleccionado');
+        });
+    }
+
+
+    function InformacionProductoStock(data){
+        var TotalProduct = document.getElementById('form_tabs');
+        TotalProduct.innerHTML = `
+            <div class="col-md-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">${data.NombreProducto}</h3>
+                        <div class="card-actions">
+                        <a href="#" class="btn" data-producto-id="${data.id}" id="AddProductoStock">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
+                        </a>
                         </div>
-                        <div class="mb-3 row">
-                            <label class="col-3 col-form-label required">Cocina</label>
-                            <div class="col">
-                            <select class="form-select" id="CategoriaCocina" name="CategoriaCocina">
-                                
-                            </select>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="card-body p-12" style="height: 100%">
                         <div class="row">
-                            <label class="col-3 col-form-label pt-0">App Comensal</label>
-                            <div class="col">
-                            <label class="form-check">
-                                <input class="form-check-input" type="checkbox" id="CheckAppComensal" name="CheckAppComensal">
-                            </label>
+                            <div class="col-12 col-md-12">
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Disponibles</label>
+                                    <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data.CantidadStock} unid. (En Stock)</label>                                                    
+                                    </div>
+                                </div>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Stock</label>
+                                    <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data.CantidadStock}</label>                                                    
+                                    </div>
+                                </div>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Stock Minimo</label>
+                                    <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data.CantidadStock}</label>                                                    
+                                    </div>
+                                </div>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Proveedor</label>
+                                    <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data.proveedor ? data.proveedor.name : 'Sin proveedor'}</label>
+                                    </div>
+                                </div>
                             </div>
-                        </div><br>
-                        <div class="row">
-                            <label class="col-3 col-form-label pt-0">Menu Online</label>
-                            <div class="col">
-                            <label class="form-check">
-                                <input class="form-check-input" type="checkbox" id="CheckMenuOnline" name="CheckMenuOnline">
-                            </label>
-                            </div>
-                        </div><br>
-                        <div class="row">
-                            <label class="col-3 col-form-label pt-0">Carta QR</label>
-                            <div class="col">
-                            <label class="form-check">
-                                <input class="form-check-input" type="checkbox" id="CheckCartaQR" name="CheckCartaQR">
-                            </label>
-                            </div>
-                        </div><br>
-                    </div>                    
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex" style="text-align: right">
-                        <button type="button" class="btn me-auto">CANCELAR</button>
-                        <button type="button" class="btn btn-primary" id="btn-registrar-categoria">GUARDAR</button>
+                        </div>                                                                                                
                     </div>
                 </div>
-            </form>
-            `;
+            </div>
+        `;
 
-            $.ajax({
-                url: '/api/get-cocinas',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    var select = $('#CategoriaCocina');
-                    select.empty();
-                    select.append($('<option></option>'));
-                    $.each(data, function(index, cocina) {
-                        select.append($('<option></option>').attr('value', cocina.id).text(cocina.Nombre_Cocina));
-                    });
-                },
-                error: function(error) {
-                    console.error('Error al recuperar datos de categorías:', error);
-                }
-            });
+        $('#AddProductoStock').on('click', function() {
+            TotalProduct.innerHTML = ``;
+            TotalProduct.innerHTML = `
+            <div class="col-md-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"> EDITANDO ${data.NombreProducto}</h3>
+                        <div class="card-actions">
+                        </div>
+                    </div>
+                    <div class="card-body p-12" style="height: 100%">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Disponibles</label>
+                                    <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data.CantidadStock} unid. (En Stock)</label>                                                    
+                                    </div>
+                                </div><br>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Stock</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="UpdateCantidadStock" name="UpdateCantidadStock" value="${data.CantidadStock}">
+                                    </div>
+                                </div><br>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Stock Minimo</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="UpdateCantidadStockMinimo" name="UpdateCantidadStockMinimo" value="${data.CantidadStock}">
+                                    </div>
+                                </div><br>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Comentario</label>
+                                    <div class="col">
+                                        <textarea class="form-control" rows="5" id="UpdateComentarioStock" name="UpdateComentarioStock" value="${data.ComentarioStock}"></textarea>
+                                    </div>
+                                </div><br>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary me-2" id="EditBtnGuardarStock">Guardar</button>
+                                    <button class="btn btn-danger" id="EditBtnCancelarStock">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>                                                                                                
+                    </div>
+                </div>
+            </div>`;   
+             
+            $('#EditBtnGuardarStock').off('click').on('click', function(event) {
+                var IdUpdate = `${data.id}`;
+                var CantidadStock = $("#UpdateCantidadStock").val();
+                var CantidadStockMinimo = $("#UpdateCantidadStockMinimo").val();
+                var ComentariodStock = $("#UpdateComentarioStock").val();
 
-            $('#ProductoCategoria').change(function() {
-                var categoriaSeleccionada = $(this).val();
-                if (categoriaSeleccionada) {
-                    cargarSubcategorias(categoriaSeleccionada);
-                    $('#ProductoSubCategoria').parent().show();
-                } else {
-                    $('#ProductoSubCategoria').parent().hide();
-                }
-            });
+                var datosRecogidos = {
+                    id: IdUpdate,
+                    cantidad: CantidadStock,
+                    minimo: CantidadStockMinimo,
+                    comentario: ComentariodStock
+                };
 
-            $('#btn-registrar-categoria').off('click').on('click', function(event) {
-                // Obtener los valores de los otros campos del formulario
-                var Nombre = $("#CategoriaNombre").val();
-                var cocina = $("#CategoriaCocina").val();
-                var appcomensal = $("#CheckAppComensal").prop('checked');
-                var menuonline = $("#CheckMenuOnline").prop('checked');
-                var cartaqr = $("#CheckCartaQR").prop('checked');
-
-                // Crear un objeto FormData para enviar los datos del formulario
-                var formData = new FormData();
-                formData.append('Nombre', Nombre);
-                formData.append('Cocina', cocina);
-                formData.append('AppComensal', appcomensal);
-                formData.append('MenuOnline', menuonline);
-                formData.append('CartaQR', cartaqr);
-
-                // Realizar la solicitud AJAX
                 $.ajax({
-                    url: '/api/registrar-categoria',
+                    url: '/api/actualizar-producto-stock',
                     type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false, 
-                    success: function (categoria) {
-                        MostrarTablaCategoria();
-                        MostrarCategoria();
-                        MostrarMensaje("Cocina Creada Exitosamente", "success");
-                        $("#CategoriaNombre").val("");
-                        $("#CategoriaCocina").val("");
-                        $("#CheckAppComensal").prop('checked', false);
-                        $("#CheckMenuOnline").prop('checked', false);
-                        $("#CheckCartaQR").prop('checked', false);
+                    data: datosRecogidos,
+                    success: function (producto) {
+                        MostrarTablaProductStock()
+                        CanvasTime();
+                        MostrarMensaje("Se Actualizo El Producto Exitosamente", "success");
                     },
                     error: function (error) {
                         console.error('Error al registrar:', error);
@@ -472,586 +654,11 @@
             });
 
         });
-    });
-
-    function MostrarTablaCategoria(){        
-        $.ajax({
-            url: 'api/get-categorias',
-            type: 'GET',
-            dataType: 'json',
-            success: function(categorias) {
-                if (categorias.length > 0) {
-                    actualizarCategoriaTabla();
-                    function actualizarCategoriaTabla() {
-                        console.log(categorias)
-                        var tablaCategorias = $('#tabla-categorias tbody');
-                        tablaCategorias.empty();
-                        $.each(categorias, function(index, categoria) {
-                            var filaCategoria = '<tr class="categoria-fila" data-categoria-id="' + categoria.id + '">' +
-                                                    '<td style="font-weight: bold;">' + categoria.Nombre_categoria + '</td>' +
-                                                    '<td style="font-weight: bold;">' + (categoria.cocina ? categoria.cocina.Nombre_Cocina : '-') + '</td>' +
-                                                    '<td style="font-weight: bold;">' + categoria.productos_count + '</td>' +
-                                                    '<td style="font-weight: bold;"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg></td>' +
-                                                '</tr>';
-                            tablaCategorias.append(filaCategoria);
-
-                            if (categoria.subcategorias && categoria.subcategorias.length > 0) {
-                                $.each(categoria.subcategorias, function(subindex, subcategoria) {
-                                    var filaSubcategoria = '<tr class="subcategoria-fila" data-subcategoria-id="' + subcategoria.id + '">' +
-                                                                '<td  style="color: #6C7B95"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-down-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 8v8h8" /></svg>' + subcategoria.Nombre_subcategoria + '</td>' +
-                                                                '<td style="color: #6C7B95">' + (subcategoria.cocina_id ? subcategoria.cocina.Nombre_Cocina : '-') + '</td>' +
-                                                                '<td  style="color: #6C7B95">' + categoria.productos_count + '</td>' +
-                                                                '<td  style="color: #6C7B95"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg></td>' +
-                                                            '</tr>';
-                                    tablaCategorias.append(filaSubcategoria);
-                                });
-                            }
-                        });
-
-
-                        $('.categoria-fila').on('click', function() {
-                            $('.categoria-fila').removeClass('seleccionado');
-                            $('.subcategoria-fila').removeClass('seleccionadosub');
-                            $(this).addClass('seleccionado');
-                            var categoriaID = $(this).data('categoria-id');
-                            $.ajax({
-                                url: '/api/get-categoria-seleccionado/' + categoriaID,
-                                type: 'GET',
-                                dataType: 'json',
-                                success: function(data) {
-                                    var CategoriaDivs = document.getElementById('form_tabs');
-                                    CategoriaDivs.innerHTML = ``;
-                                    CategoriaDivs.innerHTML = `
-                                    <form id="form-register-product">
-                                        <div class="card-header">
-                                            <h3 class="card-title">${data.Nombre_categoria}</h3>
-                                            <div class="card-actions">
-                                            <a href="#" class="btn" data-categoria-id="${data.id}" id="EditarCategoria">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
-                                            </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="card-body">
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.Nombre_categoria}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Cocina</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.cocina_id != null ? data.cocina.Nombre_Cocina : 'sin cocina'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">App Comensal</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.AppComensal == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Menu Online</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.MenuOnline == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Carta QR</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.CartaQR == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                            </div>                    
-                                        </div>
-                                        <div class="card-footer">
-                                            <div class="d-flex" style="text-align: right">
-                                                <button type="button" class="btn btn-primary" id="btn-registrar-subcategoria" data-categoria-id="${categoriaID}">Agregar Sub - Categoria</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    `;
-
-                                    $('#EditarCategoria').off('click').on('click', function(event) {
-                                        var id = this.getAttribute('data-categoria-id');
-                                        var CategoriaDivs = document.getElementById('form_tabs');
-                                        CategoriaDivs.innerHTML = ``;
-                                        CategoriaDivs.innerHTML = `
-                                        <form id="form-register-product">
-                                            <div class="card-header">
-                                                <h3 class="card-title">Editando ${data.Nombre_categoria}</h3>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="card-body">
-                                                    <div class="mb-12 row">
-                                                        <label class="col-4 col-form-label" style="font-weight: bold;">Nombre</label>
-                                                        <div class="col">
-                                                            <input type="text" class="form-control" id="UpdateNombre_categoria" name="UpdateNombre_categoria" value="${data.Nombre_categoria}">
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="mb-12 row">
-                                                        <label class="col-4 col-form-label" style="font-weight: bold;">Cocina</label>
-                                                        <div class="col">
-                                                        <select id="categoriaCocinaSelect" class="form-control">
-
-                                                        </select>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="mb-12 row">
-                                                        <label class="col-4 col-form-label" style="font-weight: bold">App Comensal</label>
-                                                        <div class="col">
-                                                            <select id="UpdateAppComensal" name="UpdateAppComensal" class="form-control">
-                                                                <option value="true">Habilitado</option>
-                                                                <option value="false">Deshabilitado</option>
-                                                            </select>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="mb-12 row">
-                                                        <label class="col-4 col-form-label" style="font-weight: bold">Menu Online</label>
-                                                        <div class="col">
-                                                            <select id="UpdateMenuOnline" name="UpdateMenuOnline" class="form-control">
-                                                                <option value="true">Habilitado</option>
-                                                                <option value="false">Deshabilitado</option>
-                                                            </select>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="mb-12 row">
-                                                        <label class="col-4 col-form-label" style="font-weight: bold">Carta Qr</label>
-                                                        <div class="col">
-                                                            <select id="UpdateCartaQr" name="UpdateCartaQr" class="form-control">
-                                                                <option value="true">Habilitado</option>
-                                                                <option value="false">Deshabilitado</option>
-                                                            </select>
-                                                        </div>
-                                                    </div><br>
-                                                </div>                    
-                                            </div>
-                                            <div class="card-footer">
-                                                <div class="d-flex" style="text-align: right">
-                                                    <button type="button" class="btn me-auto">CANCELAR</button>
-                                                    <button type="button" class="btn btn-primary" id="btn-actualizar-categoria">ACTUALIZAR</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        `;
-
-                                        var cocinaId = data.cocina_id;
-                                        $.ajax({
-                                            url: 'api/get-cocinas',
-                                            type: 'GET',
-                                            dataType: 'json',
-                                            success: function(cocinas) {
-                                                var select = $('#categoriaCocinaSelect');
-                                                select.empty();
-                                                select.append($('<option></option>').attr('value', null).text('Seleccione una cocina'));
-                                                $.each(cocinas, function(index, cocina) {
-                                                    select.append($('<option></option>').attr('value', cocina.id).text(cocina.Nombre_Cocina));
-                                                }); 
-                                                $('#categoriaCocinaSelect').val(cocinaId).change();
-                                            },
-                                            error: function(error) {
-                                                console.error('Error al recuperar datos de categorías:', error);
-                                            }
-                                        });
-
-                                        var appcomensal = data.AppComensal;
-                                        $('#UpdateAppComensal').val(appcomensal).change();
-                                        var cartaqr = data.CartaQR;
-                                        $('#UpdateCartaQr').val(cartaqr).change();
-                                        var menuonline = data.MenuOnline;
-                                        $('#UpdateMenuOnline').val(menuonline).change();
-
-                                        $('#btn-actualizar-categoria').off('click').on('click', function(event) {
-                                            var EditNombre = $("#UpdateNombre_categoria").val();
-                                            var Editcocina = $("#categoriaCocinaSelect").val();
-                                            var Editappcomensal = $("#UpdateAppComensal").val();
-                                            var Editmenuonline = $("#UpdateMenuOnline").val();
-                                            var Editcartaqr = $("#UpdateCartaQr").val();
-
-                                            var datosRecogidos = {
-                                                id: id,
-                                                nombre: EditNombre,
-                                                cocina_id: Editcocina,
-                                                appcomensal: Editappcomensal,
-                                                menuonline: Editmenuonline,
-                                                cartaqr: Editcartaqr
-                                            };
-
-                                            $.ajax({
-                                                url: '/api/actualizar-categoria/',
-                                                type: 'POST',
-                                                data: datosRecogidos,
-                                                success: function (producto) {
-                                                    CanvasTime();
-                                                    MostrarTablaCategoria();
-                                                    MostrarCategoria();
-                                                    MostrarMensaje("Se Actualizo La Categoria Exitosamente", "success");
-                                                },
-                                                error: function (error) {
-                                                    console.error('Error al registrar:', error);
-                                                }
-                                            });
-                                        });
-                                    });                                                                                                        
-                                    
-                                    const btnRegistrarSubcategoria = document.getElementById('btn-registrar-subcategoria');
-                                    btnRegistrarSubcategoria.addEventListener('click', function() {
-                                        const categoriaID = this.getAttribute('data-categoria-id');
-                                        var SubCategoriaDivs = document.getElementById('form_tabs');
-                                        SubCategoriaDivs.innerHTML = ``;
-                                        SubCategoriaDivs.innerHTML = `
-                                        <form id="form-register-product">
-                                            <div class="card-header">
-                                                <h3 class="card-title" style="color: blue"> se registrara sub categoria a ${data.Nombre_categoria}</h3>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="card-body">
-                                                    <div class="mb-12 row">
-                                                        <label class="col-3 col-form-label" style="font-weight: bold;">Nombre Categoria Padre</label>
-                                                        <div class="col">
-                                                        <label class="col-9 col-form-label">${data.Nombre_categoria}</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3 row">
-                                                        <label class="col-3 col-form-label required">Nombre Sub Categoria</label>
-                                                        <div class="col">
-                                                        <input type="text" class="form-control" id="SubCategoriaNombre" name="SubCategoriaNombre">
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3 row">
-                                                        <label class="col-3 col-form-label required">Cocina</label>
-                                                        <div class="col">
-                                                        <select class="form-select" id="SubCategoriaCocina" name="SubCategoriaCocina">
-                                                            
-                                                        </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">App Comensal</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckAppComensal" name="SubCheckAppComensal">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">Menu Online</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckMenuOnline" name="SubCheckMenuOnline">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">Carta QR</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckCartaQR" name="SubCheckCartaQR">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                </div>                    
-                                            </div>
-                                            <div class="card-footer">
-                                                <div class="d-flex" style="text-align: right">
-                                                    <button type="button" class="btn me-auto">CANCELAR</button>
-                                                    <button type="button" class="btn btn-primary" id="btn-enviar-subcategoria">GUARDAR</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        `;
-
-                                        $.ajax({
-                                            url: '/api/get-cocinas',
-                                            type: 'GET',
-                                            dataType: 'json',
-                                            success: function(data) {
-                                                var select = $('#SubCategoriaCocina');
-                                                select.empty();
-                                                select.append($('<option></option>'));
-                                                $.each(data, function(index, cocina) {
-                                                    select.append($('<option></option>').attr('value', cocina.id).text(cocina.Nombre_Cocina));
-                                                });
-                                            },
-                                            error: function(error) {
-                                                console.error('Error al recuperar datos de categorías:', error);
-                                            }
-                                        });
-
-                                        $('#btn-enviar-subcategoria').off('click').on('click', function(event) {
-                                            // Obtener los valores de los otros campos del formulario
-                                            var Nombre = $("#SubCategoriaNombre").val();
-                                            var cocina = $("#SubCategoriaCocina").val();
-                                            var appcomensal = $("#SubCheckAppComensal").prop('checked');
-                                            var menuonline = $("#SubCheckMenuOnline").prop('checked');
-                                            var cartaqr = $("#SubCheckCartaQR").prop('checked');
-                                            var categoriaId = categoriaID;
-                                            // Crear un objeto FormData para enviar los datos del formulario
-                                            var formData = new FormData();
-                                            formData.append('Nombre', Nombre);
-                                            formData.append('Cocina', cocina);
-                                            formData.append('AppComensal', appcomensal);
-                                            formData.append('MenuOnline', menuonline);
-                                            formData.append('CartaQR', cartaqr);
-                                            formData.append('Categoria', categoriaId);
-                                            // Realizar la solicitud AJAX
-                                            $.ajax({
-                                                url: '/api/registrar-subcategoria',
-                                                type: 'POST',
-                                                data: formData,
-                                                contentType: false,
-                                                processData: false, 
-                                                success: function (categoria) {
-                                                    MostrarTablaCategoria();
-                                                    MostrarCategoria();
-                                                    MostrarMensaje("Cocina Creada Exitosamente", "success");
-                                                    $("#SubCategoriaNombre").val("");
-                                                    $("#SubCategoriaCocina").val("");
-                                                    $("#SubCheckAppComensal").prop('checked', false);
-                                                    $("#SubCheckMenuOnline").prop('checked', false);
-                                                    $("#SubCheckCartaQR").prop('checked', false);
-                                                },
-                                                error: function (error) {
-                                                    console.error('Error al registrar:', error);
-                                                }
-                                            });
-                                        });
-                                    });
-                                },
-                                error: function(error) {
-                                    console.error('Error al recuperar datos de producto:', error);
-                                }
-                            });
-                        });
-
-                        $('.subcategoria-fila').on('click', function() {
-                            $('.subcategoria-fila').removeClass('seleccionadosub');
-                            $('.categoria-fila').removeClass('seleccionado');
-                            $(this).addClass('seleccionadosub');
-                            var categoriaID = $(this).data('subcategoria-id');
-                            $.ajax({
-                                url: '/api/get-subcategoria-seleccionado/' + categoriaID,
-                                type: 'GET',
-                                dataType: 'json',
-                                success: function(data) {
-                                    var CategoriaDivs = document.getElementById('form_tabs');
-                                    CategoriaDivs.innerHTML = ``;
-                                    CategoriaDivs.innerHTML = `
-                                    <form id="form-register-product">
-                                        <div class="card-header">
-                                            <h3 class="card-title">${data.Nombre_subcategoria}</h3>
-                                            <div class="card-actions">
-                                            <a href="#" class="btn" data-subcategoria-id="${data.id}" id="EditarSubCategoria">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
-                                            </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="card-body">
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Categoria</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.categoria.Nombre_categoria}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.Nombre_subcategoria}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Cocina</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.cocina_id != null ? data.cocina.Nombre_Cocina : 'sin cocina'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">App Comensal</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.AppComensal == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Menu Online</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.MenuOnline == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-12 row">
-                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Carta QR</label>
-                                                    <div class="col">
-                                                    <label class="col-9 col-form-label">${data.AppComensal == 'true' ? 'Si' : 'No'}</label>
-                                                    </div>
-                                                </div>
-                                            </div>                    
-                                        </div>
-                                    </form>
-                                    `;
-
-                                    $('#EditarSubCategoria').off('click').on('click', function(event) {
-                                        var id = this.getAttribute('data-subcategoria-id');
-                                        alert(id)
-                                    });
-
-                                    const btnRegistrarSubcategoria = document.getElementById('btn-registrar-subcategoria');
-                                    btnRegistrarSubcategoria.addEventListener('click', function() {
-                                        const categoriaID = this.getAttribute('data-categoria-id');
-                                        var SubCategoriaDivs = document.getElementById('form_tabs');
-                                        SubCategoriaDivs.innerHTML = ``;
-                                        SubCategoriaDivs.innerHTML = `
-                                        <form id="form-register-product">
-                                            <div class="card-header">
-                                                <h3 class="card-title" style="color: blue"> se registrara sub categoria a ${data.Nombre_categoria}</h3>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="card-body">
-                                                    <div class="mb-12 row">
-                                                        <label class="col-3 col-form-label" style="font-weight: bold;">Nombre Categoria Padre</label>
-                                                        <div class="col">
-                                                        <label class="col-9 col-form-label">${data.Nombre_categoria}</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3 row">
-                                                        <label class="col-3 col-form-label required">Nombre Sub Categoria</label>
-                                                        <div class="col">
-                                                        <input type="text" class="form-control" id="SubCategoriaNombre" name="SubCategoriaNombre">
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3 row">
-                                                        <label class="col-3 col-form-label required">Cocina</label>
-                                                        <div class="col">
-                                                        <select class="form-select" id="SubCategoriaCocina" name="SubCategoriaCocina">
-                                                            
-                                                        </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">App Comensal</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckAppComensal" name="SubCheckAppComensal">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">Menu Online</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckMenuOnline" name="SubCheckMenuOnline">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                    <div class="row">
-                                                        <label class="col-3 col-form-label pt-0">Carta QR</label>
-                                                        <div class="col">
-                                                        <label class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="SubCheckCartaQR" name="SubCheckCartaQR">
-                                                        </label>
-                                                        </div>
-                                                    </div><br>
-                                                </div>                    
-                                            </div>
-                                            <div class="card-footer">
-                                                <div class="d-flex" style="text-align: right">
-                                                    <button type="button" class="btn me-auto">CANCELAR</button>
-                                                    <button type="button" class="btn btn-primary" id="btn-enviar-subcategoria">GUARDAR</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                        `;
-
-                                        $.ajax({
-                                            url: '/api/get-cocinas',
-                                            type: 'GET',
-                                            dataType: 'json',
-                                            success: function(data) {
-                                                var select = $('#SubCategoriaCocina');
-                                                select.empty();
-                                                select.append($('<option></option>'));
-                                                $.each(data, function(index, cocina) {
-                                                    select.append($('<option></option>').attr('value', cocina.id).text(cocina.Nombre_Cocina));
-                                                });
-                                            },
-                                            error: function(error) {
-                                                console.error('Error al recuperar datos de categorías:', error);
-                                            }
-                                        });
-
-                                        $('#btn-enviar-subcategoria').off('click').on('click', function(event) {
-                                            // Obtener los valores de los otros campos del formulario
-                                            var Nombre = $("#SubCategoriaNombre").val();
-                                            var cocina = $("#SubCategoriaCocina").val();
-                                            var appcomensal = $("#SubCheckAppComensal").prop('checked');
-                                            var menuonline = $("#SubCheckMenuOnline").prop('checked');
-                                            var cartaqr = $("#SubCheckCartaQR").prop('checked');
-                                            var categoriaId = categoriaID;
-                                            // Crear un objeto FormData para enviar los datos del formulario
-                                            var formData = new FormData();
-                                            formData.append('Nombre', Nombre);
-                                            formData.append('Cocina', cocina);
-                                            formData.append('AppComensal', appcomensal);
-                                            formData.append('MenuOnline', menuonline);
-                                            formData.append('CartaQR', cartaqr);
-                                            formData.append('Categoria', categoriaId);
-                                            // Realizar la solicitud AJAX
-                                            $.ajax({
-                                                url: '/api/registrar-subcategoria',
-                                                type: 'POST',
-                                                data: formData,
-                                                contentType: false,
-                                                processData: false, 
-                                                success: function (categoria) {
-                                                    MostrarTablaCategoria();
-                                                    MostrarCategoria();
-                                                    MostrarMensaje("Cocina Creada Exitosamente", "success");
-                                                    $("#SubCategoriaNombre").val("");
-                                                    $("#SubCategoriaCocina").val("");
-                                                    $("#SubCheckAppComensal").prop('checked', false);
-                                                    $("#SubCheckMenuOnline").prop('checked', false);
-                                                    $("#SubCheckCartaQR").prop('checked', false);
-                                                },
-                                                error: function (error) {
-                                                    console.error('Error al registrar:', error);
-                                                }
-                                            });
-                                        });
-                                    });
-                                    
-                                },
-                                error: function(error) {
-                                    console.error('Error al recuperar datos de producto:', error);
-                                }
-                            });
-                        });
-
-                        $('#SearchProduct').on('input', function() {
-                            var searchText = $(this).val().toLowerCase();
-                            $('#tabla-categorias tbody tr').each(function() {
-                                var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                                var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                                var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                                if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                    $(this).show();
-                                } else {
-                                    $(this).hide();
-                                }
-                            });
-                        });
-                    }                    
-                } else {
-                    var tablaCategorias = $('#tabla-productos tbody');
-                    tablaCategorias.empty();
-                    tablaCategorias.append('<tr>' +
-                    '<td colspan="5" style="text-align: center">LA CATEGORIA NO TIENE REGISTROS AUN</td>' +
-                    '</tr>');
-                }
-            },
-            error: function(error) {
-                console.error('Error al recuperar datos:', error);
-            }
-        });  
     }
+    
+
+    $(document).ready(function() {  
+        MostrarTablaProductStock();
+    });
 </script>
 @livewireScripts
