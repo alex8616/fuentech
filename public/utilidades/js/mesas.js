@@ -441,7 +441,7 @@
                     var ambientesContainer = $('#listambientes');
                     $.each(data, function(index, ambiente) {
                         var button = $('<button>')
-                            .addClass('btn btn-ambiente')
+                            .addClass('btn btn-ambiente me-2 my-2')
                             .html(`${ambiente.NombreAmbiente}<span class="badge bg-lime ms-2">9</span>`)
                             .data('ambiente-id', ambiente.id);
 
@@ -465,11 +465,14 @@
                                     .addClass('btn btn-primary')
                                     .text(ambienteId)
                                     .attr('id', 'EditAmbiente');
+
                                 OperacionDiv.css({
                                     'display': 'flex',
                                     'justify-content': 'flex-end',
+                                    'align-items': 'center',
                                     'padding': '10px'
                                 });
+
                                 OperacionDiv.append(ambienteButton);
 
                                 $('#EditAmbiente').off('click').on('click', function (event) {
@@ -613,9 +616,14 @@
                                 var productosSeleccionados = [];
 
                                 $('#BuscarProducto').autocomplete({
-                                    source: productos.map(producto => producto.NombreProducto),
+                                    source: productos.map(producto => ({
+                                        label: `${producto.CodigoProducto} - ${producto.NombreProducto}`,
+                                        value: producto.NombreProducto,
+                                        codigo: producto.CodigoProducto
+                                    })),
                                     select: function (event, ui) {
-                                        var productoSeleccionado = productos.find(producto => producto.NombreProducto === ui.item.label);
+                                        var productoSeleccionado = productos.find(producto => producto.NombreProducto === ui.item.value);
+                                        var codigoProducto = ui.item.codigo;
                                         productosSeleccionados.push(Object.assign({}, productoSeleccionado));
                                         actualizarDivsProductos();
                                         ui.item.value = '';
@@ -623,8 +631,18 @@
                                     },
                                     close: function (event, ui) {
                                         $(this).val('');
+                                    },
+                                    open: function (event, ui) {
+                                        $('.ui-menu-item').each(function () {
+                                            var text = $(this).text();
+                                            var codigo = text.split(' - ')[0];
+                                            var nombre = text.split(' - ')[1];
+                                            $(this).html(`<span class="autocomplete-bold">${codigo}</span> - ${nombre}`);
+                                        });
                                     }
                                 });
+
+                                
 
                                 var btnGuardar = document.getElementById('btnGuardar');
                                 $('#btnGuardar').off('click').on('click', function (event) {
@@ -679,21 +697,21 @@
 
                                         nuevoDiv.innerHTML = `
                                         <div style="background: #FFCC70; padding-top: 10px;">
-                                            <div data-index="${index}" style="display: flex; width: 100%; padding: 0px; margin: 0px;">
-                                                <div class="col-sm-4" style="width: 25%;" id="divdate1">
+                                            <div data-index="${index}" style="display: flex; padding: 0px; margin: 0px;">
+                                                <div style="width: 25%;" id="divdate1">
                                                     <div class="input-group" style="width: 100%">
                                                         <button class="btn btn-outline-secondary btnDecrementar" type="button" style="width: 15px">-</button>
-                                                        <input type="number" name="CantProduct" class="form-control CantProduct" value="${producto.Cantidad || 1}" style="padding: 0px; text-align: center; width: 15px"; id="divInput">
+                                                        <input type="text" name="CantProduct" class="form-control CantProduct" value="${producto.Cantidad || 1}" style="padding: 0px; text-align: center;" id="divInput" disabled>
                                                         <button class="btn btn-outline-secondary btnIncrementar" type="button" style="width: 15px">+</button>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-5" style="padding-left: 9px; padding-right: 9px; width: 35%;" id="divdate2">
+                                                <div style="padding-left: 9px; padding-right: 9px; width: 35%;" id="divdate2">
                                                     <a style="font-weight: bold; font-size: 13px; word-wrap: break-word;">${producto.NombreProducto}</a>
                                                 </div>
-                                                <div class="col-sm-1" style="width: 15%;" id="divdate3">
-                                                    <input type="number" name="PrecioProduct" class="form-control PrecioProduct" value="${producto.PrecioProducto || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px">
+                                                <div style="width: 15%;" id="divdate3">
+                                                    <input type="number" name="PrecioProduct" class="form-control PrecioProduct" value="${producto.PrecioProducto  || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px">
                                                 </div>
-                                                <div class="col-sm-2" style="text-align: center; width: 25%; padding: 0px; margin: 0px; id="divdate4"">
+                                                <div style="text-align: center; width: 25%; padding: 0px; margin: 0px; id="divdate4"">
                                                     <a class="mostrar-comentario">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-circle" style="width: 36px; height: 36px;" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -710,7 +728,7 @@
                                                 </div>                                                
                                             </div>
                                             <div style="text-align: center;"><br>
-                                                <input type="text" name="ComentarioProduct" class="form-control ComentarioProduct" style="display: none">
+                                                <input type="text" name="ComentarioProduct" class="form-control ComentarioProduct" style="display: none"><br id="saltoDiv" style="display: none">
                                             </div>
                                         </div>
                                         `;
@@ -767,8 +785,10 @@
                                             // Alternar la visibilidad del input de comentario
                                             if (comentarioProductInput.style.display === 'none' || comentarioProductInput.style.display === '') {
                                                 comentarioProductInput.style.display = 'block';
+                                                saltoDiv.style.display = 'block';
                                             } else {
                                                 comentarioProductInput.style.display = 'none';
+                                                saltoDiv.style.display = 'none';
                                             }
                                         });
 
@@ -778,8 +798,6 @@
 
                                 }
 
-                                
-
                                 function DivTotalConsumo(mesaId) {
 
                                     function DescuentoDiv() {
@@ -788,30 +806,33 @@
                                         // Haz lo que necesites con el id
                                         var DivDescuento = document.getElementById('DivDescuento');
                                         DivDescuento.innerHTML = 
-                                        `<div data-index="${id}" style="background: #DDE6ED; padding: 10px; widht: 100%; display: flex">
+                                        `<div class="d-flex" data-index="${id}" style="background: #DDE6ED; margin: 0px; padding: 10px; width: 100%; display: flex; height: 60px;">
                                             <input type="number" value="${id}" id="IdDescuento" class="form-control" style="width: 100%" hidden>
-                                            <div class="col-sm-6" style="width: 42%; background: red">
-                                                <div class="mb-3 row">
-                                                    <label class="col-3 col-form-label" style="width: 40%">Descuento: </label>
-                                                    <div class="col">
-                                                    <input type="number" id="DescuentoPorcentaje" class="form-control" style="width: 100%">
-                                                    </div>
-                                                    <label class="col-3 col-form-label" style="width: 10%">%</label>
+                                            <div class="mb-6 row" style="width: 200%;">
+                                                <label class="col-1 col-form-label" style="white-space: nowrap; width: auto">Descuento: </label>
+                                                <div class="col" style="display: flex; align-items: center;">
+                                                    <input type="text" id="DescuentoPorcentaje" class="form-control" style="width: 80%">
+                                                    <label class="col-form-label">%</label>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-6" style="width: 20%; background: blue">
-                                                <div class="mb-3 row">
-                                                    <label class="col-3 col-form-label" style="width: 50%">Bs: </label>
-                                                    <div class="col">
-                                                    <input type="number" id="DescuentoMonto" class="form-control" style="width: 100%">
-                                                    </div>
+                                            <div class="mb-6 row" style="width: 150%;">
+                                                <label class="col-3 col-form-label" style="width: auto">Bs: </label>
+                                                <div class="col">
+                                                    <input type="text" id="DescuentoMonto" class="form-control" style="width: 60%">
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12" style="width: 30%; background: green">
-                                                <button type="button" class="badge bg-red-lt" id="btnDescuentoCancelar">Cancelar</button>
-                                                <button type="button" class="badge bg-green-lt" id="btnDescuentoConfirmar">Confirmar</button>
+                                            <div class="mb-6 row" style="width: auto; padding: 7px">
+                                                <div class="d-flex">
+                                                    <button type="button" class="badge bg-red-lt" id="btnDescuentoCancelar" style="height: 100%">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                                    </button>
+                                                    <button type="button" class="badge bg-green-lt" id="btnDescuentoConfirmar" style="height: 100%">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                                    </button>
+                                                </div>                                            
                                             </div>
-                                        </div>`;
+                                        </div>
+                                        `;
 
                                         document.getElementById('btnDescuentoCancelar').addEventListener('click', function () {
                                             DivDescuento.innerHTML = '';
@@ -880,13 +901,13 @@
                                                             var SubTotalProduct = document.getElementById('DivSubTotal');
                                                             if (consumo[0].descuentoconsumos.length > 0) {
                                                                 SubTotalProduct.innerHTML = `
-                                                                    <div class="row" style="background: #243A73; padding: 20px;">
-                                                                        <div class="col-sm-7">
+                                                                    <div class="d-flex" style="background: #243A73; padding: 20px;">
+                                                                        <div class="flex-grow-1">
                                                                             <div class="input-group" style="width: 100%">
                                                                                 <span style="font-size: 20px; color: white">SUB TOTAL</span>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="col-sm-5" style="text-align: right">
+                                                                        <div class="flex-shrink-0 text-right">
                                                                             <span style="font-size: 20px; color: white">${consumo[0].subTotal} Bs.</span>
                                                                         </div>
                                                                     </div>
@@ -896,14 +917,14 @@
                                                             }
                                                             var TotalProduct = document.getElementById('DivTotal');
                                                             TotalProduct.innerHTML = `
-                                                                <div style="background: #243A73; padding: 20px; display: flex">
-                                                                    <div class="col-sm-7" style="width: 50%">
-                                                                        <div class="input-group" style="width: 100%">
-                                                                            <span style="font-size: 20px; color: white">TOTAL</span>
+                                                                <div style="background: #243A73; padding: 20px; display: flex;">
+                                                                    <div style="width: 50%;">
+                                                                        <div class="input-group" style="width: 100%;">
+                                                                            <span style="font-size: 20px; color: white;">TOTAL</span>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-sm-5" style="text-align: right; width: 50%">
-                                                                        <span style="font-size: 20px; color: white">${consumo[0].total} Bs.</span>
+                                                                    <div style="text-align: right; width: 50%;">
+                                                                        <span style="font-size: 20px; color: white;">${consumo[0].total} Bs.</span>
                                                                     </div>
                                                                 </div>
                                                             `;
@@ -934,13 +955,13 @@
 
                                             if (consumo[0].descuentoconsumos.length > 0) {
                                                 SubTotalProduct.innerHTML = `
-                                                    <div class="row" style="background: #243A73; padding: 20px;">
-                                                        <div class="col-sm-7">
+                                                    <div class="d-flex" style="background: #243A73; padding: 20px;">
+                                                        <div class="flex-grow-1">
                                                             <div class="input-group" style="width: 100%">
                                                                 <span style="font-size: 20px; color: white">SUB TOTAL</span>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-5" style="text-align: right">
+                                                        <div class="flex-shrink-0 text-right">
                                                             <span style="font-size: 20px; color: white">${consumo[0].subTotal} Bs.</span>
                                                         </div>
                                                     </div>
@@ -951,14 +972,14 @@
 
                                             var TotalProduct = document.getElementById('DivTotal');
                                             TotalProduct.innerHTML = `
-                                                <div style="background: #243A73; padding: 20px; display: flex">
-                                                    <div class="col-sm-7" style="width: 50%">
-                                                        <div class="input-group" style="width: 100%">
-                                                            <span style="font-size: 20px; color: white">TOTAL</span>
+                                                <div style="background: #243A73; padding: 20px; display: flex;">
+                                                    <div style="width: 50%;">
+                                                        <div class="input-group" style="width: 100%;">
+                                                            <span style="font-size: 20px; color: white;">TOTAL</span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-5" style="text-align: right; width: 50%">
-                                                        <span style="font-size: 20px; color: white">${consumo[0].total} Bs.</span>
+                                                    <div style="text-align: right; width: 50%;">
+                                                        <span style="font-size: 20px; color: white;">${consumo[0].total} Bs.</span>
                                                     </div>
                                                 </div>
                                             `;
@@ -1020,19 +1041,19 @@
                                                         <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
                                                             <div class="card" id="CardOcupado" style="width: 100%; padding: 0px; margin: 0px;">
                                                                 <div class="card-status-start bg-primary"></div>
-                                                                <div class="card-header">
-                                                                    <div style="width: 100%; padding: 0px; margin: 0px; display: flex;">
-                                                                        <div class="col-md-12 col-lg-2" style="width: 15%; padding-right: 10px">
+                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto;">
+                                                                    <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
+                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-7"  style="text-align: left;" style="width: 30%;">
-                                                                            <p class="card-title">${detalle.producto.NombreProducto}</p>
-                                                                            <p style="font-size: 12px">${detalle.comentario} CANCELADO: ${detalle.comentarioeliminado}</p>
+                                                                        <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                            <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
+                                                                            <p style="font-size: 12px">CANCELADO: ${detalle.comentarioeliminado}</p>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-2" style="width: 20%;">
-                                                                            <h3 class="card-title" style="text-decoration:line-through;">${detalle.precio}</h3>                                                                    
+                                                                        <div class="col-md-12 col-lg-3" style="width: 50%;">
+                                                                            <h3 class="card-title">${detalle.total}</h3>                                                                    
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-1" style="text-aling: right; width: 10%; padding-top: 20px">
+                                                                        <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
                                                                             <a class="nav-link">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -1051,19 +1072,19 @@
                                                         <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
                                                             <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
                                                                 <div class="card-status-start bg-primary"></div>
-                                                                <div class="card-header">
-                                                                    <div style="width: 100%; padding: 0px; margin: 0px; display: flex; background: red;">
+                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto;">
+                                                                    <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
                                                                         <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-7" style="text-align: left;" style="width: auto;">
-                                                                            <p class="card-title">${detalle.producto.NombreProducto}</p>
+                                                                        <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                            <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
                                                                             <p style="font-size: 12px">${detalle.comentario}</p>
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
-                                                                            <h3 class="card-title">${detalle.precio}</h3>                                                                    
+                                                                        <div class="col-md-12 col-lg-3" style="width: 50%;">
+                                                                            <h3 class="card-title">${detalle.total}</h3>                                                                    
                                                                         </div>
-                                                                        <div class="col-md-12 col-lg-1"  style="text-aling: right; width: 10%; padding-top: 20px">
+                                                                        <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
                                                                             <a class="nav-link" data-bs-toggle="modal" data-bs-target="#ElminarDetalle" data-index="${index}">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -1134,13 +1155,20 @@
                         resolve(`
                             <form>
                                 <div class="card-header" style="background: #FF8080">
-                                    <div class="row" style="width: 100%">
-                                        <div class="col-12 col-sm-8">
-                                            <h3 class="card-title" style="color: white">Mesa #${mesaId}</h3>
-                                            <a data-id="${mesaId}" id="ImprimirMesa" onclick="generarPDF()">Imprimir</a>
-                                        </div> 
-                                    </div>
-                                </div> 
+                                    <div class="d-flex align-items-center" style="width: 100%">
+                                        <h3 class="card-title" style="color: white; margin: 0">Mesa #${mesaId}</h3>
+                                        <div class="ms-auto">
+                                            <a class="badge bg-blue-lt" data-id="${mesaId}" id="ImprimirMesa" onclick="generarPDF()" style="color: white; text-decoration: underline;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-printer"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" /></svg>
+                                            </a>
+                                            <a class="badge bg-red-lt" style="color: white; text-decoration: underline;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-color-picker"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11 7l6 6" /><path d="M4 16l11.7 -11.7a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4l-11.7 11.7h-4v-4z" /></svg>
+                                            </a>
+                                        </div>
+                                    </div> 
+                                </div>
+                        
+                        
                                 <div class="card-body" style="padding: 0px; margin: 0px">
                                     <div class="col-md-12">
                                         <form class="card">
@@ -1429,13 +1457,13 @@
                                         var SubTotalProduct = document.getElementById('DivSubTotal');
                                         if (consumo[0].descuentoconsumos.length > 0) {
                                             SubTotalProduct.innerHTML = `
-                                                <div class="row" style="background: #243A73; padding: 20px;">
-                                                    <div class="col-sm-7">
+                                                <div class="d-flex" style="background: #243A73; padding: 20px;">
+                                                    <div class="flex-grow-1">
                                                         <div class="input-group" style="width: 100%">
                                                             <span style="font-size: 20px; color: white">SUB TOTAL</span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-5" style="text-align: right">
+                                                    <div class="flex-shrink-0 text-right">
                                                         <span style="font-size: 20px; color: white">${consumo[0].subTotal} Bs.</span>
                                                     </div>
                                                 </div>
@@ -1445,14 +1473,14 @@
                                         }
                                         var TotalProduct = document.getElementById('DivTotal');
                                         TotalProduct.innerHTML = `
-                                            <div style="background: #243A73; padding: 20px; display: flex">
-                                                <div class="col-7 col-md-7" style="width: 10%">
-                                                    <div class="input-group" style="width: 100%">
-                                                        <span style="font-size: 20px; color: white">TOTAL</span>
+                                            <div style="background: #243A73; padding: 20px; display: flex;">
+                                                <div style="width: 50%;">
+                                                    <div class="input-group" style="width: 100%;">
+                                                        <span style="font-size: 20px; color: white;">TOTAL</span>
                                                     </div>
                                                 </div>
-                                                <div class="col-5 col-md-5" style="text-align: right; width: 50%">
-                                                    <span style="font-size: 20px; color: white">${consumo[0].total} Bs.</span>
+                                                <div style="text-align: right; width: 50%;">
+                                                    <span style="font-size: 20px; color: white;">${consumo[0].total} Bs.</span>
                                                 </div>
                                             </div>
                                         `;
@@ -1711,6 +1739,45 @@
                     });
                 });
 
+            }
+        });
+    }
+
+    function generarPDF() {
+        var mesaId = document.getElementById('ImprimirMesa').getAttribute('data-id');
+        let pdfLink;
+        $.ajax({
+            url: window.location.origin + '/api/get-mesa-comanda/' + mesaId,
+            type: 'GET',
+            beforeSend: function(xhr, settings) {
+                pdfLink = settings.url;
+            },
+            success: function(data) {
+                $.ajax({
+                    url:'/api/print-name',
+                    type: 'GET',
+                    success: function(impresora) {
+                        let printerName = impresora.NombreImpresora;
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'http://localhost:8080/imprimir/' + printerName, true);
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.onload = function () {
+                            if (xhr.status === 200) {
+                                alert('El archivo PDF se envió correctamente para imprimir.');
+                            } else {
+                                alert('Hubo un error al enviar el archivo PDF para imprimir.');
+                            }
+                        };
+                        xhr.send(JSON.stringify({ pdf_link: pdfLink }));
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
             }
         });
     }
