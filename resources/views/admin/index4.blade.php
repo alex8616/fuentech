@@ -108,18 +108,52 @@
                                         <h3 class="card-title" style="color: white; font-weight: bold;">INGREDIENTES</h3>
                                     </div>
                                     <div class="col-12 col-sm-4" style="text-align: right;">
-                                        <a class="btn" id="addproductos">+ INGREDIENTE</a>
+                                        <a class="btn" id="addingredientes">+ INGREDIENTE</a>
                                         <a class="btn" id="exportproductos" style="padding-left: 25px;">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder-share" width="24" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 19h-8a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v4" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="background-color: #303847">
                                 <div class="datagrid">
                                     <div class="datagrid-item">
-                                        <div class="datagrid-title">Registrar</div>
-                                        <div class="datagrid-content">Third Party</div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-4" id="all_productos" style="padding: 25px;">
+                                                <div class="list-group list-group-transparent mb-3" id="listaringredientes">
+                                                   
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-8" id="listarproductos" style="background: white; padding-top: 10px; padding-bottom: 10px">
+                                                <div id="lista_productos">
+                                                    <div class="mb-3 row">
+                                                        <label class="col-4 col-form-label"> 
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" /><path d="M16.5 17.5m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" /><path d="M18.5 19.5l2.5 2.5" /></svg>    
+                                                            Filtrar por ingrediente: </label>
+                                                        <div class="col-7">
+                                                        <input type="text" class="form-control" id="SearchProduct" name="SearchProduct">
+                                                        </div>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="table-responsive" id="tabla-ingredientes">
+                                                            <table class="table table-vcenter card-table">
+                                                            <thead>
+                                                                <tr>
+                                                                <th>Nombre</th>
+                                                                <th>Unidad</th>
+                                                                <th>Merma</th>
+                                                                <th>Costo</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                
+                                                            </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -444,6 +478,8 @@
 <script src="{{ asset('utilidades/js/productos.js') }}" defer></script>
 <script src="{{ asset('utilidades/js/categorias.js') }}" defer></script>
 <script src="{{ asset('utilidades/js/categoriasingredientes.js') }}" defer></script>
+<script src="{{ asset('utilidades/js/ingredientes.js') }}" defer></script>
+
 <style>
     .icon-container {
         width: 40px;

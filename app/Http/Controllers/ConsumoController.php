@@ -77,7 +77,7 @@ class ConsumoController extends Controller
                 $comentario = $producto['comentario'];
                 $precio = $producto['precio'];
                 
-                $ExiteProducto = Producto::where('id',$productoId)->where('ControlStock','true')->first();
+                $ExiteProducto = Producto::where('id',$productoId)->first();
                 
                 if ($ExiteProducto->ControlStock == "true"){
                     $detalleConsumo = DetalleConsumo::create([
