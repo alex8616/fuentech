@@ -22,11 +22,8 @@ return new class extends Migration
             $table->unsignedBigInteger('proveedor_id')->nullable();
             $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete('cascade')->nullable();
 
-            $table->unsignedBigInteger('producto_id')->nullable();
-            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade')->nullable();
-
-            $table->unsignedBigInteger('categoria_id')->nullable();
-            $table->foreign('categoria_id')->references('id')->on('categoria_ingredientes')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('categoria_ingrediente_id')->nullable();
+            $table->foreign('categoria_ingrediente_id')->references('id')->on('categoria_ingredientes')->onDelete('cascade')->nullable();
             $table->timestamps();
         });
     }

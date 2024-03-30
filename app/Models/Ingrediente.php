@@ -15,13 +15,13 @@ class Ingrediente extends Model
         'CantidadIngrediente',
         'ControlStock',
         'proveedor_id',
-        'categoria_id',
+        'categoria_ingrediente_id',
         'producto_id'
     ];
 
     //Relacion de uno a muchos inversa
     public function categoriaingrediente(){
-        return $this->belongsTo(CategoriaIngrediente::class);
+        return $this->belongsTo(CategoriaIngrediente::class, 'categoria_ingrediente_id');
     }
 
     public function producto(){

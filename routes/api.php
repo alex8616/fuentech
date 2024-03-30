@@ -12,6 +12,7 @@ use App\Http\Controllers\DescuentoConsumoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedoreController;
 use App\Http\Controllers\RepartidoreController;
+use App\Http\Controllers\CategoriaIngredienteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,13 @@ Route::post('/registrar-subcategoria', [CategoriaController::class, 'RegistrarSu
 Route::get('/get-categoria-seleccionado/{categoria}', [CategoriaController::class, 'GetCategoriaSeleccionado']);
 Route::get('/get-subcategoria-seleccionado/{subcategoria}', [CategoriaController::class, 'GetSubCategoriaSeleccionado']);
 Route::post('/actualizar-categoria', [CategoriaController::class, 'ActualizarCategoria']);
+
+
+Route::get('/get-categoria-ingredientes', [CategoriaIngredienteController::class, 'GetCategoriaIngrediente']);
+Route::get('/get-categoria-ingredientes-seleccionado/{categoria}', [CategoriaIngredienteController::class, 'GetCategoriaSeleccionado']);
+Route::post('/registrar-ingrediente-categoria', [CategoriaIngredienteController::class, 'RegistrarCategoria'])->middleware('auth');
+Route::post('/actualizar-categoria-ingrediente', [CategoriaIngredienteController::class, 'ActualizarCategoria']);
+
 
 Route::get('/get-cocinas', [CocinaController::class, 'GetCocina']);
 

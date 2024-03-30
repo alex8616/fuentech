@@ -102,8 +102,18 @@
                     </div>
                     <div class="tab-pane" id="tabs-ingredientes" role="tabpanel">
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Base info</h3>
+                            <div class="card-header" style="width: 100%; background-color: #1d2736">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-12 col-sm-8">
+                                        <h3 class="card-title" style="color: white; font-weight: bold;">INGREDIENTES</h3>
+                                    </div>
+                                    <div class="col-12 col-sm-4" style="text-align: right;">
+                                        <a class="btn" id="addproductos">+ INGREDIENTE</a>
+                                        <a class="btn" id="exportproductos" style="padding-left: 25px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder-share" width="24" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 19h-8a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v4" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="datagrid">
@@ -131,7 +141,7 @@
                         </div>
                     </div>
                     <div class="tab-pane" id="tabs-cantegoriaproductos" role="tabpanel">
-                    <div class="card">
+                        <div class="card">
                             <div class="card-header" style="width: 100%; background-color: #1d2736">
                                 <div class="row" style="width: 100%;">
                                     <div class="col-12 col-sm-8">
@@ -178,14 +188,44 @@
                     </div>
                     <div class="tab-pane" id="tabs-cantegoriaingredientes" role="tabpanel">
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Base info</h3>
+                            <div class="card-header" style="width: 100%; background-color: #1d2736">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-12 col-sm-8">
+                                        <h3 class="card-title" style="color: white; font-weight: bold;">CATEGORIA INGREDIENTES</h3>
+                                    </div>
+                                    <div class="col-12 col-sm-4" style="text-align: right;">
+                                        <a class="btn" id="addpcategoriaingredientes">+ CATEGORIA</a>
+                                        <a class="btn" id="exportproductos" style="padding-left: 25px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder-share" width="24" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 19h-8a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v4" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="datagrid">
                                     <div class="datagrid-item">
-                                        <div class="datagrid-title">Registrar</div>
-                                        <div class="datagrid-content">Third Party</div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12" style="background: white; padding-top: 10px; padding-bottom: 10px">
+                                                <div id="lista_categorias">
+                                                    <div class="card">
+                                                        <div class="table-responsive" id="tabla-categoria-ingredientes">
+                                                            <table class="table table-vcenter card-table">
+                                                            <thead>
+                                                                <tr>
+                                                                <th>Nombre</th>
+                                                                <th>Ingrediente</th>
+                                                                <th class="w-1"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                
+                                                            </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -403,6 +443,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
 <script src="{{ asset('utilidades/js/productos.js') }}" defer></script>
 <script src="{{ asset('utilidades/js/categorias.js') }}" defer></script>
+<script src="{{ asset('utilidades/js/categoriasingredientes.js') }}" defer></script>
 <style>
     .icon-container {
         width: 40px;

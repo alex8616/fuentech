@@ -4,62 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoriaIngrediente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoriaIngredienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function GetCategoriaIngrediente(){
+        $categorias = CategoriaIngrediente::withCount('ingredientes')->get();
+    
+        return response()->json($categorias);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function GetCategoriaSeleccionado($id){
+        $categorias = CategoriaIngrediente::where('id',$id)->first();
+        return response()->json($categorias);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function RegistrarCategoria(Request $request){
+        $user = Auth::user(); 
+        $categoria = CategoriaIngrediente::create([
+            'NombreCategoria' => $request->Nombre,
+        ]);
+        return response()->json($categoria);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CategoriaIngrediente $categoriaIngrediente)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CategoriaIngrediente $categoriaIngrediente)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, CategoriaIngrediente $categoriaIngrediente)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CategoriaIngrediente $categoriaIngrediente)
-    {
-        //
+    public function ActualizarCategoria(Request $request){
+        $categoria = CategoriaIngrediente::where('id',$request->id)->first();
+        $categoria->NombreCategoria = $request->input("nombre");
+        $categoria->save();
+        return response()->json($categoria);
     }
 }
