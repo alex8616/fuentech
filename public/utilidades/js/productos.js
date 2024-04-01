@@ -927,3 +927,131 @@ function CanvasTime(){
         </div>
     `;        
 }
+
+$(document).ready(function() {
+    $.ajax({
+        url: '/api/get-ingrediente',
+        method: 'GET',
+        success: function(data) {
+            $("#BuscarReceta").autocomplete({
+                source: function(request, response) {
+                    // Filtrar los datos basados en el término de búsqueda
+                    var searchTerm = request.term.toLowerCase();
+                    var filteredData = data.filter(function(ingrediente) {
+                        return ingrediente.NombreIngrediente.toLowerCase().includes(searchTerm);
+                    });
+                    response(filteredData);
+                },
+                appendTo: "#modal-ingredientes",
+                select: function(event, ui) {
+                    var ingredienteSeleccionado = ui.item;
+                    agregarDivIngrediente(ingredienteSeleccionado);
+                },
+                // Personalizar la apariencia de cada elemento en el menú desplegable
+                create: function() {
+                    $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                        return $("<li>")
+                            .append("<div>" + item.NombreIngrediente + "</div>")
+                            .appendTo(ul);
+                    };
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al obtener las opciones:", error);
+        }
+    });
+
+    function agregarDivIngrediente(ingredienteSeleccionado) {
+        var divIngrediente = `
+            <div class="row row-cards">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Ingrediente</label>
+                        <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Cant. Neta</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="CantidadNeta">
+                            </div>
+                            <div class="col">
+                                <select class="form-control form-select" id="UnidadNeta">
+                                    <option value="Unid">Unid.</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Gramos">Gramos</option>
+                                    <option value="Onza">Onza</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Merma</label>
+                        <span id="RecuperarMermaIngrediente">${ingredienteSeleccionado.CantidadIngrediente}</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Cant. Bruta</label>
+                        <div class="row">
+                            <div class="col" style="margin: 0px;">
+                                <input type="text" class="form-control" id="CantidadBruta" readonly>
+                            </div>
+                            <div class="col" style="margin: 0px;">
+                                <select class="form-control form-select" id="UnidadBruta" disabled>
+                                    <option value="Unid">Unid.</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Gramos">Gramos</option>
+                                    <option value="Onza">Onza</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Costo</label>
+                        <div class="row">
+                            <div class="col-auto">
+                                <span id="TotalIngrediente">${ingredienteSeleccionado.CostoIngrediente}</span>
+                            </div>
+                            <div class="col-auto">
+                                <a href="#" class="badge bg-red-lt" id="EliminarFila">X</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        $("#contenedor-ingrediente").append(divIngrediente);
+
+        function calcularCantidadBrutaYTotal(event) {
+            var row = $(event.target).closest('.row-cards');
+            var cantidadNeta = parseFloat(row.find('#CantidadNeta').val());
+            var merma = parseFloat(row.find('#RecuperarMermaIngrediente').text());
+            var costoIngrediente = parseFloat(row.find('#TotalIngrediente').text());
+            if (!isNaN(cantidadNeta) && !isNaN(merma) && !isNaN(costoIngrediente)) {
+                var cantidadBruta = cantidadNeta / (1 - (merma / 100));
+                var total = cantidadBruta * costoIngrediente;
+
+                row.find('#CantidadBruta').val(cantidadBruta.toFixed(2));
+                row.find('#TotalIngrediente').text(total.toFixed(2));
+            } else {
+                console.error('Uno o más valores no son números válidos.');
+            }
+        }
+
+        $('#contenedor-ingrediente').off('change', '.row-cards').on('change', '.row-cards', calcularCantidadBrutaYTotal);
+
+        calcularCantidadBrutaYTotal({ target: $('#contenedor-ingrediente').children().last().find('#CantidadNeta')[0] });
+
+        $('#contenedor-ingrediente').on('click', '#EliminarFila', function() {
+            $(this).closest('.row-cards').remove();
+        });
+    }
+});

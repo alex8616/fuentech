@@ -365,7 +365,6 @@ function InformacionIngrediente(data){
                 type: 'POST',
                 data: datosRecogidos,
                 success: function (producto) {
-                    alert(EditCategoria)
                     ListIngredientes(EditCategoria);
                     CanvasTime();
                     MostrarMensaje("Se Actualizo El Producto Exitosamente", "success");

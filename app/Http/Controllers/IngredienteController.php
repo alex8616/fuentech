@@ -47,4 +47,9 @@ class IngredienteController extends Controller
             
         return response()->json($ingrediente);
     }
+
+    public function GetIngrediente(){
+        $ingredientes = Ingrediente::get();
+        return response()->json($ingredientes);
+    }
 }

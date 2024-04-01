@@ -33,4 +33,5 @@ class CategoriaIngredienteController extends Controller
         $categoria->save();
         return response()->json($categoria);
     }
+       
 }

@@ -472,14 +472,20 @@
             </div>
             <div class="modal-body">
                 <div class="input-icon">
-                    <input type="text" value="" class="form-control form-control-rounded" id="BuscarReceta" placeholder="Buscar Ingrediente" >
+                    <input type="text" value="" class="form-control form-control" id="BuscarReceta" placeholder="Buscar Ingrediente" >
                     <span class="input-icon-addon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
                     </span>
                 </div>
                 
+                <div class="row">
+                    <div class="col-12 col-sm-12" id="contenedor-ingrediente"><br>
+                        
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-success me-auto" data-bs-dismiss="modal">Registrar</button>
                 <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
             </div>
             </div>
@@ -489,9 +495,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js"></script>
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -504,6 +512,41 @@
 <script src="{{ asset('utilidades/js/ingredientes.js') }}" defer></script>
 
 <style>
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid black;
+        background-color: white;
+        color: #333;
+    }
+
+    .ui-autocomplete .ui-menu-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .ui-autocomplete .ui-menu-item-wrapper.ui-state-active {
+        background-color: #fd7;
+        border: 1px solid #fd7;
+        color: black
+    }
+
+    .ui-autocomplete {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
+    .ui-autocomplete .ui-menu-item-wrapper {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+
     .icon-container {
         width: 40px;
         height: 40px;
