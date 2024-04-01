@@ -99,6 +99,21 @@ class ProductoController extends Controller
         return response()->json($producto);
     }
 
+    public function ActualizarProducto(Request $request){
+        $producto = Producto::with('categoria','categoria.subcategorias','proveedor')->where('id',$request->id)->first();
+        $producto->NombreProducto = $request->input("nombre");
+        $producto->PrecioProducto = $request->input("precio");
+        $producto->CostoProducto = $request->input("costo");
+        $producto->CodigoProducto = $request->input("codigo");
+        $producto->proveedor_id = $request->input("proveedor");
+        $producto->EstadoProducto = $request->input("activo");
+        $producto->ControlStock = $request->input("controlStock");
+        $producto->categoria_id = $request->input("categoria");
+        $producto->sub_categoria_id = $request->input("subcategoria");
+        $producto->save();
+        return response()->json($producto);
+    }
+
     public function ActualizarProductoStock(Request $request){
         $producto = Producto::where('id',$request->id)->first();
 

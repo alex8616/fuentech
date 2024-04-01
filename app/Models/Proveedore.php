@@ -24,4 +24,9 @@ class Proveedore extends Model
     public function productos(){
         return $this->hasMany(Producto::class);
     }
+
+    //Relacion de uno a muchos
+    public function ingredientes(){
+        return $this->hasMany(Ingrediente::class);
+    }
 }

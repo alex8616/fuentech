@@ -69,12 +69,11 @@ function ListIngredientes(categoriaId){
                         $(this).addClass('seleccionado');
                         var productoId = $(this).data('producto-id');
                         $.ajax({
-                            url: '/api/get-productos-seleccionado/' + productoId,
+                            url: '/api/get-ingrediente-seleccionado/' + productoId,
                             type: 'GET',
                             dataType: 'json',
                             success: function(data) {
-                                InformacionProducto(data);
-                                ActualizarProductoImagen(productoId);
+                                InformacionIngrediente(data);
                             },
                             error: function(error) {
                                 console.error('Error al recuperar datos de producto:', error);
@@ -97,38 +96,6 @@ function ListIngredientes(categoriaId){
                             }
                         });
                     });
-
-                    $('.boton-registrar-favorito-sip').on('click', function() {
-                        var productoId = $(this).closest('tr').data('producto-id');
-                        $.ajax({
-                            url: '/api/producto-register-true/'+ productoId,
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function(data) {
-                                MostrarMensaje("Se Quito De Favoritos", "success");
-                                ListProductos(categoriaId);
-                            },
-                            error: function(error) {
-                                console.error('Error al recuperar datos de categorías:', error);
-                            }
-                        });
-                    });
-
-                    $('.boton-registrar-favorito-nop').on('click', function() {
-                        var productoId = $(this).closest('tr').data('producto-id');
-                        $.ajax({
-                            url: '/api/producto-register-false/'+ productoId,
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function(data) {
-                                MostrarMensaje("Se Agrego a Favoritos", "success");
-                                ListProductos(categoriaId);
-                            },
-                            error: function(error) {
-                                console.error('Error al recuperar datos de categorías:', error);
-                            }
-                        });
-                    });
                 }                    
             } else {
                 var tablaIngredientes = $('#tabla-productos tbody');
@@ -147,15 +114,15 @@ function ListIngredientes(categoriaId){
 
 function cargarCategorias(){
     $.ajax({
-        url: '/api/get-categorias',
+        url: '/api/get-categoria-ingredientes',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            var select = $('#ProductoCategoria');
+            var select = $('#IngredienteCategoria');
             select.empty();
             select.append($('<option></option>').attr('value', '').text('Seleccionar categoría'));
             $.each(data, function(index, categoria) {
-                select.append($('<option></option>').attr('value', categoria.id).text(categoria.Nombre_categoria));
+                select.append($('<option></option>').attr('value', categoria.id).text(categoria.NombreCategoria));
             });
         },
         error: function(error) {
@@ -165,13 +132,13 @@ function cargarCategorias(){
 }
 
 
-function InformacionProducto(data){
+function InformacionIngrediente(data){
     var TotalProduct = document.getElementById('form_tabs');
     TotalProduct.innerHTML = `
         <div class="col-md-6 col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">${data.NombreProducto}</h3>
+                    <h3 class="card-title">${data.NombreIngrediente}</h3>
                     <div class="card-actions">
                     <a href="#" class="btn" data-producto-id="${data.id}" id="EditarProducto">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
@@ -180,42 +147,35 @@ function InformacionProducto(data){
                 </div>
                 <div class="card-body p-12" style="height: 100%">
                     <div class="row">
-                        <div class="col-12 col-md-7">
+                        <div class="col-12 col-md-12">                            
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Nombre</label>
+                                <div class="col">
+                                <label class="col-8 col-form-label" style="color: #61677A">Bs. ${data.NombreIngrediente}</label>                                                    
+                                </div>
+                            </div>
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Unidad</label>
+                                <div class="col">
+                                <label class="col-8 col-form-label" style="color: #61677A">Bs. ${data.UnidadIngrediente}</label>                                                    
+                                </div>
+                            </div>
                             <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Categoria</label>
                                 <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">${data.categoria.Nombre_categoria}</label>                                                    
+                                <label class="col-8 col-form-label" style="color: #61677A">${data.categoriaingrediente.NombreCategoria}</label>                                                    
                                 </div>
                             </div>
-                            ${data.categoria.subcategorias.length > 0 ? `
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Sub Categoria</label>
-                                <div class="col">
-                                    <label class="col-8 col-form-label" style="color: #61677A">${data.categoria.subcategorias[0].Nombre_subcategoria}</label>
-                                </div>
-                            </div>` : ''}
                             <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Costo</label>
                                 <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">Bs. ${data.CostoProducto}</label>                                                    
+                                <label class="col-8 col-form-label" style="color: #61677A">${data.CostoIngrediente}</label>                                                    
                                 </div>
                             </div>
                             <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Precio</label>
+                                <label class="col-4 col-form-label" style="font-weight: bold">Merma</label>
                                 <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">Bs. ${data.PrecioProducto}</label>                                                    
-                                </div>
-                            </div>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Codigo</label>
-                                <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">${data.CodigoProducto}</label>                                                    
-                                </div>
-                            </div>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Activo</label>
-                                <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">${data.EstadoProducto}</label>                                                    
+                                <label class="col-8 col-form-label" style="color: #61677A">${data.CantidadIngrediente}</label>                                                    
                                 </div>
                             </div>
                             <div class="mb-12 row">
@@ -225,28 +185,11 @@ function InformacionProducto(data){
                                 </div>
                             </div>
                             <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Menu Online</label>
-                                <div class="col">
-                                <label class="col-8 col-form-label" style="color: #61677A">${data.categoria.Nombre_categoria}</label>                                                    
-                                </div>
-                            </div>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Carta QR</label>
-                                <div class="col">
-                                    <label class="col-8 col-form-label" style="color: #61677A">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-image" data-producto-id="${data.id}" id="openModal">Establecer Imagen</a>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Control Stock</label>
                                 <div class="col">
                                 <label class="col-8 col-form-label" style="color: #61677A">${data.ControlStock}</label>                                                    
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <img src="/${data.ImagenProducto}" alt="Imagen del producto">
                         </div>
                     </div>                                                                                                
                 </div>
@@ -261,61 +204,43 @@ function InformacionProducto(data){
         <div class="col-md-6 col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"> EDITANDO ${data.NombreProducto}</h3>
+                    <h3 class="card-title"> EDITANDO ${data.NombreIngrediente}</h3>
                     <div class="card-actions">
                     </div>
                 </div>
                 <div class="card-body p-12" style="height: 100%">
                     <div class="row">
-                        <div class="col-12 col-md-7">
+                        <div class="col-12 col-md-12">                           
                             <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Nombre</label>
                                 <div class="col">
-                                <input type="text" class="form-control" id="UpdateProductoNombre" name="UpdateProductoNombre" value="${data.NombreProducto}">
+                                <input type="text" class="form-control" id="UpdateIngredienteNombre" name="UpdateIngredienteNombre" value="${data.NombreIngrediente}">
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Categoria</label>
                                 <div class="col">
-                                <select id="categoriaProductoSelect" class="form-control">
+                                <select id="CategoriaIngredienteSelect" class="form-control">
                                     
                                 </select>
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Sub Categoria</label>
+                                <label class="col-4 col-form-label" style="font-weight: bold">Unidad</label>
                                 <div class="col">
-                                <select id="subcategoriaProductoSelect" class="form-control">
-                                    
-                                </select>
-                                </div>
-                            </div><br>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Precio</label>
-                                <div class="col">
-                                <input type="text" class="form-control" id="UpdateProductoPrecio" name="UpdateProductoPrecio" value="${data.PrecioProducto}">
+                                <input type="text" class="form-control" id="UpdateIngredienteUnidad" name="UpdateIngredienteUnidad" value="${data.UnidadIngrediente}">
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Costo</label>
                                 <div class="col">                                    
-                                <input type="text" class="form-control" id="UpdateProductoCosto" name="UpdateProductoCosto" value="${data.CostoProducto}">
+                                <input type="text" class="form-control" id="UpdateIngredienteCosto" name="UpdateIngredienteCosto" value="${data.CostoIngrediente}">
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Codigo</label>
+                                <label class="col-4 col-form-label" style="font-weight: bold">Merma</label>
                                 <div class="col">
-                                <input type="text" class="form-control" id="UpdateProductoCodigo" name="UpdateProductoCodigo" value="${data.CodigoProducto}">
-                                </div>
-                            </div><br>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Activo</label>
-                                <div class="col">
-                                <select id="estadoProductoSelect" class="form-control">
-                                    <option value="true">Habilitado</option>
-                                    <option value="false">Deshabilitado</option>
-                                </select>
-                                <label class="col-8 col-form-label" style="color: #61677A"></label>                                                    
+                                <input type="text" class="form-control" id="UpdateIngredienteMerma" name="UpdateIngredienteMerma" value="${data.CantidadIngrediente}">
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
@@ -327,23 +252,6 @@ function InformacionProducto(data){
                                 </div>
                             </div><br>
                             <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Menu Online</label>
-                                <div class="col">
-                                    <select id="menuProductoSelect" class="form-control">
-                                        <option value="true">Habilitado</option>
-                                        <option value="false">Deshabilitado</option>
-                                    </select>
-                                </div>
-                            </div><br>
-                            <div class="mb-12 row">
-                                <label class="col-4 col-form-label" style="font-weight: bold">Carta QR</label>
-                                <div class="col">
-                                    <label class="col-8 col-form-label" style="color: #61677A">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal-image" data-producto-id="${data.id}" id="openModal">Establecer Imagen</a>
-                                    </label>
-                                </div>
-                            </div><br>
-                            <div class="mb-12 row">
                                 <label class="col-4 col-form-label" style="font-weight: bold">Control Stock</label>
                                 <div class="col">
                                 <select id="stockProductoSelect" class="form-control">
@@ -352,11 +260,14 @@ function InformacionProducto(data){
                                 </select>
                                 </div>
                             </div><br>
-                            <button id="EditBtnGuardar">Guardar</button>
-                            <button id="EditBtnCancelar">Cancelar</button>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <img src="/${data.ImagenProducto}" alt="Imagen del producto">
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button id="EditBtnIngredienteGuardar" class="btn btn-success active">Guardar</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button id="EditBtnIngredienteCancelar" class="btn btn-danger active">Cancelar</button>
+                                </div>
+                            </div>
                         </div>
                     </div>                                                                                                
                 </div>
@@ -404,67 +315,23 @@ function InformacionProducto(data){
             });
         }
 
-        var categoriaProductoId = data.categoria.id;
+        var categoriaProductoId = data.categoriaingrediente.id;
         $.ajax({
-            url: 'api/get-categorias',
+            url: 'api/get-categoria-ingredientes',
             type: 'GET',
             dataType: 'json',
             success: function(categorias) {
-                var select = $('#categoriaProductoSelect');
+                var select = $('#CategoriaIngredienteSelect');
                 select.empty();
                 $.each(categorias, function(index, categoria) {
-                    select.append($('<option></option>').attr('value', categoria.id).text(categoria.Nombre_categoria));
+                    select.append($('<option></option>').attr('value', categoria.id).text(categoria.NombreCategoria));
                 }); 
-                $('#categoriaProductoSelect').val(categoriaProductoId).change();
+                $('#CategoriaIngredienteSelect').val(categoriaProductoId).change();
             },
             error: function(error) {
                 console.error('Error al recuperar datos de categorías:', error);
             }
         });
-
-        var sub_categoria_id = data.sub_categoria_id;
-        $.ajax({
-            url: '/api/get-subcategorias/' + categoriaProductoId,
-            type: 'GET',
-            dataType: 'json',
-            success: function(subcategorias) {
-                var select = $('#subcategoriaProductoSelect');
-                select.empty();
-                $.each(subcategorias, function(index, subcategoria) {
-                    select.append($('<option></option>').attr('value', subcategoria.id).text(subcategoria.Nombre_subcategoria));
-                }); 
-                $('#subcategoriaProductoSelect').val(sub_categoria_id).change();
-            },
-            error: function(error) {
-                console.error('Error al recuperar datos de categorías:', error);
-            }
-        });
-
-        $('#categoriaProductoSelect').change(function() {
-            var categoriaSeleccionadaId = $(this).val();
-            if (categoriaSeleccionadaId) {
-                $.ajax({
-                    url: '/api/get-subcategorias/' + categoriaSeleccionadaId,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(subcategorias) {
-                        var selectSubcategoria = $('#subcategoriaProductoSelect');
-                        selectSubcategoria.empty();
-                        $.each(subcategorias, function(index, subcategoria) {
-                            selectSubcategoria.append($('<option></option>').attr('value', subcategoria.id).text(subcategoria.Nombre_subcategoria));
-                        }); 
-                    },
-                    error: function(error) {
-                        console.error('Error al recuperar datos de subcategorías:', error);
-                    }
-                });
-            } else {
-                $('#subcategoriaProductoSelect').empty();
-            }
-        });
-
-        var estadoProducto = `${data.EstadoProducto}`;
-        $('#estadoProductoSelect').val(estadoProducto).change();
 
         var stockProducto = `${data.ControlStock}`;
         $('#stockProductoSelect').val(stockProducto).change();
@@ -473,36 +340,33 @@ function InformacionProducto(data){
 
         var IdCategoriaUpdate = `${data.categoria_id}`;
 
-        $('#EditBtnGuardar').off('click').on('click', function(event) {
-            var EditNombre = $("#UpdateProductoNombre").val();
-            var EditPrecio = $("#UpdateProductoPrecio").val();
-            var EditCosto = $("#UpdateProductoCosto").val();
-            var EditCodigo = $("#UpdateProductoCodigo").val();
+        $('#EditBtnIngredienteGuardar').off('click').on('click', function(event) {
+            var EditNombre = $("#UpdateIngredienteNombre").val();
+            var EditCategoria = $("#CategoriaIngredienteSelect").val();
+            var EditUnidad = $("#UpdateIngredienteUnidad").val();
+            var EditCosto = $("#UpdateIngredienteCosto").val();
+            var EditMerma = $("#UpdateIngredienteMerma").val();
             var Editproveedor = $("#proveedorProductoSelect").val();
-            var Editactivo = $("#estadoProductoSelect").val();
             var EditcontrolStock = $("#stockProductoSelect").val();
-            var EditCategoria = $("#categoriaProductoSelect").val();
-            var EditSubCategoria = $("#subcategoriaProductoSelect").val();
 
             var datosRecogidos = {
                 id: IdUpdate,
                 nombre: EditNombre,
-                precio: EditPrecio,
+                unidad: EditUnidad,
                 costo: EditCosto,
-                codigo: EditCodigo,
+                merma: EditMerma,
                 proveedor: Editproveedor,
-                activo: Editactivo,
                 controlStock: EditcontrolStock,
                 categoria: EditCategoria,
-                subcategoria: EditSubCategoria
             };
 
             $.ajax({
-                url: '/api/actualizar-producto',
+                url: '/api/actualizar-ingrediente',
                 type: 'POST',
                 data: datosRecogidos,
                 success: function (producto) {
-                    ListProductos(IdCategoriaUpdate);
+                    alert(EditCategoria)
+                    ListIngredientes(EditCategoria);
                     CanvasTime();
                     MostrarMensaje("Se Actualizo El Producto Exitosamente", "success");
                 },
@@ -518,62 +382,46 @@ function InformacionProducto(data){
 $(document).ready(function() {  
     MostrarCategoriaIngrediente();
 
-    document.getElementById('addproductos').addEventListener('click', function() {
+    document.getElementById('addingredientes').addEventListener('click', function() {
         cargarCategorias();
         var formTabsDiv = document.getElementById('form_tabs');
         formTabsDiv.innerHTML = `
         <form id="form-register-product">
             <div class="card-header">
-                <h3 class="card-title">Registrar Producto</h3>
+                <h3 class="card-title">Nuevo Ingrediente</h3>
             </div>
             <div class="card-body">
                 <div class="card-body">
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Nombre</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="ProductoNombre" name="ProductoNombre">
+                        <input type="text" class="form-control" id="IngredienteNombre" name="IngredienteNombre">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Categoria</label>
                         <div class="col">
-                        <select class="form-select" id="ProductoCategoria" name="ProductoCategoria">
+                        <select class="form-select" id="IngredienteCategoria" name="IngredienteCategoria">
                             
                         </select>
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label class="col-3 col-form-label">Sub Categoria</label>
+                        <label class="col-3 col-form-label required">Unidad</label>
                         <div class="col">
-                        <select class="form-select" id="ProductoSubCategoria" name="ProductoSubCategoria">
-                            
-                        </select>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-3 col-form-label required">Precio</label>
-                        <div class="col">
-                        <input type="number" class="form-control" id="ProductoPrecio" name="ProductoPrecio">
+                        <input type="text" class="form-control" id="IngredienteUnidad" name="IngredienteUnidad">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Costo</label>
                         <div class="col">
-                        <input type="number" class="form-control" id="ProductoCosto" name="ProductoCosto">
+                        <input type="number" class="form-control" id="IngredienteCosto" name="IngredienteCosto">
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label class="col-3 col-form-label required">Codigo</label>
+                        <label class="col-3 col-form-label required">Merma %</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="ProductoCodigo" name="ProductoCodigo">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-3 col-form-label">Cocina</label>
-                        <div class="col">
-                        <select class="form-select">
-
-                        </select>
+                        <input type="text" class="form-control" id="IngredienteMerma" name="IngredienteMerma">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -584,31 +432,11 @@ $(document).ready(function() {
                         </select>
                         </div>
                     </div>
-                    <div class="mb-3 row">
-                        <label class="col-3 col-form-label required">Descripcion</label>
-                        <div class="col">
-                        <input type="text" class="form-control" id="ProductoDescripcion" name="ProductoDescripcion">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-3 col-form-label">Imagen</label>
-                        <div class="col">
-                        <input type="file" class="form-control" id="ProductoImagen" name="ProductoImagen">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <label class="col-3 col-form-label pt-0">Activo</label>
-                        <div class="col">
-                        <label class="form-check">
-                            <input class="form-check-input" type="checkbox" id="CheckActivo" name="CheckActivo">
-                        </label>
-                        </div>
-                    </div>
                     <div class="row">
                         <label class="col-3 col-form-label pt-0">Control Stock</label>
                         <div class="col">
                         <label class="form-check">
-                            <input class="form-check-input" type="checkbox" id="CheckStock" name="CheckStock">
+                            <input class="form-check-input" type="checkbox" id="checkboxIngrediente" name="checkboxIngrediente">
                         </label>
                         </div>
                     </div>
@@ -617,7 +445,7 @@ $(document).ready(function() {
             <div class="card-footer">
                 <div class="d-flex" style="text-align: right">
                     <button type="button" class="btn me-auto">CANCELAR</button>
-                    <button type="button" class="btn btn-primary" id="btn-registrar-producto">GUARDAR</button>
+                    <button type="button" class="btn btn-primary" id="btn-registrar-ingrediente">GUARDAR</button>
                 </div>
             </div>
         </form>
@@ -638,68 +466,45 @@ $(document).ready(function() {
             error: function(error) {
                 console.error('Error al recuperar datos de categorías:', error);
             }
-        });
+        });IngredienteCategoria
 
-        $('#ProductoCategoria').change(function() {
-            var categoriaSeleccionada = $(this).val();
-            if (categoriaSeleccionada) {
-                cargarSubcategorias(categoriaSeleccionada);
-                $('#ProductoSubCategoria').parent().show();
-            } else {
-                $('#ProductoSubCategoria').parent().hide();
-            }
-        });
-
-        $('#btn-registrar-producto').off('click').on('click', function(event) {
+        $('#btn-registrar-ingrediente').off('click').on('click', function(event) {
             // Obtener los valores de los otros campos del formulario
-            var Nombre = $("#ProductoNombre").val();
-            var Categoria = $("#ProductoCategoria").val();
-            var SubCategoria = $("#ProductoSubCategoria").val();
-            var Precio = $("#ProductoPrecio").val();
-            var Costo = $("#ProductoCosto").val();
-            var Codigo = $("#ProductoCodigo").val();
+            var Nombre = $("#IngredienteNombre").val();
+            var Categoria = $("#IngredienteCategoria").val();
+            var Unidad = $("#IngredienteUnidad").val();
+            var Costo = $("#IngredienteCosto").val();
+            var Merma = $("#IngredienteMerma").val();
             var proveedor = $("#ProductoProveedor").val();
-            var Descripcion = $("#ProductoDescripcion").val();
-            var activo = $("#CheckActivo").prop('checked');
-            var controlStock = $("#CheckStock").prop('checked');
-
-            // Capturar el archivo seleccionado por el usuario
-            var imagen = $('#ProductoImagen')[0].files[0]; // Aquí estamos obteniendo el primer archivo seleccionado
+            var controlStock = $("#checkboxIngrediente").prop('checked');
 
             // Crear un objeto FormData para enviar los datos del formulario
             var formData = new FormData();
             formData.append('Nombre', Nombre);
             formData.append('Categoria', Categoria);
-            formData.append('SubCategoria', SubCategoria);
-            formData.append('Precio', Precio);
+            formData.append('Unidad', Unidad);
             formData.append('Costo', Costo);
-            formData.append('Codigo', Codigo);
+            formData.append('Merma', Merma);
             formData.append('proveedor', proveedor);
-            formData.append('Descripcion', Descripcion);
-            formData.append('activo', activo);
             formData.append('controlStock', controlStock);
-            formData.append('imagen', imagen); // Agregar la imagen al objeto FormData
 
             // Realizar la solicitud AJAX
             $.ajax({
-                url: '/api/registrar-producto',
+                url: '/api/registrar-ingrediente',
                 type: 'POST',
-                data: formData, // Enviar el objeto FormData en lugar de un objeto JSON
+                data: formData,
                 contentType: false,
-                processData: false, // Es importante establecer processData como false
+                processData: false, 
                 success: function (producto) {
-                    ListProductos(Categoria);
+                    ListIngredientes(Categoria);
                     MostrarMensaje("Producto Creada Exitosamente", "success");
-                    $("#ProductoNombre").val("");
-                    $("#ProductoCategoria").val("");
-                    $("#ProductoSubCategoria").val("");
-                    $("#ProductoPrecio").val("");
-                    $("#ProductoCosto").val("");
-                    $("#ProductoCodigo").val("");
+                    $("#IngredienteNombre").val("");
+                    $("#IngredienteCategoria").val("");
+                    $("#IngredienteUnidad").val("");
+                    $("#IngredienteCosto").val("");
+                    $("#IngredienteMerma").val("");
                     $("#ProductoProveedor").val("");
-                    $("#ProductoDescripcion").val("");
-                    $("#CheckActivo").prop('checked', false);
-                    $("#CheckStock").prop('checked', false);
+                    $("#checkboxIngrediente").prop('checked', false);
                 },
                 error: function (error) {
                     console.error('Error al registrar:', error);

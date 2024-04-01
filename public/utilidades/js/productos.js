@@ -422,7 +422,12 @@ function InformacionProducto(data){
                         <div class="col-12 col-md-5">
                             <img src="/${data.ImagenProducto}" alt="Imagen del producto">
                         </div>
-                    </div>                                                                                                
+                    </div> <br>                    
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes">Agregar Ingredientes</button>
+                        </div>
+                    </div>                                                                                               
                 </div>
             </div>
         </div>

@@ -50,6 +50,9 @@ Route::post('/actualizar-categoria-ingrediente', [CategoriaIngredienteController
 
 
 Route::get('/get-ingrediente-categoria/{categoria}', [IngredienteController::class, 'GetIngredienteCategoria']);
+Route::get('/get-ingrediente-seleccionado/{ingrediente}', [IngredienteController::class, 'GeIngredienteSeleccionado']);
+Route::post('/actualizar-ingrediente', [IngredienteController::class, 'ActualizarIngrediente']);
+Route::post('/registrar-ingrediente', [IngredienteController::class, 'RegistrarIngrediente'])->middleware('auth');
 
 
 Route::get('/get-cocinas', [CocinaController::class, 'GetCocina']);
