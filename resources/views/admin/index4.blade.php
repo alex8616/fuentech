@@ -479,14 +479,14 @@
                 </div>
                 
                 <div class="row">
-                    <div class="col-12 col-sm-12" id="contenedor-ingrediente"><br>
+                    <div class="col-12 col-sm-12" id="contenedor-ingrediente">
                         
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success me-auto" data-bs-dismiss="modal">Registrar</button>
                 <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="BtnRegistrarReceta">Registrar</button>
             </div>
             </div>
         </div>

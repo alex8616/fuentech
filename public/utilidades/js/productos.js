@@ -425,9 +425,9 @@ function InformacionProducto(data){
                     </div> <br>                    
                     <div class="row justify-content-end">
                         <div class="col-auto">
-                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes">Agregar Ingredientes</button>
+                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes" data-selectproduct-id="${data.id}">Agregar Ingredientes</button>
                         </div>
-                    </div>                                                                                               
+                    </div>
                 </div>
             </div>
         </div>
@@ -929,45 +929,87 @@ function CanvasTime(){
 }
 
 $(document).ready(function() {
-    $.ajax({
-        url: '/api/get-ingrediente',
-        method: 'GET',
-        success: function(data) {
-            $("#BuscarReceta").autocomplete({
-                source: function(request, response) {
-                    // Filtrar los datos basados en el término de búsqueda
-                    var searchTerm = request.term.toLowerCase();
-                    var filteredData = data.filter(function(ingrediente) {
-                        return ingrediente.NombreIngrediente.toLowerCase().includes(searchTerm);
-                    });
-                    response(filteredData);
+    $('#modal-ingredientes').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var productId = button.data('selectproduct-id');
+        $.ajax({
+            url: '/api/get-ingrediente',
+            method: 'GET',
+            success: function(data) {
+                $("#BuscarReceta").autocomplete({
+                    source: function(request, response) {
+                        var searchTerm = request.term.toLowerCase();
+                        var filteredData = data.filter(function(ingrediente) {
+                            return ingrediente.NombreIngrediente.toLowerCase().includes(searchTerm);
+                        });
+                        response(filteredData);
+                    },
+                    appendTo: "#modal-ingredientes",
+                    select: function(event, ui) {                        
+                        var ingredienteSeleccionado = ui.item;
+                        agregarDivIngrediente(ingredienteSeleccionado,productId);
+                    },
+                    create: function() {
+                        $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                            return $("<li>")
+                                .append("<div>" + item.NombreIngrediente + "</div>")
+                                .appendTo(ul);
+                        };
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al obtener las opciones:", error);
+            }
+        });
+    });
+    
+
+    // Evitar que el modal se cierre cuando se hace clic fuera de él
+    $('#modal-ingredientes').modal({ backdrop: 'static', keyboard: false });
+
+    // Cuando se haga clic en el botón Registrar
+    $('#BtnRegistrarReceta').on('click', function() {
+        $('.row-cards').each(function() {
+            var row = $(this);
+            var Id = row.find('#productoID').val();
+            var nombreIngrediente = row.find('#RecuperarNombreIngrediente').text();
+            var cantidadNeta = row.find('#CantidadNeta').val();
+            var unidadNeta = row.find('#UnidadNeta').val();
+            var merma = row.find('#RecuperarMermaIngrediente').text();
+            var cantidadBruta = row.find('#CantidadBruta').val();
+            var costoIngrediente = row.find('#TotalIngrediente').text();
+            $.ajax({
+                url: '/api/registrar-receta',
+                method: 'POST',
+                data: {
+                    Id: Id,
+                    nombreIngrediente: nombreIngrediente,
+                    cantidadNeta: cantidadNeta,
+                    unidadNeta: unidadNeta,
+                    merma: merma,
+                    cantidadBruta: cantidadBruta,
+                    costoIngrediente: costoIngrediente
                 },
-                appendTo: "#modal-ingredientes",
-                select: function(event, ui) {
-                    var ingredienteSeleccionado = ui.item;
-                    agregarDivIngrediente(ingredienteSeleccionado);
+                success: function(response) {
+                    $('#contenedor-ingrediente').empty();
+                    console.log('Ingrediente registrado:', response);
                 },
-                // Personalizar la apariencia de cada elemento en el menú desplegable
-                create: function() {
-                    $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
-                        return $("<li>")
-                            .append("<div>" + item.NombreIngrediente + "</div>")
-                            .appendTo(ul);
-                    };
+                error: function(xhr, status, error) {
+                    console.error('Error al registrar ingrediente:', error);
                 }
             });
-        },
-        error: function(xhr, status, error) {
-            console.error("Error al obtener las opciones:", error);
-        }
+        });        
     });
+    
 
-    function agregarDivIngrediente(ingredienteSeleccionado) {
+    function agregarDivIngrediente(ingredienteSeleccionado, productId) {
         var divIngrediente = `
-            <div class="row row-cards">
+        <br><div class="row row-cards">
                 <div class="col-md-3">
                     <div class="mb-3">
                         <label class="form-label" style="font-weight: bold">Ingrediente</label>
+                        <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
                         <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
                     </div>
                 </div>
