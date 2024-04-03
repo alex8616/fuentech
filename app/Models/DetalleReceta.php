@@ -22,6 +22,6 @@ class DetalleReceta extends Model
     }
 
     public function ingrediente(){
-        return $this->belongsTo(Producto::class);
+        return $this->belongsTo(Ingrediente::class);
     }
 }

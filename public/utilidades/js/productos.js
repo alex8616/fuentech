@@ -424,55 +424,56 @@ function InformacionProducto(data){
                         <div class="col-12 col-md-5">
                             <img src="/${data.ImagenProducto}" alt="Imagen del producto">
                         </div>
-                    </div> <br>  
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes" data-selectproduct-id="${data.id}">Agregar Ingredientes</button>
+                        </div>
+                    </div> <br>
                     <div class="mb-12 row">
-                        <div class="col">
+                        <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Ingrediente</th>
-                                        <th>Cantidad Neta</th>
-                                        <th>Unidad Neta</th>
+                                        <th>Cant. Neta</th>
                                         <th>Merma</th>
-                                        <th>Cantidad Bruta</th>
-                                        <th>Costo Ingrediente</th>
+                                        <th>Cant. Bruta</th>
+                                        <th>Costo</th>
                                     </tr>
                                 </thead>
                                 <tbody id="detalleRecetaBody">
                                     <!-- Aquí se llenarán los detalles de la receta -->
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                    <th><a href="#" data-bs-toggle="modal" data-bs-target="#modal-ingredientes-editar" data-producto-id="${data.id}" id="editar-receta">Editar</a></th>
+                                    <th colspan="4" style="text-align: right">TOTAL RECETA 150000Bs.</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
-                    </div>                 
-                    <div class="row justify-content-end">
-                        <div class="col-auto">
-                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes" data-selectproduct-id="${data.id}">Agregar Ingredientes</button>
-                        </div>
-                    </div>
+                    </div>                                     
                 </div>
             </div>
         </div>
     `;
 
     var detalleRecetaBody = document.getElementById('detalleRecetaBody');
-    // Verificar si data.receta está definido y tiene elementos
     if (data.receta && data.receta.length > 0 && data.receta[0].detallerecetas) {
-        // Llenar la tabla con los detalles de la receta
         data.receta[0].detallerecetas.forEach(function(detalle) {
             var row = `
-                <tr>
-                    <td>${detalle.ingrediente_id}</td>
-                    <td>${detalle.cantidadneta}</td>
-                    <td>${detalle.unidad}</td>
-                    <td>${detalle.merma}</td>
-                    <td>${detalle.cantidadbruta}</td>
-                    <td>${detalle.costoIngrediente}</td>
+                <tr style="font-size: 13px">
+                    <td>${detalle.ingrediente.NombreIngrediente}</td>
+                    <td>${detalle.cantidadneta} ${detalle.unidad}</td>
+                    <td>${detalle.ingrediente.CantidadIngrediente}</td>
+                    <td>${detalle.cantidadbruta} ${detalle.unidad}</td>
+                    <td>${detalle.ingrediente.CostoIngrediente}</td>
                 </tr>
             `;
             detalleRecetaBody.insertAdjacentHTML('beforeend', row);
         });
     } else {
-        // Si no hay detalles de receta, mostrar un mensaje o hacer alguna otra acción
         detalleRecetaBody.innerHTML = '<tr><td colspan="6">No se encontraron detalles de receta</td></tr>';
     }
 
@@ -1141,3 +1142,65 @@ $(document).ready(function() {
         });
     }
 });
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById('hot-container');
+
+    // Configuración inicial de Handsontable
+    const hot = new Handsontable(container, {
+        rowHeaders: true,
+        colHeaders: ['Nombre Ingrediente', 'Cantidad Neta', 'Unidad', 'Merma', 'Cantidad Bruta', 'Costo Ingrediente'],
+        autoColumnSize: true,
+        autoRowSize: true,
+        stretchH: 'all'
+    });
+
+    // Función para actualizar los datos en Handsontable
+    function updateTableWithData(data) {
+        hot.loadData(data);
+    }
+
+    // Obtener todos los elementos con la clase "editar-receta"
+    const editarRecetaButtons = document.querySelectorAll('.editar-receta');
+
+    // Iterar sobre cada botón y agregar un evento clic
+    editarRecetaButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            alert("sii")
+            event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
+
+            // Obtener el ID del producto desde el atributo data-producto-id
+            const productoId = button.getAttribute('data-producto-id');
+
+            // Realizar la solicitud AJAX utilizando jQuery
+            $.ajax({
+                url: `/api/get-productos-seleccionado/${productoId}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log("siii "+data)
+                    // Extraer los detalles de la receta del objeto de respuesta
+                    const detallesReceta = data.receta[0].detallerecetas.map(detalle => [
+                        detalle.ingrediente.NombreIngrediente,
+                        detalle.cantidadneta,
+                        detalle.unidad,
+                        detalle.merma,
+                        detalle.cantidadbruta,
+                        detalle.costoIngrediente
+                    ]);
+
+                    // Actualizar la tabla Handsontable con los datos obtenidos
+                    updateTableWithData(detallesReceta);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los datos del producto:', error);
+                }
+            });
+        });
+    });
+});
+
+
+  
