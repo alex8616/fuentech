@@ -9,10 +9,15 @@ class Receta extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'NombreReceta'
+        'NombreReceta',
+        'producto_id'
     ];
 
     public function detallerecetas(){
         return $this->hasMany(DetalleReceta::class);
+    }
+
+    public function producto(){
+        return $this->belongsTo(Producto::class);
     }
 }

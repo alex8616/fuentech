@@ -53,8 +53,8 @@ class Producto extends Model
     public function ingredientes(){
         return $this->hasMany(Ingrediente::class);
     }
-
-    public function detallereceta(){
-        return $this->hasMany(DetalleReceta::class);
+    
+    public function receta(){
+        return $this->hasMany(Receta::class);
     }
 }

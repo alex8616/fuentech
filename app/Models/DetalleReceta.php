@@ -14,14 +14,14 @@ class DetalleReceta extends Model
         'cantidadbruta',
         'unidad',
         'receta_id',
-        'producto_id',
+        'ingrediente_id',
     ];
 
     public function receta(){
         return $this->belongsTo(Receta::class);
     }
 
-    public function producto(){
+    public function ingrediente(){
         return $this->belongsTo(Producto::class);
     }
 }

@@ -11,24 +11,28 @@ use Illuminate\Support\Facades\Auth;
 class RecetaController extends Controller
 {
     public function RegistrarReceta(Request $request){
-        $ingredientes = $request->ingredientes;
-        return response()->json($ingredientes);
-    
-        foreach ($ingredientes as $ingrediente) {
-            $producto = Producto::findOrFail($ingrediente['Id']);
-    
-            // Aquí puedes crear la receta y el detalle de receta para cada ingrediente
+        $ingredientes = $request->input('ingredientes');
+        $Id = $request->Id;
+        $existeReceta = Receta::where('producto_id', $Id)->exists();
+
+        if($existeReceta == true){
+            $receta = Receta::where('producto_id', $Id)->first();
+        }else{
+            $producto = Producto::findOrFail($request->Id);
             $receta = Receta::create([
-                'NombreReceta' => $producto->NombreProducto . ' ' . $ingrediente['nombreIngrediente'],
+                'NombreReceta' => "Receta #1 ".$producto->NombreProducto,
+                'producto_id' => $request->Id
             ]);
-    
+        }
+
+        foreach ($ingredientes as $ingrediente) {
             $detalleReceta = DetalleReceta::create([
                 'fecha_registro' => now(),
                 'cantidadneta' => $ingrediente['cantidadNeta'],
                 'cantidadbruta' => $ingrediente['cantidadBruta'],
                 'unidad' => $ingrediente['unidadNeta'],
                 'receta_id' => $receta->id,
-                'producto_id' => $ingrediente['Id'],
+                'ingrediente_id' => $ingrediente['ingredienteId'],
             ]);
         }
     

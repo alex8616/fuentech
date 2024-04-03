@@ -31,4 +31,8 @@ class Ingrediente extends Model
     public function proveedor(){
         return $this->belongsTo(Proveedore::class, 'proveedor_id');
     }
+
+    public function detallereceta(){
+        return $this->hasMany(DetalleReceta::class);
+    }
 }

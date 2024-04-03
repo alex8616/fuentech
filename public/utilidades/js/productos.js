@@ -300,12 +300,14 @@ function ListProductoSubCategoria(subcategoriaId){
     });
 }
 
-function cargarCategorias(){
+function cargarCategoriasProducto(){
     $.ajax({
         url: '/api/get-categorias',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
+            console.log("cat cargar")
+            console.log(data)
             var select = $('#ProductoCategoria');
             select.empty();
             select.append($('<option></option>').attr('value', '').text('Seleccionar categoría'));
@@ -319,7 +321,7 @@ function cargarCategorias(){
     });
 }
 
-function cargarSubcategorias() {
+function cargarSubcategoriasProducto() {
     var id = $('#ProductoCategoria').val();
     $.ajax({
         url: '/api/get-subcategorias/' + id,
@@ -422,7 +424,26 @@ function InformacionProducto(data){
                         <div class="col-12 col-md-5">
                             <img src="/${data.ImagenProducto}" alt="Imagen del producto">
                         </div>
-                    </div> <br>                    
+                    </div> <br>  
+                    <div class="mb-12 row">
+                        <div class="col">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Cantidad Neta</th>
+                                        <th>Unidad Neta</th>
+                                        <th>Merma</th>
+                                        <th>Cantidad Bruta</th>
+                                        <th>Costo Ingrediente</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalleRecetaBody">
+                                    <!-- Aquí se llenarán los detalles de la receta -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>                 
                     <div class="row justify-content-end">
                         <div class="col-auto">
                             <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes" data-selectproduct-id="${data.id}">Agregar Ingredientes</button>
@@ -433,6 +454,27 @@ function InformacionProducto(data){
         </div>
     `;
 
+    var detalleRecetaBody = document.getElementById('detalleRecetaBody');
+    // Verificar si data.receta está definido y tiene elementos
+    if (data.receta && data.receta.length > 0 && data.receta[0].detallerecetas) {
+        // Llenar la tabla con los detalles de la receta
+        data.receta[0].detallerecetas.forEach(function(detalle) {
+            var row = `
+                <tr>
+                    <td>${detalle.ingrediente_id}</td>
+                    <td>${detalle.cantidadneta}</td>
+                    <td>${detalle.unidad}</td>
+                    <td>${detalle.merma}</td>
+                    <td>${detalle.cantidadbruta}</td>
+                    <td>${detalle.costoIngrediente}</td>
+                </tr>
+            `;
+            detalleRecetaBody.insertAdjacentHTML('beforeend', row);
+        });
+    } else {
+        // Si no hay detalles de receta, mostrar un mensaje o hacer alguna otra acción
+        detalleRecetaBody.innerHTML = '<tr><td colspan="6">No se encontraron detalles de receta</td></tr>';
+    }
 
     $('#EditarProducto').on('click', function() {
         TotalProduct.innerHTML = ``;
@@ -721,9 +763,8 @@ function ActualizarProductoImagen(productoId){
 
 $(document).ready(function() {  
     MostrarCategoria();
-
     document.getElementById('addproductos').addEventListener('click', function() {
-        cargarCategorias();
+        cargarCategoriasProducto();
         var formTabsDiv = document.getElementById('form_tabs');
         formTabsDiv.innerHTML = `
         <form id="form-register-product">
@@ -847,7 +888,7 @@ $(document).ready(function() {
         $('#ProductoCategoria').change(function() {
             var categoriaSeleccionada = $(this).val();
             if (categoriaSeleccionada) {
-                cargarSubcategorias(categoriaSeleccionada);
+                cargarSubcategoriasProducto(categoriaSeleccionada);
                 $('#ProductoSubCategoria').parent().show();
             } else {
                 $('#ProductoSubCategoria').parent().hide();
@@ -970,39 +1011,41 @@ $(document).ready(function() {
 
     // Cuando se haga clic en el botón Registrar
     $('#BtnRegistrarReceta').on('click', function() {
+        var Id = $('#productoID').val(); // Obtener el Id una sola vez fuera del bucle
+        var ingredientes = []; // Array para almacenar todos los ingredientes
+        
         $('.row-cards').each(function() {
             var row = $(this);
-            var Id = row.find('#productoID').val();
-            var nombreIngrediente = row.find('#RecuperarNombreIngrediente').text();
-            var cantidadNeta = row.find('#CantidadNeta').val();
-            var unidadNeta = row.find('#UnidadNeta').val();
-            var merma = row.find('#RecuperarMermaIngrediente').text();
-            var cantidadBruta = row.find('#CantidadBruta').val();
-            var costoIngrediente = row.find('#TotalIngrediente').text();
-            $.ajax({
-                url: '/api/registrar-receta',
-                method: 'POST',
-                data: {
-                    Id: Id,
-                    nombreIngrediente: nombreIngrediente,
-                    cantidadNeta: cantidadNeta,
-                    unidadNeta: unidadNeta,
-                    merma: merma,
-                    cantidadBruta: cantidadBruta,
-                    costoIngrediente: costoIngrediente
-                },
-                success: function(response) {
-                    $('#contenedor-ingrediente').empty();
-                    console.log('Ingrediente registrado:', response);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al registrar ingrediente:', error);
-                }
-            });
-        });        
+            var ingrediente = {
+                Id: row.find('#productoID').val(),
+                ingredienteId: row.find('#ingredienteID').val(), 
+                nombreIngrediente: row.find('#RecuperarNombreIngrediente').text(),
+                cantidadNeta: row.find('#CantidadNeta').val(),
+                unidadNeta: row.find('#UnidadNeta').val(),
+                merma: row.find('#RecuperarMermaIngrediente').text(),
+                cantidadBruta: row.find('#CantidadBruta').val(),
+                costoIngrediente: row.find('#TotalIngrediente').text()
+            };
+            ingredientes.push(ingrediente); 
+        });
+    
+        // Enviar todos los ingredientes juntos en una sola solicitud AJAX
+        $.ajax({
+            url: '/api/registrar-receta',
+            method: 'POST',
+            data: {
+                Id: Id, 
+                ingredientes: ingredientes
+            },
+            success: function(response) {
+                $('#contenedor-ingrediente').empty();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al registrar ingredientes:', error);
+            }
+        });
     });
     
-
     function agregarDivIngrediente(ingredienteSeleccionado, productId) {
         var divIngrediente = `
         <br><div class="row row-cards">
@@ -1010,6 +1053,7 @@ $(document).ready(function() {
                     <div class="mb-3">
                         <label class="form-label" style="font-weight: bold">Ingrediente</label>
                         <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
+                        <input type="text" readonly class="form-control" id="ingredienteID" value="${ingredienteSeleccionado.id}">  
                         <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
                     </div>
                 </div>

@@ -20,8 +20,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('receta_id')->nullable();
             $table->foreign('receta_id')->references('id')->on('recetas')->onDelete('cascade')->nullable();
-            $table->unsignedBigInteger('producto_id')->nullable();
-            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('ingrediente_id')->nullable();
+            $table->foreign('ingrediente_id')->references('id')->on('ingredientes')->onDelete('cascade')->nullable();
             $table->timestamps();
         });
     }

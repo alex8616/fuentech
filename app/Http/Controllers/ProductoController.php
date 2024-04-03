@@ -30,7 +30,7 @@ class ProductoController extends Controller
     }
 
     public function GetProductoSeleccionado($producto){
-        $productos = Producto::with('categoria','categoria.subcategorias','proveedor')->where('id',$producto)->first();
+        $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas')->where('id',$producto)->first();
         return response()->json($productos);
     }
 
