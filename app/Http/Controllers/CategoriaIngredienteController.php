@@ -32,6 +32,6 @@ class CategoriaIngredienteController extends Controller
         $categoria->NombreCategoria = $request->input("nombre");
         $categoria->save();
         return response()->json($categoria);
-    }
+    }    
        
 }

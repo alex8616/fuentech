@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetalleReceta;
 use App\Models\Ingrediente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,5 +52,23 @@ class IngredienteController extends Controller
     public function GetIngrediente(){
         $ingredientes = Ingrediente::get();
         return response()->json($ingredientes);
+    }
+
+    public function ActualizarDetalleReceta(Request $request){
+        $data = $request->all();
+        $detallereceta = DetalleReceta::find($data['id']);
+        $IdIngre = $detallereceta->ingrediente_id;
+        $ingrediente = Ingrediente::find($IdIngre);
+        if ($detallereceta) {
+            $detallereceta->cantidadneta = $data['2'];
+            $detallereceta->cantidadbruta = $data['4'];
+            $detallereceta->unidad = $data['5'];
+            $ingrediente->CostoIngrediente = $data['6'];
+            $detallereceta->save();
+            $ingrediente->save();
+            return response()->json(['message' => 'Detalle de receta actualizado correctamente', 'data' => $detallereceta]);
+        } else {
+            return response()->json(['error' => 'Detalle de receta no encontrado'], 404);
+        }
     }
 }

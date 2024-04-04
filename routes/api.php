@@ -55,6 +55,7 @@ Route::get('/get-ingrediente-seleccionado/{ingrediente}', [IngredienteController
 Route::post('/actualizar-ingrediente', [IngredienteController::class, 'ActualizarIngrediente']);
 Route::post('/registrar-ingrediente', [IngredienteController::class, 'RegistrarIngrediente'])->middleware('auth');
 Route::get('/get-ingrediente', [IngredienteController::class, 'GetIngrediente']);
+Route::post('/actualizar-detallereceta', [IngredienteController::class, 'ActualizarDetalleReceta']);
 
 
 Route::post('/registrar-receta', [RecetaController::class, 'RegistrarReceta'])->middleware('auth');

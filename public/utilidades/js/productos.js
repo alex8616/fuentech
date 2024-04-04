@@ -447,7 +447,7 @@ function InformacionProducto(data){
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                    <th><a href="#" data-bs-toggle="modal" data-bs-target="#modal-ingredientes-editar" data-producto-id="${data.id}" id="editar-receta">Editar</a></th>
+                                    <th><a href="#" data-bs-toggle="modal" data-bs-target="#modal-editar-receta" data-producto-id="${data.id}" id="editar-receta">Editar</a></th>
                                     <th colspan="4" style="text-align: right">TOTAL RECETA 150000Bs.</th>
                                     </tr>
                                 </tfoot>
@@ -735,6 +735,130 @@ function InformacionProducto(data){
         });
 
     });
+    
+    $('#editar-receta').off('click').on('click', function() {
+        const editarRecetaLink = document.getElementById('editar-receta');
+        const productoId = editarRecetaLink.getAttribute('data-producto-id');
+        $.ajax({
+            url: '/api/get-productos-seleccionado/' + productoId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                const detallesReceta = data.receta[0].detallerecetas;
+                const tableBody = document.getElementById('recetaTableBody');
+                tableBody.innerHTML = '';
+                detallesReceta.forEach(detalle => {
+                    const row = `
+                        <tr>
+                            <td>${detalle.id}</td>
+                            <td>${detalle.ingrediente.NombreIngrediente}</td>
+                            <td class="editable-cell">${detalle.cantidadneta}</td>
+                            <td>${detalle.ingrediente.CantidadIngrediente}</td>
+                            <td class="editable-cell">${detalle.cantidadbruta}</td>
+                            <td class="editable-cell-select">${detalle.unidad}</td>
+                            <td class="editable-cell">${detalle.ingrediente.CostoIngrediente}</td>
+                            <td>
+                                <span class="badge badge-outline text-green" id="EditarDetalleReceta">E</span>
+                                <span class="badge badge-outline text-red" id="EliminarDetalleReceta">X</span>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+
+                
+
+                $('#recetaTableBody').on('click', '#EditarDetalleReceta', function() {
+                    const row = this.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                
+                    cells.forEach(cell => {
+                        if (cell.classList.contains('editable-cell-select')) {
+                            const oldValue = cell.textContent.trim();
+                            const select = document.createElement('select');
+                            const options = ['Unid', 'Kilos', 'Gramos','Onza'];
+                            options.forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.textContent = option;
+                                optionElement.value = option;
+                                select.appendChild(optionElement);
+                            });
+                            select.value = oldValue;
+                            const cellWidth = cell.getBoundingClientRect().width;
+                            select.style.width = cellWidth + 'px';
+                            select.classList.add('form-control');
+                            cell.innerHTML = '';
+                            cell.appendChild(select);
+                        } else if(cell.classList.contains('editable-cell')) { 
+                            const oldValue = cell.textContent.trim();
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'text');
+                            input.setAttribute('value', oldValue);
+                
+                            const cellWidth = cell.getBoundingClientRect().width;
+                            input.style.width = cellWidth + 'px';
+                
+                            input.classList.add('form-control');
+                
+                            cell.innerHTML = '';
+                            cell.appendChild(input);
+                        }
+                    });
+                
+                    $(this).text('G');
+                    $(this).attr('id', 'GuardarDetalleReceta');
+                    $(this).removeClass('text-green').addClass('text-success');+
+
+                    $(this).closest('tr').find('.EliminarDetalleReceta').hide();
+                });
+                
+                $('#recetaTableBody').on('click', '#GuardarDetalleReceta', function() {
+                    const row = this.closest('tr');
+                    const rowIdCell = row.querySelector('td:first-child');
+                    const rowId = rowIdCell.textContent.trim();
+                    const cells = row.querySelectorAll('td');
+                    
+                    const newData = {
+                        id: rowId 
+                    };
+                    cells.forEach(cell => {
+                        const inputOrSelect = cell.querySelector('input, select');
+                        if (inputOrSelect) {
+                            const newValue = inputOrSelect.value;
+                            newData[cell.cellIndex] = newValue;
+                            cell.innerHTML = newValue;
+                        }
+                    });
+                    
+                    $.ajax({
+                        url: '/api/actualizar-detallereceta',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: newData,
+                        success: function(response) {
+                            console.log('Datos actualizados correctamente:', response);
+                        },
+                        error: function(error) {
+                            console.error('Error al actualizar los datos:', error);
+                        }
+                    });
+                    
+                    $(this).text('E');
+                    $(this).attr('id', 'EditarDetalleReceta');
+                    $(this).removeClass('text-success').addClass('text-green');
+
+                    $(this).closest('tr').find('.EliminarDetalleReceta').show();
+                });
+
+
+                
+            },
+            error: function(error) {
+                console.error('Error al recuperar datos de proveedores:', error);
+            }
+        });
+    });
+    
 }
 
 function ActualizarProductoImagen(productoId){
@@ -1144,63 +1268,3 @@ $(document).ready(function() {
 });
 
 
-
-document.addEventListener("DOMContentLoaded", function() {
-    const container = document.getElementById('hot-container');
-
-    // Configuración inicial de Handsontable
-    const hot = new Handsontable(container, {
-        rowHeaders: true,
-        colHeaders: ['Nombre Ingrediente', 'Cantidad Neta', 'Unidad', 'Merma', 'Cantidad Bruta', 'Costo Ingrediente'],
-        autoColumnSize: true,
-        autoRowSize: true,
-        stretchH: 'all'
-    });
-
-    // Función para actualizar los datos en Handsontable
-    function updateTableWithData(data) {
-        hot.loadData(data);
-    }
-
-    // Obtener todos los elementos con la clase "editar-receta"
-    const editarRecetaButtons = document.querySelectorAll('.editar-receta');
-
-    // Iterar sobre cada botón y agregar un evento clic
-    editarRecetaButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            alert("sii")
-            event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
-
-            // Obtener el ID del producto desde el atributo data-producto-id
-            const productoId = button.getAttribute('data-producto-id');
-
-            // Realizar la solicitud AJAX utilizando jQuery
-            $.ajax({
-                url: `/api/get-productos-seleccionado/${productoId}`,
-                method: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    console.log("siii "+data)
-                    // Extraer los detalles de la receta del objeto de respuesta
-                    const detallesReceta = data.receta[0].detallerecetas.map(detalle => [
-                        detalle.ingrediente.NombreIngrediente,
-                        detalle.cantidadneta,
-                        detalle.unidad,
-                        detalle.merma,
-                        detalle.cantidadbruta,
-                        detalle.costoIngrediente
-                    ]);
-
-                    // Actualizar la tabla Handsontable con los datos obtenidos
-                    updateTableWithData(detallesReceta);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al obtener los datos del producto:', error);
-                }
-            });
-        });
-    });
-});
-
-
-  

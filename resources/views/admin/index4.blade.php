@@ -492,25 +492,40 @@
         </div>
     </div>
 
-    <!-- Modal -->
-<div class="modal fade" id="modal-editar-receta" tabindex="-1" aria-labelledby="modal-editar-receta-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-editar-receta-label">Editar Receta</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="hot-container"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <!-- Puedes agregar otros botones aquí si es necesario -->
-      </div>
+    
+    <div class="modal modal-blur fade" id="modal-editar-receta" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Receta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="recetaTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Ingrediente</th>
+                            <th>Cant. Neta</th>
+                            <th>Merma</th>
+                            <th>Cant. Bruta</th>
+                            <th>Unid.</th>
+                            <th>Costo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="recetaTableBody">
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="BtnRegistrarReceta">Registrar</button>
+            </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
 @endsection
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
