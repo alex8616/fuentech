@@ -55,15 +55,16 @@ class IngredienteController extends Controller
     }
 
     public function ActualizarDetalleReceta(Request $request){
+        //return response()->json($request);
         $data = $request->all();
         $detallereceta = DetalleReceta::find($data['id']);
         $IdIngre = $detallereceta->ingrediente_id;
         $ingrediente = Ingrediente::find($IdIngre);
         if ($detallereceta) {
             $detallereceta->cantidadneta = $data['2'];
-            $detallereceta->cantidadbruta = $data['4'];
+            $detallereceta->cantidadbruta = $data['cantidadBruta'];
             $detallereceta->unidad = $data['5'];
-            $ingrediente->CostoIngrediente = $data['6'];
+            $ingrediente->CostoIngrediente = $data['costoTotal'];
             $detallereceta->save();
             $ingrediente->save();
             return response()->json(['message' => 'Detalle de receta actualizado correctamente', 'data' => $detallereceta]);
@@ -71,4 +72,16 @@ class IngredienteController extends Controller
             return response()->json(['error' => 'Detalle de receta no encontrado'], 404);
         }
     }
+
+    public function EliminarDetalleReceta(Request $request){
+        $detalleRecetaId = $request->input('id');
+        $detalleReceta = DetalleReceta::find($detalleRecetaId);
+        if ($detalleReceta) {
+            $detalleReceta->delete();
+            return response()->json(['message' => 'Detalle de receta eliminado correctamente']);
+        } else {
+            return response()->json(['error' => 'No se encontró el detalle de receta con el ID proporcionado'], 404);
+        }
+    }
+    
 }

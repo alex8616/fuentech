@@ -736,6 +736,7 @@ function InformacionProducto(data){
 
     });
     
+    
     $('#editar-receta').off('click').on('click', function() {
         const editarRecetaLink = document.getElementById('editar-receta');
         const productoId = editarRecetaLink.getAttribute('data-producto-id');
@@ -767,11 +768,10 @@ function InformacionProducto(data){
                 });
 
                 
-
-                $('#recetaTableBody').on('click', '#EditarDetalleReceta', function() {
+                $('#recetaTableBody').off('click', '#EditarDetalleReceta').on('click', '#EditarDetalleReceta', function() {
                     const row = this.closest('tr');
                     const cells = row.querySelectorAll('td');
-                
+                                    
                     cells.forEach(cell => {
                         if (cell.classList.contains('editable-cell-select')) {
                             const oldValue = cell.textContent.trim();
@@ -790,43 +790,67 @@ function InformacionProducto(data){
                             cell.innerHTML = '';
                             cell.appendChild(select);
                         } else if(cell.classList.contains('editable-cell')) { 
+                            const costoIngrediente = parseFloat(row.querySelector('td:nth-child(7)').textContent.trim());
                             const oldValue = cell.textContent.trim();
                             const input = document.createElement('input');
                             input.setAttribute('type', 'text');
                             input.setAttribute('value', oldValue);
+                            input.classList.add('form-control');
+                
+                            // Agregar un evento input al input de cantidad neta para calcular la cantidad bruta y el costo total
+                            input.addEventListener('input', function() {
+                                const cantidadNeta = parseFloat(this.value);
+                                const cantidadIngrediente = parseFloat(row.querySelector('td:nth-child(4)').textContent.trim());
+                                const cantidadBruta = cantidadNeta * cantidadIngrediente; // Multiplicar por la cantidad de ingrediente
+                                const cantidadBrutaCell = row.querySelector('.editable-cell:nth-child(5)');
+                                cantidadBrutaCell.textContent = cantidadBruta.toFixed(2);
+                                
+                                // Calcular el costo multiplicando el costo del ingrediente por 2
+                                const costoTotal = cantidadBruta * costoIngrediente;
+                                const costoTotalCell = row.querySelector('.editable-cell:nth-child(7)');
+                                costoTotalCell.textContent = costoTotal.toFixed(2);
+                            });
                 
                             const cellWidth = cell.getBoundingClientRect().width;
                             input.style.width = cellWidth + 'px';
                 
-                            input.classList.add('form-control');
-                
+                            // Reemplazar el contenido de la celda por el input creado
                             cell.innerHTML = '';
                             cell.appendChild(input);
+                
+                            // Agregar las clases y atributos necesarios al input
+                            input.classList.add('editable-cell'); // Agregar clase editable-cell
+                            input.classList.add('editable-cell-input'); // Agregar clase editable-cell-input
+                            input.dataset.oldValue = oldValue; // Guardar el valor anterior en un atributo data
                         }
                     });
                 
                     $(this).text('G');
                     $(this).attr('id', 'GuardarDetalleReceta');
-                    $(this).removeClass('text-green').addClass('text-success');+
-
-                    $(this).closest('tr').find('.EliminarDetalleReceta').hide();
+                    $(this).removeClass('text-green').addClass('text-blue');
+                
+                    $(row).find('#EliminarDetalleReceta').hide();
                 });
                 
-                $('#recetaTableBody').on('click', '#GuardarDetalleReceta', function() {
-                    const row = this.closest('tr');
-                    const rowIdCell = row.querySelector('td:first-child');
-                    const rowId = rowIdCell.textContent.trim();
-                    const cells = row.querySelectorAll('td');
+                $('#recetaTableBody').off('click', '#GuardarDetalleReceta').on('click', '#GuardarDetalleReceta', function(event) {
+                    event.preventDefault(); // Evitar que el formulario se envíe de manera predeterminada
+                    const row = $(this).closest('tr');
+                    const rowIdCell = row.find('td:first-child');
+                    const rowId = rowIdCell.text().trim();
+                    const cells = row.find('td');
                     
                     const newData = {
-                        id: rowId 
+                        id: rowId,
+                        cantidadBruta: parseFloat(row.find('.editable-cell:nth-child(5)').text().trim()), // Obtener la cantidad bruta desde la celda
+                        costoTotal: parseFloat(row.find('.editable-cell:nth-child(7)').text().trim()) // Obtener el costo total desde la celda
                     };
-                    cells.forEach(cell => {
-                        const inputOrSelect = cell.querySelector('input, select');
-                        if (inputOrSelect) {
-                            const newValue = inputOrSelect.value;
-                            newData[cell.cellIndex] = newValue;
-                            cell.innerHTML = newValue;
+                    
+                    cells.each(function(index, cell) {
+                        const inputOrSelect = $(cell).find('input, select');
+                        if (inputOrSelect.length > 0) {
+                            const newValue = inputOrSelect.val();
+                            newData[index] = newValue;
+                            $(cell).text(newValue); // Actualizar el contenido de la celda con el nuevo valor
                         }
                     });
                     
@@ -845,12 +869,27 @@ function InformacionProducto(data){
                     
                     $(this).text('E');
                     $(this).attr('id', 'EditarDetalleReceta');
-                    $(this).removeClass('text-success').addClass('text-green');
-
-                    $(this).closest('tr').find('.EliminarDetalleReceta').show();
+                    $(this).removeClass('text-blue').addClass('text-green');
+                    
+                    row.find('#EliminarDetalleReceta').show();
                 });
-
-
+                
+                $('#recetaTableBody').off('click', '#EliminarDetalleReceta').on('click', '#EliminarDetalleReceta', function(event) {
+                    event.preventDefault(); 
+                    const rowId = $(this).closest('tr').find('td:first-child').text().trim();
+                    $.ajax({
+                        url: '/api/eliminar-detallereceta',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { id: rowId },
+                        success: function(response) {
+                            console.log('Detalle de receta eliminado correctamente:', response);
+                        },
+                        error: function(error) {
+                            console.error('Error al eliminar el detalle de receta:', error);
+                        }
+                    });
+                });
                 
             },
             error: function(error) {
