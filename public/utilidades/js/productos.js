@@ -431,7 +431,7 @@ function InformacionProducto(data){
                         </div>
                     </div> <br>
                     <div class="mb-12 row">
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="TableDetalle" style="display: none">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -448,7 +448,7 @@ function InformacionProducto(data){
                                 <tfoot>
                                     <tr>
                                     <th><a href="#" data-bs-toggle="modal" data-bs-target="#modal-editar-receta" data-producto-id="${data.id}" id="editar-receta">Editar</a></th>
-                                    <th colspan="4" style="text-align: right">TOTAL RECETA 150000Bs.</th>
+                                    <th colspan="4" style="text-align: right" id="TotalDetalleReceta"></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -459,23 +459,8 @@ function InformacionProducto(data){
         </div>
     `;
 
-    var detalleRecetaBody = document.getElementById('detalleRecetaBody');
-    if (data.receta && data.receta.length > 0 && data.receta[0].detallerecetas) {
-        data.receta[0].detallerecetas.forEach(function(detalle) {
-            var row = `
-                <tr style="font-size: 13px">
-                    <td>${detalle.ingrediente.NombreIngrediente}</td>
-                    <td>${detalle.cantidadneta} ${detalle.unidad}</td>
-                    <td>${detalle.ingrediente.CantidadIngrediente}</td>
-                    <td>${detalle.cantidadbruta} ${detalle.unidad}</td>
-                    <td>${detalle.ingrediente.CostoIngrediente}</td>
-                </tr>
-            `;
-            detalleRecetaBody.insertAdjacentHTML('beforeend', row);
-        });
-    } else {
-        detalleRecetaBody.innerHTML = '<tr><td colspan="6">No se encontraron detalles de receta</td></tr>';
-    }
+    actualizarTablaDetallesReceta(data);
+        
 
     $('#EditarProducto').on('click', function() {
         TotalProduct.innerHTML = ``;
@@ -745,28 +730,7 @@ function InformacionProducto(data){
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                const detallesReceta = data.receta[0].detallerecetas;
-                const tableBody = document.getElementById('recetaTableBody');
-                tableBody.innerHTML = '';
-                detallesReceta.forEach(detalle => {
-                    const row = `
-                        <tr>
-                            <td>${detalle.id}</td>
-                            <td>${detalle.ingrediente.NombreIngrediente}</td>
-                            <td class="editable-cell">${detalle.cantidadneta}</td>
-                            <td>${detalle.ingrediente.CantidadIngrediente}</td>
-                            <td class="editable-cell">${detalle.cantidadbruta}</td>
-                            <td class="editable-cell-select">${detalle.unidad}</td>
-                            <td class="editable-cell">${detalle.ingrediente.CostoIngrediente}</td>
-                            <td>
-                                <span class="badge badge-outline text-green" id="EditarDetalleReceta">E</span>
-                                <span class="badge badge-outline text-red" id="EliminarDetalleReceta">X</span>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-
+                TablaDetalleRecetas(data)
                 
                 $('#recetaTableBody').off('click', '#EditarDetalleReceta').on('click', '#EditarDetalleReceta', function() {
                     const row = this.closest('tr');
@@ -840,6 +804,7 @@ function InformacionProducto(data){
                     const cells = row.find('td');
                     
                     const newData = {
+                        producId: productoId,
                         id: rowId,
                         cantidadBruta: parseFloat(row.find('.editable-cell:nth-child(5)').text().trim()), // Obtener la cantidad bruta desde la celda
                         costoTotal: parseFloat(row.find('.editable-cell:nth-child(7)').text().trim()) // Obtener el costo total desde la celda
@@ -860,7 +825,8 @@ function InformacionProducto(data){
                         dataType: 'json',
                         data: newData,
                         success: function(response) {
-                            console.log('Datos actualizados correctamente:', response);
+                            actualizarTablaDetallesReceta(response);
+                            MostrarMensaje("Actualizado Exitosamente","success");
                         },
                         error: function(error) {
                             console.error('Error al actualizar los datos:', error);
@@ -876,20 +842,30 @@ function InformacionProducto(data){
                 
                 $('#recetaTableBody').off('click', '#EliminarDetalleReceta').on('click', '#EliminarDetalleReceta', function(event) {
                     event.preventDefault(); 
-                    const rowId = $(this).closest('tr').find('td:first-child').text().trim();
-                    $.ajax({
-                        url: '/api/eliminar-detallereceta',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: { id: rowId },
-                        success: function(response) {
-                            console.log('Detalle de receta eliminado correctamente:', response);
-                        },
-                        error: function(error) {
-                            console.error('Error al eliminar el detalle de receta:', error);
-                        }
-                    });
+                    var $this = $(this);
+                    mostrarConfirmacion("¿Estás seguro de que deseas realizar esta acción?", function(esConfirmado) {
+                        if (esConfirmado) {
+                            const rowId = $this.closest('tr').find('td:first-child').text().trim(); // Usar la variable local
+                            $.ajax({
+                                url: '/api/eliminar-detallereceta',
+                                type: 'POST',
+                                dataType: 'json',
+                                data: { id: rowId, producId: productoId },
+                                success: function(response) {
+                                    TablaDetalleRecetas(response);
+                                    actualizarTablaDetallesReceta(response);
+                                    MostrarMensaje("Eliminado Exitosamente","success");
+                                },
+                                error: function(error) {
+                                    console.error('Error al eliminar el detalle de receta:', error);
+                                }
+                            });
+                        } else {
+                            console.log("La acción ha sido cancelada.");
+                        }                        
+                    });                                    
                 });
+                
                 
             },
             error: function(error) {
@@ -1202,7 +1178,8 @@ $(document).ready(function() {
                 ingredientes: ingredientes
             },
             success: function(response) {
-                $('#contenedor-ingrediente').empty();
+                MostrarMensaje("Agregado Exitosamente", "success");
+                actualizarTablaDetallesReceta(response)
             },
             error: function(xhr, status, error) {
                 console.error('Error al registrar ingredientes:', error);
@@ -1217,7 +1194,7 @@ $(document).ready(function() {
                     <div class="mb-3">
                         <label class="form-label" style="font-weight: bold">Ingrediente</label>
                         <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
-                        <input type="text" readonly class="form-control" id="ingredienteID" value="${ingredienteSeleccionado.id}">  
+                        <input type="text" readonly class="form-control" id="ingredienteID" value="${ingredienteSeleccionado.id}" hidden>  
                         <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
                     </div>
                 </div>
@@ -1306,4 +1283,61 @@ $(document).ready(function() {
     }
 });
 
+function actualizarTablaDetallesReceta(data) {
+    var detalleRecetaBody = document.getElementById('detalleRecetaBody');
+    var totalCosto = 0;
 
+    // Vaciar la tabla antes de agregar nuevas filas
+    detalleRecetaBody.innerHTML = '';
+
+    if (data.receta && data.receta[0].detallerecetas.length > 0 && data.receta[0].detallerecetas) {
+        const tablaDetalle = document.getElementById('TableDetalle');
+        tablaDetalle.style.display = 'block';
+        data.receta[0].detallerecetas.forEach(function (detalle) {
+            var row = `
+                <tr style="font-size: 13px">
+                    <td>${detalle.ingrediente.NombreIngrediente}</td>
+                    <td>${detalle.cantidadneta} ${detalle.unidad}</td>
+                    <td>${detalle.ingrediente.CantidadIngrediente}</td>
+                    <td>${detalle.cantidadbruta} ${detalle.unidad}</td>
+                    <td>${detalle.costo}</td>
+                </tr>
+            `;
+            detalleRecetaBody.insertAdjacentHTML('beforeend', row);
+
+            totalCosto += parseFloat(detalle.costo);
+
+        });
+
+        var totalDetalleReceta = document.getElementById('TotalDetalleReceta');
+        totalDetalleReceta.textContent = 'TOTAL RECETA: ' + totalCosto.toFixed(2);
+    } else {
+        const tablaDetalle = document.getElementById('TableDetalle');
+        tablaDetalle.style.display = 'none';
+        detalleRecetaBody.innerHTML = '<tr><td colspan="5">No se encontraron detalles de receta</td></tr>';
+    }
+}
+
+function TablaDetalleRecetas(data){
+    const detallesReceta = data.receta[0].detallerecetas;
+    const tableBody = document.getElementById('recetaTableBody');
+    tableBody.innerHTML = '';
+    detallesReceta.forEach(detalle => {
+        const row = `
+            <tr>
+                <td>${detalle.id}</td>
+                <td>${detalle.ingrediente.NombreIngrediente}</td>
+                <td class="editable-cell">${detalle.cantidadneta}</td>
+                <td>${detalle.ingrediente.CantidadIngrediente}</td>
+                <td class="editable-cell">${detalle.cantidadbruta}</td>
+                <td class="editable-cell-select">${detalle.unidad}</td>
+                <td class="editable-cell">${detalle.ingrediente.CostoIngrediente}</td>
+                <td>
+                    <span class="badge badge-outline text-green" id="EditarDetalleReceta">E</span>
+                    <span class="badge badge-outline text-red" id="EliminarDetalleReceta">X</span>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}

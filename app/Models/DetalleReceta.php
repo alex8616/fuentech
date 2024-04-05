@@ -13,6 +13,7 @@ class DetalleReceta extends Model
         'cantidadneta',
         'cantidadbruta',
         'unidad',
+        'costo',
         'receta_id',
         'ingrediente_id',
     ];

@@ -161,14 +161,42 @@
                     </div>
                     <div class="tab-pane" id="tabs-modificadores" role="tabpanel">
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Base info</h3>
+                            <div class="card-header" style="width: 100%; background-color: #1d2736">
+                                <div class="row" style="width: 100%;">
+                                    <div class="col-12 col-sm-8">
+                                        <h3 class="card-title" style="color: white; font-weight: bold;">GRUPO DE MODIFICADORES</h3>
+                                    </div>
+                                    <div class="col-12 col-sm-4" style="text-align: right;">
+                                        <a class="btn" id="addModificador">+ Nuevo Grupo Modificador</a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="datagrid">
                                     <div class="datagrid-item">
-                                        <div class="datagrid-title">Registrar</div>
-                                        <div class="datagrid-content">Third Party</div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12" style="background: white; padding-top: 10px; padding-bottom: 10px">
+                                                <div id="lista_categorias">
+                                                    <div class="card">
+                                                        <div class="table-responsive" id="tabla-categoria-ingredientes">
+                                                            <table class="table table-vcenter card-table">
+                                                            <thead>
+                                                                <tr>
+                                                                <th>Nombre</th>
+                                                                <th>Cantidad De Productos</th>
+                                                                <th>Cant. Minima</th>
+                                                                <th>Cant. Maxima</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                
+                                                            </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -263,7 +291,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                    
+                        </div>
                     </div>
                     <div class="tab-pane" id="tabs-controlstock" role="tabpanel">                        
                         <div class="card">
@@ -510,7 +538,7 @@
                             <th>Merma</th>
                             <th>Cant. Bruta</th>
                             <th>Unid.</th>
-                            <th>Costo</th>
+                            <th>Costo Ingre.</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -521,7 +549,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="BtnRegistrarReceta">Registrar</button>
             </div>
             </div>
         </div>
@@ -547,6 +574,7 @@
 <script src="{{ asset('utilidades/js/categorias.js') }}" defer></script>
 <script src="{{ asset('utilidades/js/categoriasingredientes.js') }}" defer></script>
 <script src="{{ asset('utilidades/js/ingredientes.js') }}" defer></script>
+<script src="{{ asset('utilidades/js/modificador.js') }}" defer></script>
 
 <style>
     .ui-autocomplete {

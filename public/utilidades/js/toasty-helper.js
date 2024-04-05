@@ -37,6 +37,60 @@ function MostrarMensaje(message, status) {
     }).showToast();
 }
 
+function mostrarConfirmacion(message, callback) {
+    const container = document.createElement('div');
+    container.style.display = 'flex'; // Establecer el contenedor como flexbox
+    container.style.flexDirection = 'row'; // Disponer los elementos en una fila
+    container.style.alignItems = 'center'; // Centrar verticalmente los elementos
+
+    const textNode = document.createTextNode(message);
+    container.appendChild(textNode);
+
+    const botonesContainer = document.createElement('div');
+    botonesContainer.style.display = 'flex'; // Establecer contenedor de botones como flexbox
+    botonesContainer.style.marginLeft = '10px'; // Agregar un margen entre el texto y los botones
+
+    const botonSi = document.createElement('button');
+    botonSi.textContent = 'Sí';
+    botonSi.style.backgroundColor = '#2ecc71';
+    botonSi.style.color = '#fff';
+    botonSi.style.border = 'none';
+    botonSi.style.borderRadius = '5px';
+    botonSi.style.padding = '5px 10px';
+    botonSi.style.cursor = 'pointer';
+    botonSi.addEventListener('click', function() {
+        callback(true);
+        toastify.hideToast();
+    });
+
+    const botonNo = document.createElement('button');
+    botonNo.textContent = 'No';
+    botonNo.style.backgroundColor = '#e74c3c';
+    botonNo.style.color = '#fff';
+    botonNo.style.border = 'none';
+    botonNo.style.borderRadius = '5px';
+    botonNo.style.padding = '5px 10px';
+    botonNo.style.cursor = 'pointer';
+    botonNo.style.marginLeft = '10px'; // Agregar margen entre los botones
+    botonNo.addEventListener('click', function() {
+        callback(false);
+        toastify.hideToast();
+    });
+
+    botonesContainer.appendChild(botonSi);
+    botonesContainer.appendChild(botonNo);
+
+    container.appendChild(botonesContainer);
+
+    const toastify = Toastify({
+        node: container,
+        duration: -1,
+        gravity: 'bottom',
+        position: 'right',
+        className: 'toastify',
+    }).showToast();
+}
+
 function getStatusIconClass(status) {
     // Asocia el estado con la clase de icono de FontAwesome
     const iconClasses = {

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('cantidadneta')->nullable();
             $table->string('cantidadbruta')->nullable();
             $table->string('unidad')->nullable();
+            $table->string('costo')->nullable();
 
             $table->unsignedBigInteger('receta_id')->nullable();
             $table->foreign('receta_id')->references('id')->on('recetas')->onDelete('cascade')->nullable();

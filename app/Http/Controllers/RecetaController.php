@@ -31,11 +31,12 @@ class RecetaController extends Controller
                 'cantidadneta' => $ingrediente['cantidadNeta'],
                 'cantidadbruta' => $ingrediente['cantidadBruta'],
                 'unidad' => $ingrediente['unidadNeta'],
+                'costo' => $ingrediente['costoIngrediente'],
                 'receta_id' => $receta->id,
                 'ingrediente_id' => $ingrediente['ingredienteId'],
             ]);
         }
-    
-        return response()->json(['success' => true]);
+        $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas.ingrediente')->where('id',$request->Id)->first();
+        return response()->json($productos);
     }
 }

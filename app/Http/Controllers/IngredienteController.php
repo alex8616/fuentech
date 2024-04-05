@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DetalleReceta;
 use App\Models\Ingrediente;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,27 +59,27 @@ class IngredienteController extends Controller
         //return response()->json($request);
         $data = $request->all();
         $detallereceta = DetalleReceta::find($data['id']);
-        $IdIngre = $detallereceta->ingrediente_id;
-        $ingrediente = Ingrediente::find($IdIngre);
         if ($detallereceta) {
             $detallereceta->cantidadneta = $data['2'];
             $detallereceta->cantidadbruta = $data['cantidadBruta'];
             $detallereceta->unidad = $data['5'];
-            $ingrediente->CostoIngrediente = $data['costoTotal'];
+            $detallereceta->costo = $data['costoTotal'];
             $detallereceta->save();
-            $ingrediente->save();
-            return response()->json(['message' => 'Detalle de receta actualizado correctamente', 'data' => $detallereceta]);
+            $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas.ingrediente')->where('id',$request->producId)->first();
+            return response()->json($productos);
         } else {
             return response()->json(['error' => 'Detalle de receta no encontrado'], 404);
         }
     }
 
     public function EliminarDetalleReceta(Request $request){
+        //return response()->json($request);productoId
         $detalleRecetaId = $request->input('id');
         $detalleReceta = DetalleReceta::find($detalleRecetaId);
         if ($detalleReceta) {
             $detalleReceta->delete();
-            return response()->json(['message' => 'Detalle de receta eliminado correctamente']);
+            $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas.ingrediente')->where('id',$request->producId)->first();
+            return response()->json($productos);
         } else {
             return response()->json(['error' => 'No se encontró el detalle de receta con el ID proporcionado'], 404);
         }
