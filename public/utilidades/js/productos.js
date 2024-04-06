@@ -457,9 +457,7 @@ function InformacionProducto(data){
                 </div>
             </div>
         </div>
-    `;
-
-    actualizarTablaDetallesReceta(data);
+    `;   
         
 
     $('#EditarProducto').on('click', function() {
@@ -721,6 +719,7 @@ function InformacionProducto(data){
 
     });
     
+    actualizarTablaDetallesReceta(data);
     
     $('#editar-receta').off('click').on('click', function() {
         const editarRecetaLink = document.getElementById('editar-receta');
@@ -1316,6 +1315,7 @@ function actualizarTablaDetallesReceta(data) {
         tablaDetalle.style.display = 'none';
         detalleRecetaBody.innerHTML = '<tr><td colspan="5">No se encontraron detalles de receta</td></tr>';
     }
+
 }
 
 function TablaDetalleRecetas(data){

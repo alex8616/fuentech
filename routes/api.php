@@ -14,6 +14,7 @@ use App\Http\Controllers\ProveedoreController;
 use App\Http\Controllers\RepartidoreController;
 use App\Http\Controllers\CategoriaIngredienteController;
 use App\Http\Controllers\IngredienteController;
+use App\Http\Controllers\ModificadoreController;
 use App\Http\Controllers\RecetaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +61,11 @@ Route::post('/eliminar-detallereceta', [IngredienteController::class, 'EliminarD
 
 
 Route::post('/registrar-receta', [RecetaController::class, 'RegistrarReceta'])->middleware('auth');
+
+Route::post('/registrar-modificadore', [ModificadoreController::class, 'RegistrarModificadore'])->middleware('auth');
+Route::get('/get-modificadores', [ModificadoreController::class, 'GetModificadores']);
+Route::get('/get-modificador-seleccionado/{modificador}', [ModificadoreController::class, 'GetModificadorSeleccionado']);
+Route::post('/actualizar-modificador', [ModificadoreController::class, 'ActualizarModificador']);
 
 
 Route::get('/get-cocinas', [CocinaController::class, 'GetCocina']);

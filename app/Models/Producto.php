@@ -57,4 +57,12 @@ class Producto extends Model
     public function receta(){
         return $this->hasMany(Receta::class);
     }
+
+    public function modificadore(){
+        return $this->hasMany(Modificadore::class);
+    }
+
+    public function detallemodificadore(){
+        return $this->hasMany(DetalleModificadore::class);
+    }
 }

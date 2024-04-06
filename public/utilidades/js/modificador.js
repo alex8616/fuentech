@@ -1,5 +1,5 @@
 $(document).ready(function() {  
-    MostrarTablaCategoriaIngrediente();
+    MostrarTablaModificadores();
 
     document.getElementById('addModificador').addEventListener('click', function() {
         cargarCategorias();
@@ -14,19 +14,19 @@ $(document).ready(function() {
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Nombre</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="CategoriaIngredienteNombre" name="CategoriaIngredienteNombre">
+                        <input type="text" class="form-control" id="NombreModificador" name="NombreModificador">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Nombre Publico</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="CategoriaIngredienteNombre" name="CategoriaIngredienteNombre">
+                        <input type="text" class="form-control" id="NombrePublicoModificador" name="NombrePublicoModificador">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Logica Del Precio Final</label>
                         <div class="col">
-                            <select name="logicaPrecioFinal" id="logicaPrecioFinal" class="form-control">
+                            <select name="LogicaPrecioModificador" id="LogicaPrecioModificador" class="form-control">
                                 <option value="Suma">Suma</option>
                                 <option value="Maximo">Maximo</option>
                             </select>
@@ -35,13 +35,13 @@ $(document).ready(function() {
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Cant. Minima</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="CategoriaIngredienteNombre" name="CategoriaIngredienteNombre">
+                        <input type="text" class="form-control" id="CantidadMinimaModificador" name="CantidadMinimaModificador">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Cant. Maxima</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="CategoriaIngredienteNombre" name="CategoriaIngredienteNombre">
+                        <input type="text" class="form-control" id="CantidadMaximaModificador" name="CantidadMaximaModificador">
                         </div>
                     </div>
                 </div>                    
@@ -49,26 +49,39 @@ $(document).ready(function() {
             <div class="card-footer">
                 <div class="d-flex" style="text-align: right">
                     <button type="button" class="btn me-auto">CANCELAR</button>
-                    <button type="button" class="btn btn-primary" id="btn-registrar-ingrediente-categoria">GUARDAR</button>
+                    <button type="button" class="btn btn-primary" id="btn-registrar-modificador">GUARDAR</button>
                 </div>
             </div>
         </form>
         `;
 
-        $('#btn-registrar-ingrediente-categoria').off('click').on('click', function(event) {
-            var Nombre = $("#CategoriaIngredienteNombre").val();
+        $('#btn-registrar-modificador').off('click').on('click', function(event) {
+            var Nombre = $("#NombreModificador").val();
+            var NombrePublic = $("#NombrePublicoModificador").val();
+            var Logica = $("#LogicaPrecioModificador").val();
+            var CantMin = $("#CantidadMinimaModificador").val();
+            var CantMax = $("#CantidadMaximaModificador").val();
+        
             var formData = new FormData();
             formData.append('Nombre', Nombre);
+            formData.append('NombrePublic', NombrePublic);
+            formData.append('Logica', Logica);
+            formData.append('CantMin', CantMin);
+            formData.append('CantMax', CantMax);
+        
             $.ajax({
-                url: '/api/registrar-ingrediente-categoria',
+                url: '/api/registrar-modificadore',
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false, 
-                success: function (categoria) {
-                    MostrarTablaCategoriaIngrediente();
+                success: function (modificadore) {
                     MostrarMensaje("Creado Exitosamente", "success");
-                    $("#CategoriaIngredienteNombre").val("");
+                    $("#NombreModificador").val("");
+                    $("#NombrePublicoModificador").val("");
+                    $("#LogicaPrecioModificador").val("");
+                    $("#CantidadMinimaModificador").val("");
+                    $("#CantidadMaximaModificador").val("");
                 },
                 error: function (error) {
                     console.error('Error al registrar:', error);
@@ -79,33 +92,34 @@ $(document).ready(function() {
     });
 });
 
-function MostrarTablaCategoriaIngrediente(){        
+function MostrarTablaModificadores(){        
     $.ajax({
-        url: 'api/get-categoria-ingredientes',
+        url: 'api/get-modificadores',
         type: 'GET',
         dataType: 'json',
-        success: function(categorias) {
-            if (categorias.length > 0) {
-                actualizarCategoriaTabla();
-                function actualizarCategoriaTabla() {
-                    var tablaCategorias = $('#tabla-categoria-ingredientes tbody');
-                    tablaCategorias.empty();
-                    $.each(categorias, function(index, categoria) {
-                        var filaCategoria = '<tr class="categoria-fila-ingrediente" data-categoria-id="' + categoria.id + '">' +
-                                                '<td>' + categoria.NombreCategoria + '</td>' +
-                                                '<td style="font-weight: bold; padding-left: 40px">' + categoria.ingredientes_count + '</td>' +
-                                                '<td style="font-weight: bold;"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg></td>' +
+        success: function(modificadores) {
+            if (modificadores.length > 0) {
+                actualizarModificadorTabla();
+                function actualizarModificadorTabla() {
+                    var tablamodificadores = $('#tabla-modificadores tbody');
+                    tablamodificadores.empty();
+                    $.each(modificadores, function(index, modificadore) {
+                        var filamodificadore = '<tr class="modificador-fila" data-modificador-id="' + modificadore.id + '">' +
+                                                '<td>' + modificadore.NombreModificador + '</td>' +
+                                                '<td style="font-weight: bold; padding-left: 40px">' + modificadore.detallemodificador_count + '</td>' +
+                                                '<td style="font-weight: bold; padding-left: 40px">' + modificadore.CantidadMinimaModificador + '</td>' +
+                                                '<td style="font-weight: bold; padding-left: 40px">' + modificadore.CantidadMaximaModificador + '</td>' +
                                             '</tr>';
-                        tablaCategorias.append(filaCategoria);
+                                            tablamodificadores.append(filamodificadore);
                         });
 
 
-                    $('.categoria-fila-ingrediente').on('click', function() {
-                        $('.categoria-fila-ingrediente').removeClass('seleccionado');
+                    $('.modificador-fila').on('click', function() {
+                        $('.modificador-fila').removeClass('seleccionado');
                         $(this).addClass('seleccionado');
-                        var categoriaID = $(this).data('categoria-id');
+                        var modificadorID = $(this).data('modificador-id');
                         $.ajax({
-                            url: '/api/get-categoria-ingredientes-seleccionado/' + categoriaID,
+                            url: '/api/get-modificador-seleccionado/' + modificadorID,
                             type: 'GET',
                             dataType: 'json',
                             success: function(data) {
@@ -114,9 +128,9 @@ function MostrarTablaCategoriaIngrediente(){
                                 CategoriaDivs.innerHTML = `
                                 <form id="form-register-product">
                                     <div class="card-header">
-                                        <h3 class="card-title">${data.NombreCategoria}</h3>
+                                        <h3 class="card-title">${data.NombreModificador}</h3>
                                         <div class="card-actions">
-                                        <a href="#" class="btn" data-categoria-id="${data.id}" id="EditarCategoriaIngrediente">
+                                        <a href="#" class="btn" data-modificador-id="${data.id}" id="EditarModificador">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
                                         </a>
                                         </div>
@@ -126,57 +140,187 @@ function MostrarTablaCategoriaIngrediente(){
                                             <div class="mb-12 row">
                                                 <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.NombreCategoria}</label>
+                                                <label class="col-9 col-form-label">${data.NombreModificador}</label>
                                                 </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-3 col-form-label" style="font-weight: bold;">Nombre Publico</label>
+                                                <div class="col">
+                                                <label class="col-9 col-form-label">${data.NombrePublicoModificador}</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-3 col-form-label" style="font-weight: bold;">Logica De Precio Final</label>
+                                                <div class="col">
+                                                <label class="col-9 col-form-label">${data.LogicaPrecioModificador}</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-3 col-form-label" style="font-weight: bold;">Cant. Minima</label>
+                                                <div class="col">
+                                                <label class="col-9 col-form-label">${data.CantidadMinimaModificador}</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-3 col-form-label" style="font-weight: bold;">Cant. Maxima</label>
+                                                <div class="col">
+                                                <label class="col-9 col-form-label">${data.CantidadMaximaModificador}</label>
+                                                </div>
+                                            </div>
+                                            <div class="row justify-content-end">
+                                                <div class="col-auto">
+                                                    <button  type="button" class="btn btn-outline-dark" data-selectmodificador-id="${data.id}" id="btn-add-producto">Agregar Productos</button>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row" id="DivProductModificar" style="display: none">
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" id="UpdateNombreModificador" name="UpdateNombreModificador">
+                                                    </div>
+                                                </div><br>
                                             </div>
                                         </div>                    
                                     </div>
                                 </form>
                                 `;
 
-                                $('#EditarCategoriaIngrediente').off('click').on('click', function(event) {
-                                    var id = this.getAttribute('data-categoria-id');
-                                    var CategoriaDivs = document.getElementById('form_tabs');
-                                    CategoriaDivs.innerHTML = ``;
-                                    CategoriaDivs.innerHTML = `
+                                
+                                $('#btn-add-producto').off('click').on('click', function(event) {
+                                    var id = this.getAttribute('data-selectmodificador-id');
+                                    const divproduct = document.getElementById('DivProductModificar');
+                                    divproduct.style.display = 'block';
+                                    alert("El IDD es "+id)
+
+                                    var DivProductos = document.getElementById('DivProductModificar');
+                                    DivProductos.innerHTML = ``;
+                                    DivProductos.innerHTML = `
                                     <form id="form-register-product">
                                         <div class="card-header">
-                                            <h3 class="card-title">Editando ${data.NombreCategoria}</h3>
+                                            <h3 class="card-title">PRODUCTOS MODIFICADORES</h3>
                                         </div>
                                         <div class="card-body">
                                             <div class="card-body">
                                                 <div class="mb-12 row">
-                                                    <label class="col-4 col-form-label" style="font-weight: bold;">Nombre</label>
                                                     <div class="col">
-                                                        <input type="text" class="form-control" id="UpdateNombre_categoriaIngrediente" name="UpdateNombre_categoriaIngrediente" value="${data.NombreCategoria}">
+                                                        <input type="text" class="form-control" id="SeachProductoModificador" name="SeachProductoModificador" placeholder="Buscar Producto . . .">
                                                     </div>
-                                                </div><br>                                            
+                                                </div><br>
+                                                <div id="contenedor-product">
+                                                </div>
                                             </div>                    
                                         </div>
                                         <div class="card-footer">
                                             <div class="d-flex" style="text-align: right">
-                                                <button type="button" class="btn me-auto">CANCELAR</button>
-                                                <button type="button" class="btn btn-primary" id="btn-actualizar-categoria-ingrediente">ACTUALIZAR</button>
+                                                <button type="button" class="btn me-auto" id="btn-cancelar-modificador-producto">CANCELAR</button>
+                                                <button type="button" class="btn btn-primary" id="btn-registrar-modificador-producto">Guardar</button>
                                             </div>
                                         </div>
                                     </form>
                                     `;
 
-                                    $('#btn-actualizar-categoria-ingrediente').off('click').on('click', function(event) {
-                                        var EditNombre = $("#UpdateNombre_categoriaIngrediente").val();
+                                    var productId = button.data('selectproduct-id');
+                                    $.ajax({
+                                        url: '/api/get-productos',
+                                        method: 'GET',
+                                        success: function(data) {
+                                            $("#SeachProductoModificador").autocomplete({
+                                                AddDivProduct(ingredienteSeleccionado,productId);
+                                            });
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error("Error al obtener las opciones:", error);
+                                        }
+                                    });
+                                    
+                                    $('#btn-cancelar-modificador-producto').off('click').on('click', function(event) {
+                                        var id = this.getAttribute('data-selectmodificador-id');
+                                        const divproduct = document.getElementById('DivProductModificar');
+                                        divproduct.style.display = 'none';
+                                    });
+                                });
+
+                                $('#EditarModificador').off('click').on('click', function(event) {
+                                    var id = this.getAttribute('data-modificador-id');
+                                    var CategoriaDivs = document.getElementById('form_tabs');
+                                    CategoriaDivs.innerHTML = ``;
+                                    CategoriaDivs.innerHTML = `
+                                    <form id="form-register-product">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Editando ${data.NombreModificador}</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="card-body">
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" id="UpdateNombreModificador" name="UpdateNombreModificador" value="${data.NombreModificador}">
+                                                    </div>
+                                                </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Nombre Publico</label>
+                                                    <div class="col">
+                                                    <input type="text" class="form-control" id="UpdateNombrePublicoModificador" name="UpdateNombrePublicoModificador" value="${data.NombrePublicoModificador}">
+                                                    </div>
+                                                </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Logica De Precio Final</label>
+                                                    <div class="col">
+                                                    <select id="UpdateLogicaPrecioModificador" name="UpdateLogicaPrecioModificador" class="form-control">
+                                                        <option value="Suma">Suma</option>
+                                                        <option value="Maximo">Maximo</option>
+                                                    </select>
+                                                    </div>
+                                                </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Cant. Minima</label>
+                                                    <div class="col">
+                                                    <input type="text" class="form-control" id="UpdateCantidadMinimaModificador" name="UpdateCantidadMinimaModificador" value="${data.CantidadMinimaModificador}">
+                                                    </div>
+                                                </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-3 col-form-label" style="font-weight: bold;">Cant. Maxima</label>
+                                                    <div class="col">
+                                                    <input type="text" class="form-control" id="UpdateCantidadMaximaModificador" name="UpdateCantidadMaximaModificador" value="${data.CantidadMaximaModificador}">
+                                                    </div>
+                                                </div><br>                                                
+                                            </div>                    
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex" style="text-align: right">
+                                                <button type="button" class="btn me-auto">CANCELAR</button>
+                                                <button type="button" class="btn btn-primary" id="btn-actualizar-modificador">ACTUALIZAR</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    `;
+
+                                    var logico = `${data.LogicaPrecioModificador}`;
+                                    $('#UpdateLogicaPrecioModificador').val(logico).change();
+
+                                    $('#btn-actualizar-modificador').off('click').on('click', function(event) {
+                                        var NombreModificador = $("#UpdateNombreModificador").val();
+                                        var NombrePublicoModificador = $("#UpdateNombrePublicoModificador").val();
+                                        var LogicaPrecioModificador = $("#UpdateLogicaPrecioModificador").val();
+                                        var CantidadMinimaModificador = $("#UpdateCantidadMinimaModificador").val();
+                                        var CantidadMaximaModificador = $("#UpdateCantidadMaximaModificador").val();
 
                                         var datosRecogidos = {
                                             id: id,
-                                            nombre: EditNombre,
+                                            nombre: NombreModificador,
+                                            nombrepublic: NombrePublicoModificador,
+                                            logica: LogicaPrecioModificador,
+                                            cantmin: CantidadMinimaModificador,
+                                            cantmax: CantidadMaximaModificador,
                                         };
 
                                         $.ajax({
-                                            url: '/api/actualizar-categoria-ingrediente/',
+                                            url: '/api/actualizar-modificador/',
                                             type: 'POST',
                                             data: datosRecogidos,
-                                            success: function (producto) {
+                                            success: function (modificador) {
                                                 CanvasTime();
-                                                MostrarTablaCategoriaIngrediente();
+                                                MostrarTablaModificadores();
                                                 MostrarMensaje("Se Actualizo La Categoria Exitosamente", "success");
                                             },
                                             error: function (error) {
@@ -184,7 +328,7 @@ function MostrarTablaCategoriaIngrediente(){
                                             }
                                         });
                                     });
-                                });                                                                                                        
+                                });
                                 
                             },
                             error: function(error) {
@@ -192,25 +336,11 @@ function MostrarTablaCategoriaIngrediente(){
                             }
                         });
                     });
-
-                    $('#SearchProduct').on('input', function() {
-                        var searchText = $(this).val().toLowerCase();
-                        $('#tabla-categorias tbody tr').each(function() {
-                            var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                            var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                            var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                            if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
-                }                    
+                }
             } else {
-                var tablaCategorias = $('#tabla-productos tbody');
-                tablaCategorias.empty();
-                tablaCategorias.append('<tr>' +
+                var tablamodificadores = $('#tabla-modificadores tbody');
+                tablamodificadores.empty();
+                tablamodificadores.append('<tr>' +
                 '<td colspan="5" style="text-align: center">LA CATEGORIA NO TIENE REGISTROS AUN</td>' +
                 '</tr>');
             }
@@ -219,4 +349,32 @@ function MostrarTablaCategoriaIngrediente(){
             console.error('Error al recuperar datos:', error);
         }
     });  
+}
+
+function AddDivProduct(ingredienteSeleccionado, productId) {
+    var divIngrediente = `
+    <br><div class="row row-cards">
+            <div class="col-md-12">
+                <div class="mb-3 d-flex align-items-center">
+                    <label class="form-label" style="font-weight: bold">Ingrediente</label>
+                    <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
+                    <span id="RecuperarNombreIngrediente" class="me-2">${ingredienteSeleccionado.NombreIngrediente}</span>
+                    <span class="me-2">Bs</span>
+                    <input type="text" class="form-control me-2" id="Costo">
+                    <span class="me-2">Bs</span>
+                    <input type="text" class="form-control" id="CantiMax">
+                </div>
+            </div>
+        </div>
+    `;
+
+    $("#contenedor-product").append(divIngrediente);
+
+    $('#contenedor-ingrediente').off('change', '.row-cards').on('change', '.row-cards', calcularCantidadBrutaYTotal);
+
+    calcularCantidadBrutaYTotal({ target: $('#contenedor-ingrediente').children().last().find('#CantidadNeta')[0] });
+
+    $('#contenedor-ingrediente').on('click', '#EliminarFila', function() {
+        $(this).closest('.row-cards').remove();
+    });
 }

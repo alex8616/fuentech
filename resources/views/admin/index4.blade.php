@@ -178,7 +178,7 @@
                                             <div class="col-12 col-sm-12" style="background: white; padding-top: 10px; padding-bottom: 10px">
                                                 <div id="lista_categorias">
                                                     <div class="card">
-                                                        <div class="table-responsive" id="tabla-categoria-ingredientes">
+                                                        <div class="table-responsive" id="tabla-modificadores">
                                                             <table class="table table-vcenter card-table">
                                                             <thead>
                                                                 <tr>
