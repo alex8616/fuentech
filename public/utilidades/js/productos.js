@@ -453,7 +453,7 @@ function InformacionProducto(data){
                                 </tfoot>
                             </table>
                         </div>
-                    </div>                                     
+                    </div>
                 </div>
             </div>
         </div>
@@ -864,7 +864,6 @@ function InformacionProducto(data){
                         }                        
                     });                                    
                 });
-                
                 
             },
             error: function(error) {

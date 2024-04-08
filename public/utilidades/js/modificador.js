@@ -179,19 +179,150 @@ function MostrarTablaModificadores(){
                                                         <input type="text" class="form-control" id="UpdateNombreModificador" name="UpdateNombreModificador">
                                                     </div>
                                                 </div><br>
+                                            </div><br>
+                                            <div class="mb-12 row" id="divproductmodificadores" style="display: none">
+                                                <div class="card-header" style="background-color: #1d2736;">
+                                                    <h3 class="card-title" style="color: white">PRODUCTOS MODIFICADORES</h3>
+                                                </div>
+                                                <div class="table-responsive" id="TableDetalleModificador">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Producto</th> 
+                                                                <th>Costo</th> 
+                                                                <th>Maximo</th> 
+                                                                <th></th> 
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="detalleModificadorBody">
+                                                            <!-- Aquí se llenarán los detalles de la receta -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-                                        </div>                    
+                                            <div class="mb-12 row" id="divasociado" style="display: none">
+                                                <div class="card-header" style="background-color: #1d2736">
+                                                    <h3 class="card-title" style="color: white">PRODUCTOS ASOCIADOS</h3>
+                                                </div>
+                                                <div class="table-responsive" id="TableModificadorAsociado">
+                                                    <table class="table table-striped">
+                                                        <tbody id="ModificadorAsociadoBody">
+                                                            <!-- Aquí se llenarán los detalles de la receta -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                                 `;
 
+                                TablaDetalleModificador(data)
+                                TablaModificadorAsociado(modificadorID) 
+
+                                $('#detalleModificadorBody').off('click', '#EditarDetalleModificador').on('click', '#EditarDetalleModificador', function() {
+                                    const row = this.closest('tr');
+                                    const cells = row.querySelectorAll('td');
+                                                    
+                                    cells.forEach(cell => {
+                                        if(cell.classList.contains('editable-cell')) { 
+                                            const costoIngrediente = parseFloat(row.querySelector('td:nth-child(4)').textContent.trim());
+                                            const oldValue = cell.textContent.trim();
+                                            const input = document.createElement('input');
+                                            input.setAttribute('type', 'text');
+                                            input.setAttribute('value', oldValue);
+                                            input.classList.add('form-control');
                                 
+                                            input.addEventListener('input', function() {
+                                                const cantidadNeta = parseFloat(this.value);
+                                                const cantidadIngrediente = parseFloat(row.querySelector('td:nth-child(4)').textContent.trim());
+                                                const cantidadBruta = cantidadNeta * cantidadIngrediente; // Multiplicar por la cantidad de ingrediente
+                                                const cantidadBrutaCell = row.querySelector('.editable-cell:nth-child(5)');
+                                                cantidadBrutaCell.textContent = cantidadBruta.toFixed(2);
+                                            });
+                                
+                                            const cellWidth = cell.getBoundingClientRect().width;
+                                            input.style.width = cellWidth + 'px';
+                                
+                                            cell.innerHTML = '';
+                                            cell.appendChild(input);
+                                
+                                            input.classList.add('editable-cell');
+                                            input.classList.add('editable-cell-input');
+                                            input.dataset.oldValue = oldValue;
+                                        }
+                                    });
+                                
+                                    $(this).text('G');
+                                    $(this).attr('id', 'GuardarDetalleModificador');
+                                    $(this).removeClass('text-green').addClass('text-blue');
+                                
+                                    $(row).find('#EliminarDetalleModificador').hide();
+                                });
+                                                                
+                                $('#detalleModificadorBody').off('click', '#GuardarDetalleModificador').on('click', '#GuardarDetalleModificador', function(event) {
+                                    event.preventDefault();
+                                    const row = $(this).closest('tr');
+                                    const rowIdCell = row.find('td:first-child');
+                                    const rowId = rowIdCell.text().trim();
+                                    
+                                    const newData = {
+                                        modificadorId: modificadorID,
+                                        id: rowId,
+                                        costo: parseFloat(row.find('.editable-cell:nth-child(3)').find('input').val().trim()), 
+                                        maximo: parseFloat(row.find('.editable-cell:nth-child(4)').find('input').val().trim()) 
+                                    };
+                                    
+                                    $.ajax({
+                                        url: '/api/actualizar-detallemodificar',
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        data: newData,
+                                        success: function(response) {
+                                            TablaDetalleModificador(response)
+                                            MostrarMensaje("Actualizado Exitosamente","success");
+                                        },
+                                        error: function(error) {
+                                            console.error('Error al actualizar los datos:', error);
+                                        }
+                                    });
+                                    
+                                    $(this).text('E');
+                                    $(this).attr('id', 'EditarDetalleModificador');
+                                    $(this).removeClass('text-blue').addClass('text-green');
+                                    
+                                    row.find('#EliminarDetalleModificador').show();
+                                });
+                                
+                                $('#detalleModificadorBody').off('click', '#EliminarDetalleModificador').on('click', '#EliminarDetalleModificador', function(event) {
+                                    event.preventDefault(); 
+                                    var $this = $(this);
+                                    mostrarConfirmacion("¿Estás seguro de que deseas realizar esta acción?", function(esConfirmado) {
+                                        if (esConfirmado) {
+                                            const rowId = $this.closest('tr').find('td:first-child').text().trim(); 
+                                            $.ajax({
+                                                url: '/api/eliminar-detallemodificador',
+                                                type: 'POST',
+                                                dataType: 'json',
+                                                data: { id: rowId, modificadorId: modificadorID},
+                                                success: function(response) {
+                                                    TablaDetalleModificador(response)
+                                                    MostrarMensaje("Eliminado Exitosamente","success");
+                                                },
+                                                error: function(error) {
+                                                    console.error('Error al eliminar el detalle de receta:', error);
+                                                }
+                                            });
+                                        } else {
+                                            console.log("La acción ha sido cancelada.");
+                                        }                        
+                                    });                                    
+                                });
+
                                 $('#btn-add-producto').off('click').on('click', function(event) {
-                                    var id = this.getAttribute('data-selectmodificador-id');
+                                    var idmodificador = this.getAttribute('data-selectmodificador-id');
                                     const divproduct = document.getElementById('DivProductModificar');
                                     divproduct.style.display = 'block';
-                                    alert("El IDD es "+id)
-
                                     var DivProductos = document.getElementById('DivProductModificar');
                                     DivProductos.innerHTML = ``;
                                     DivProductos.innerHTML = `
@@ -199,37 +330,54 @@ function MostrarTablaModificadores(){
                                         <div class="card-header">
                                             <h3 class="card-title">PRODUCTOS MODIFICADORES</h3>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="card-body">
-                                                <div class="mb-12 row">
-                                                    <div class="col">
-                                                        <input type="text" class="form-control" id="SeachProductoModificador" name="SeachProductoModificador" placeholder="Buscar Producto . . .">
-                                                    </div>
-                                                </div><br>
-                                                <div id="contenedor-product">
+                                        <div class="card-body" style="margin: 0px">
+                                            <div class="mb-12 row" style="margin: 0px">
+                                                <div class="col" style="margin: 0px">
+                                                    <input type="text" class="form-control" id="SearchProductoModificador" name="SearchProductoModificador" placeholder="Buscar Producto...">
                                                 </div>
-                                            </div>                    
-                                        </div>
-                                        <div class="card-footer">
-                                            <div class="d-flex" style="text-align: right">
-                                                <button type="button" class="btn me-auto" id="btn-cancelar-modificador-producto">CANCELAR</button>
-                                                <button type="button" class="btn btn-primary" id="btn-registrar-modificador-producto">Guardar</button>
+                                            </div><br>
+                                            <div id="contenedor-product">                                            
                                             </div>
-                                        </div>
+                                            <div class="card-footer">
+                                                <div class="d-flex" style="text-align: right">
+                                                    <button type="button" class="btn me-auto" id="btn-cancelar-modificador-producto">CANCELAR</button>
+                                                    <button type="button" class="btn btn-primary" id="btn-registrar-modificador-producto">Guardar</button>
+                                                </div>
+                                            </div>
+                                        </div>                                        
                                     </form>
                                     `;
 
-                                    var productId = button.data('selectproduct-id');
-                                    $.ajax({
-                                        url: '/api/get-productos',
-                                        method: 'GET',
-                                        success: function(data) {
-                                            
+                                    $("#SearchProductoModificador").autocomplete({
+                                        source: function(request, response) {
+                                            $.ajax({
+                                                url: "/api/get-productos-autocompleta",
+                                                type: "GET",
+                                                dataType: "json",
+                                                data: {
+                                                    term: request.term
+                                                },
+                                                success: function(data) {
+                                                    var productos = data.map(function(producto) {
+                                                        return {
+                                                            label: producto.NombreProducto,
+                                                            value: producto.NombreProducto,
+                                                            id: producto.id,
+                                                            PrecioProducto: producto.PrecioProducto,
+                                                            CostoProducto: producto.CostoProducto
+                                                        };
+                                                    });
+                                                    response(productos);
+                                                }
+                                            });
                                         },
-                                        error: function(xhr, status, error) {
-                                            console.error("Error al obtener las opciones:", error);
-                                        }
+                                        select: function(event, ui) {
+                                            var producto = ui.item;
+                                            AddDivProduct(producto,idmodificador);
+                                        },
+                                        minLength: 2
                                     });
+                                    
                                     
                                     $('#btn-cancelar-modificador-producto').off('click').on('click', function(event) {
                                         var id = this.getAttribute('data-selectmodificador-id');
@@ -349,41 +497,140 @@ function MostrarTablaModificadores(){
     });  
 }
 
-function AddDivProduct(ingredienteSeleccionado, productId) {
+
+function AddDivProduct(producto,idmodificador) {
     var divIngrediente = `
-    <div class="row row-cards">
-        <div class="col-md-12">
-            <div class="d-flex align-items-center">
-                <div class="mb-3 row" style="width: 35%; margin: 8px;">
-                    <label class="col-12 col-form-label" id="RecuperarNombreIngrediente">xxx xx x</label>
-                </div>
-                <div class="mb-3 row" style="width: 30%; margin: 8px;">
-                    <label class="col-4 col-form-label">Bs.</label>
-                    <div class="col">
-                    <input type="text" class="form-control"  id="Costo">
+        <div class="row row-cards">
+            <div class="col-md-12">
+                <div class="d-flex align-items-center">
+                    <div class="mb-3 row" style="width: 35%; margin: 8px;">
+                        <input type="text" class="form-control" id="IdProducto" value="${producto.id}" hidden>
+                        <label class="col-12 col-form-label" id="RecuperarNombreIngrediente">${producto.label}</label>
                     </div>
-                </div>
-                <div class="mb-3 row" style="width: 30%; margin: 8px;">
-                    <label class="col-5 col-form-label">Max.</label>
-                    <div class="col">
-                    <input type="text" class="form-control"  id="CantiMax">
+                    <div class="mb-3 row" style="width: 30%; margin: 8px;">
+                        <label class="col-4 col-form-label">Bs.</label>
+                        <div class="col">
+                            <input type="text" class="form-control" id="Costo" value="${producto.CostoProducto}">
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3 row" style="width: 5%; margin: 8px;">
-                <span class="badge badge-outline text-red">X</span>
+                    <div class="mb-3 row" style="width: 30%; margin: 8px;">
+                        <label class="col-5 col-form-label">Max.</label>
+                        <div class="col">
+                            <input type="text" class="form-control" id="CantiMax">
+                        </div>
+                    </div>
+                    <div class="mb-3 row" style="width: 5%; margin: 8px;">
+                        <span class="badge badge-outline text-red">X</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     `;
 
     $("#contenedor-product").append(divIngrediente);
 
-    $('#contenedor-ingrediente').off('change', '.row-cards').on('change', '.row-cards', calcularCantidadBrutaYTotal);
+    $("#btn-registrar-modificador-producto").off("click").on("click", function() {        
+        var productos = [];
+        var IdRecuperado = idmodificador
 
-    calcularCantidadBrutaYTotal({ target: $('#contenedor-ingrediente').children().last().find('#CantidadNeta')[0] });
+        $(".row-cards").each(function() {
+            var Id = $(this).find("#IdProducto").val();
+            var nombreIngrediente = $(this).find("#RecuperarNombreIngrediente").text();
+            var costo = $(this).find("#Costo").val();
+            var cantidadMax = $(this).find("#CantiMax").val();
+    
+            var producto = {
+                id: Id,
+                nombreIngrediente: nombreIngrediente,
+                costo: costo,
+                cantidadMax: cantidadMax
+            };
+            productos.push(producto);
+        });
 
-    $('#contenedor-ingrediente').on('click', '#EliminarFila', function() {
-        $(this).closest('.row-cards').remove();
+        var data = {
+            idModificador: IdRecuperado,
+            productos: productos
+        };
+        $.ajax({
+            url: '/api/registrar-detalle-modificador',
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function(response) {
+                const DivProductos = document.getElementById('DivProductModificar');
+                DivProductos.style.display = 'none';
+                DivProductos.innerHTML = ``;
+                TablaDetalleModificador(response)
+                MostrarMensaje("Agregado Exitosamente","success")
+            },
+            error: function(error) {
+                console.error('Error en la solicitud:', error);
+            }
+        });
+    });
+    
+}
+
+function TablaDetalleModificador(data) {
+    const exite =  document.getElementById('divproductmodificadores');
+    const tableBody = document.getElementById('detalleModificadorBody');
+    tableBody.innerHTML = '';
+    const detallemodi = data.detallemodificador;
+
+    if (detallemodi.length > 0) {
+        exite.style.display = 'block';
+        detallemodi.forEach(detalle => {
+            const row = `
+                <tr>
+                    <td hidden>${detalle.id}</td>
+                    <td>${detalle.producto ? detalle.producto.NombreProducto : 'N/A'}</td>
+                    <td class="editable-cell" style="font-weight: bold;">${detalle.CostoDetalleModificador}</td>
+                    <td class="editable-cell">${detalle.MaximoDetalleModificador}</td>
+                    <td>
+                        <span class="badge badge-outline text-green" id="EditarDetalleModificador">E</span>
+                        <span class="badge badge-outline text-red" id="EliminarDetalleModificador">X</span>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    } else {
+        exite.style.display = 'none';
+        const row = `
+            <tr>
+                <td colspan="5">No hay detalles de modificador disponibles</td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    }
+}
+
+function TablaModificadorAsociado(modificadorID) {
+    const exiteasociado =  document.getElementById('divasociado');
+    const tableBodyAsociado = document.getElementById('ModificadorAsociadoBody');
+    tableBodyAsociado.innerHTML = '';
+    
+    $.ajax({
+        url: '/api/get-producto-asociado/'+modificadorID,
+        type: 'get',
+        dataType: 'json',
+        success: function(data) {
+            if (data.producto && data.producto.length > 0) {
+                exiteasociado.style.display = 'block';
+                data.producto.forEach(producto => {
+                    const row = `<tr><td>${producto.NombreProducto}</td></tr>`;
+                    tableBodyAsociado.innerHTML += row;
+                });
+            } else {
+                exiteasociado.style.display = 'none';
+                const row = `<tr><td colspan="1">No hay productos asociados</td></tr>`;
+                tableBodyAsociado.innerHTML += row;
+            }
+        },
+        error: function(error) {
+            console.error('Error en la solicitud:', error);
+        }
     });
 }
+

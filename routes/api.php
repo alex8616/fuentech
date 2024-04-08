@@ -35,6 +35,7 @@ Route::post('/actualizar-producto', [ProductoController::class, 'ActualizarProdu
 Route::get('/get-productos-subcategoria/{subcategoria}', [ProductoController::class, 'GetProductoSubCategoria']);
 Route::get('/get-productos-stock', [ProductoController::class, 'GetProductoStock']);
 Route::post('/actualizar-producto-stock', [ProductoController::class, 'ActualizarProductoStock']);
+Route::get('/get-productos-autocompleta', [ProductoController::class, 'getProductosAutoCompleta']);
 
 Route::get('/get-categorias', [CategoriaController::class, 'GetCategoria']);
 Route::get('/get-subcategorias/{id}', [CategoriaController::class, 'GetSubCategoria']);
@@ -66,6 +67,10 @@ Route::post('/registrar-modificadore', [ModificadoreController::class, 'Registra
 Route::get('/get-modificadores', [ModificadoreController::class, 'GetModificadores']);
 Route::get('/get-modificador-seleccionado/{modificador}', [ModificadoreController::class, 'GetModificadorSeleccionado']);
 Route::post('/actualizar-modificador', [ModificadoreController::class, 'ActualizarModificador']);
+Route::post('/registrar-detalle-modificador', [ModificadoreController::class, 'RegistrarDetalleModificador'])->middleware('auth');
+Route::post('/actualizar-detallemodificar', [ModificadoreController::class, 'ActualizarDetalleModificador']);
+Route::post('/eliminar-detallemodificador', [ModificadoreController::class, 'EliminarDetalleModificador']);
+Route::get('/get-producto-asociado/{id}', [ModificadoreController::class, 'GetProductoAsociado']);
 
 
 Route::get('/get-cocinas', [CocinaController::class, 'GetCocina']);

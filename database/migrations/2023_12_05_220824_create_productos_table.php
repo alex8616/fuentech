@@ -25,6 +25,9 @@ return new class extends Migration
 
             $table->enum('FavoritoProducto', ['true', 'false'])->default('false')->nullable();
 
+            $table->unsignedBigInteger('modificadore_id')->nullable();
+            $table->foreign('modificadore_id')->references('id')->on('modificadores')->onDelete('cascade')->nullable();
+            
             $table->unsignedBigInteger('proveedor_id')->nullable();
             $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete('cascade')->nullable();
 

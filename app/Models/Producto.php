@@ -24,6 +24,7 @@ class Producto extends Model
         'ComentarioStock',
         'MinimoStock',
         'proveedor_id',
+        'modificadore_id',
         'categoria_id',
         'sub_categoria_id',
         'empresa_id',
@@ -59,7 +60,7 @@ class Producto extends Model
     }
 
     public function modificadore(){
-        return $this->hasMany(Modificadore::class);
+        return $this->belongsTo(Modificadore::class);
     }
 
     public function detallemodificadore(){

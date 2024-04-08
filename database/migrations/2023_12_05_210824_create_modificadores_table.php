@@ -16,9 +16,6 @@ return new class extends Migration
             $table->string('LogicaPrecioModificador')->nullable();
             $table->integer('CantidadMinimaModificador')->nullable();
             $table->integer('CantidadMaximaModificador')->nullable();
-
-            $table->unsignedBigInteger('producto_id')->nullable();
-            $table->foreign('producto_id')->references('id')->on('productos')->onDelete('cascade')->nullable();
             $table->timestamps();
         });
     }

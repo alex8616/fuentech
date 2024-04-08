@@ -14,14 +14,13 @@ class Modificadore extends Model
         'LogicaPrecioModificador',
         'CantidadMinimaModificador',
         'CantidadMaximaModificador',
-        'producto_id'
     ];
 
     public function detallemodificador(){
         return $this->hasMany(DetalleModificadore::class);
     }
-
+    
     public function producto(){
-        return $this->belongsTo(Producto::class);
+        return $this->hasMany(producto::class);
     }
 }

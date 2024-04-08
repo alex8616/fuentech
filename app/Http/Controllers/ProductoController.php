@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class ProductoController extends Controller
 {
     public function GetProducto(){
-        $productos = Producto::get();
+        $productos = Producto::with('modificadore')->get();
         return response()->json($productos);
     }
     public function GetProductoStock(){
@@ -30,7 +30,7 @@ class ProductoController extends Controller
     }
 
     public function GetProductoSeleccionado($producto){
-        $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas.ingrediente')->where('id',$producto)->first();
+        $productos = Producto::with('categoria','categoria.subcategorias','proveedor','receta.detallerecetas.ingrediente','modificadore.detallemodificador')->where('id',$producto)->first();
         return response()->json($productos);
     }
 
@@ -135,4 +135,11 @@ class ProductoController extends Controller
         $producto->save();
         return response()->json($stockdate);
     }
+
+    public function getProductosAutoCompleta(Request $request) {
+        $term = $request->query('term');
+        $productos = Producto::where('NombreProducto', 'like', '%'.$term.'%')->get();
+        return response()->json($productos);
+    }
+    
 }
