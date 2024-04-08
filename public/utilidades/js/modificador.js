@@ -224,9 +224,7 @@ function MostrarTablaModificadores(){
                                         url: '/api/get-productos',
                                         method: 'GET',
                                         success: function(data) {
-                                            $("#SeachProductoModificador").autocomplete({
-                                                AddDivProduct(ingredienteSeleccionado,productId);
-                                            });
+                                            
                                         },
                                         error: function(xhr, status, error) {
                                             console.error("Error al obtener las opciones:", error);
@@ -353,19 +351,30 @@ function MostrarTablaModificadores(){
 
 function AddDivProduct(ingredienteSeleccionado, productId) {
     var divIngrediente = `
-    <br><div class="row row-cards">
-            <div class="col-md-12">
-                <div class="mb-3 d-flex align-items-center">
-                    <label class="form-label" style="font-weight: bold">Ingrediente</label>
-                    <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
-                    <span id="RecuperarNombreIngrediente" class="me-2">${ingredienteSeleccionado.NombreIngrediente}</span>
-                    <span class="me-2">Bs</span>
-                    <input type="text" class="form-control me-2" id="Costo">
-                    <span class="me-2">Bs</span>
-                    <input type="text" class="form-control" id="CantiMax">
+    <div class="row row-cards">
+        <div class="col-md-12">
+            <div class="d-flex align-items-center">
+                <div class="mb-3 row" style="width: 35%; margin: 8px;">
+                    <label class="col-12 col-form-label" id="RecuperarNombreIngrediente">xxx xx x</label>
+                </div>
+                <div class="mb-3 row" style="width: 30%; margin: 8px;">
+                    <label class="col-4 col-form-label">Bs.</label>
+                    <div class="col">
+                    <input type="text" class="form-control"  id="Costo">
+                    </div>
+                </div>
+                <div class="mb-3 row" style="width: 30%; margin: 8px;">
+                    <label class="col-5 col-form-label">Max.</label>
+                    <div class="col">
+                    <input type="text" class="form-control"  id="CantiMax">
+                    </div>
+                </div>
+                <div class="mb-3 row" style="width: 5%; margin: 8px;">
+                <span class="badge badge-outline text-red">X</span>
                 </div>
             </div>
         </div>
+    </div>
     `;
 
     $("#contenedor-product").append(divIngrediente);
