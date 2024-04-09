@@ -598,11 +598,13 @@
 
         function generarFormularioOcupado(mesaId) {
             return new Promise(function(resolve, reject) {
+                var productosSeleccionados = []; // Mover la declaración fuera de la función success
+
                 $.ajax({
                     url: '/api/get-mesa-ocupado/' + mesaId,
                     type: 'GET',
                     dataType: 'json',
-                    success: function (consumo) {                    
+                    success: function (consumo) {    
                         $.ajax({
                             url: '/api/get-productos',
                             type: 'GET',
@@ -613,22 +615,33 @@
                                 agregarDetallesConsumo(mesaId);
                                 DivTotalConsumo(mesaId);
                                 //favoriteDivsProductos();  
-                                var productosSeleccionados = [];
 
                                 $('#BuscarProducto').autocomplete({
                                     source: productos.map(producto => ({
                                         label: `${producto.CodigoProducto} - ${producto.NombreProducto}`,
                                         value: producto.NombreProducto,
-                                        codigo: producto.CodigoProducto
+                                        codigo: producto.CodigoProducto,
+                                        modificador: producto.modificadore
                                     })),
+                                    
+                                    
                                     select: function (event, ui) {
                                         var productoSeleccionado = productos.find(producto => producto.NombreProducto === ui.item.value);
-                                        var codigoProducto = ui.item.codigo;
-                                        productosSeleccionados.push(Object.assign({}, productoSeleccionado));
+                                        // Agregar una nueva instancia del producto seleccionado
+                                        productosSeleccionados.push({
+                                            Idproducto: productoSeleccionado.id,
+                                            NombreProducto: productoSeleccionado.NombreProducto,
+                                            Cantidad: 1,
+                                            PrecioProducto: productoSeleccionado.PrecioProducto,
+                                            modificador: productoSeleccionado.modificadore
+                                        });
                                         actualizarDivsProductos();
-                                        ui.item.value = '';
+                                        $(this).val('');
                                         return false;
                                     },
+                                    
+                                                                        
+                                    
                                     close: function (event, ui) {
                                         $(this).val('');
                                     },
@@ -646,15 +659,13 @@
 
                                 var btnGuardar = document.getElementById('btnGuardar');
                                 $('#btnGuardar').off('click').on('click', function (event) {
-
                                     $(this).prop('disabled', true);
-
                                     event.preventDefault();
 
                                     var productosParaGuardar = productosSeleccionados.map(function (producto) {
                                         return {
                                             Idconsumo: consumo[0].id,
-                                            Idproducto: producto.id,
+                                            Idproducto: producto.Idproducto, // Utiliza producto.Idproducto en lugar de Idproducto
                                             nombre: producto.NombreProducto,
                                             cantidad: producto.Cantidad || 1,
                                             precio: producto.PrecioProducto || 0,
@@ -669,28 +680,30 @@
                                         data: JSON.stringify(productosParaGuardar),
                                         success: function (response) {
                                             btnGuardar.style.display = 'none';
-                                            MostrarMensaje("Producto Agregado","success")
+                                            MostrarMensaje("Producto Agregado", "success");
                                             DivPedidos.innerHTML = '';
                                             AddProduct = document.getElementById('DivAddProduct');
                                             AddProduct.innerHTML = '';
                                             productosSeleccionados = [];
                                             agregarDetallesConsumo(mesaId);
-                                            DivTotalConsumo(mesaId);                                            
+                                            DivTotalConsumo(mesaId);
                                         },
                                         error: function (error) {
                                             console.error('Error:', error);
                                         },
-                                        complete: function() {
+                                        complete: function () {
                                             $('#btnGuardar').prop('disabled', false);
                                         }
                                     });
                                 });
+
    
-                                function actualizarDivsProductos() {
+                                function actualizarDivsProductos() {                                    
                                     var AddProduct = document.getElementById('DivAddProduct');
                                     AddProduct.innerHTML = ''; 
 
                                     productosSeleccionados.forEach(function (producto, index) {
+                                        console.log(producto);
                                         var nuevoDiv = document.createElement('div');
                                         nuevoDiv.className = 'row producto-row';
                                         nuevoDiv.style = 'padding: 1px';
@@ -711,7 +724,7 @@
                                                 <div style="width: 15%;" id="divdate3">
                                                     <input type="number" name="PrecioProduct" class="form-control PrecioProduct" value="${producto.PrecioProducto  || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px">
                                                 </div>
-                                                <div style="text-align: center; width: 25%; padding: 0px; margin: 0px; id="divdate4"">
+                                                <div style="text-align: center; width: 25%; padding: 0px; margin: 0px; id="divdate4">
                                                     <a class="mostrar-comentario">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-message-circle" style="width: 36px; height: 36px;" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -727,11 +740,46 @@
                                                     </a>
                                                 </div>                                                
                                             </div>
+                                            ${producto.modificador != null ? `
+                                                <div style="text-align: center; margin-left: 10%;" id="DivModificadores"><br>
+                                                    <!-- Aquí listame todos los productos con modificadores -->
+                                                </div>
+                                            ` : ''}
                                             <div style="text-align: center;"><br>
-                                                <input type="text" name="ComentarioProduct" class="form-control ComentarioProduct" style="display: none"><br id="saltoDiv" style="display: none">
+                                                <input type="text" name="ComentarioProduct" class="form-control ComentarioProduct" style="display: none"><br id="saltoDiv" style="display: none" placeholder="Escriba El Comentario . . .">
                                             </div>
                                         </div>
                                         `;
+
+                                        if (producto.modificador != null) {
+                                            var productosModificadoresDiv = nuevoDiv.querySelector('#DivModificadores');
+                                            producto.modificador.detallemodificador.forEach(function (detalle) {
+                                                var productoModificador = detalle.producto;
+                                                var productoModificadorDiv = document.createElement('div');
+                                                productoModificadorDiv.innerHTML = `
+                                                    <div class="card" style="margin: 0px; padding: 10px; border-left: 6px solid orange">
+                                                        <div data-index="${index}" style="display: flex; padding: 0px; margin: 0px;">
+                                                        <div style="width: 30%;" id="divdate1">
+                                                            <div class="input-group" style="width: 100%">
+                                                                <button class="btn btn-outline-secondary btnDecrementar" type="button" style="width: 15px">-</button>
+                                                                <input type="text" name="CantProduct" class="form-control CantProduct" value="${producto.Cantidad || 1}" style="padding: 0px; text-align: center;" id="divInput" disabled>
+                                                                <button class="btn btn-outline-secondary btnIncrementar" type="button" style="width: 15px">+</button>
+                                                            </div>
+                                                        </div>
+                                                        <div style="padding-left: 9px; padding-right: 9px; width: 35%;" id="divdate2">
+                                                            <a style="font-weight: bold; font-size: 13px; word-wrap: break-word;">${productoModificador.NombreProducto}</a>
+                                                        </div>
+                                                        <div style="width: 20%;" id="divdate3">
+                                                            <input type="number" name="PrecioProduct" class="form-control PrecioProduct" value="${detalle.CostoDetalleModificador  || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px">
+                                                        </div>
+                                                        <div style="text-align: center; padding: 8px; margin: 0px; id="divdate4">
+                                                            <input class="form-check" type="checkbox" style="width: 20px; height: 20px">
+                                                        </div>   
+                                                    </div>
+                                                `;
+                                                productosModificadoresDiv.appendChild(productoModificadorDiv);
+                                            });
+                                        }
 
                                         AddProduct.appendChild(nuevoDiv);
 

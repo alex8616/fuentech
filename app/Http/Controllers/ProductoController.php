@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class ProductoController extends Controller
 {
     public function GetProducto(){
-        $productos = Producto::with('modificadore')->get();
+        $productos = Producto::with(['modificadore.detallemodificador.producto'])->get();
         return response()->json($productos);
     }
     public function GetProductoStock(){
