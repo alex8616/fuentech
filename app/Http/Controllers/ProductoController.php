@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use App\Models\StockDate;
 use App\Models\SubCategoria;
+use App\Models\Consumo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -141,5 +142,13 @@ class ProductoController extends Controller
         $productos = Producto::where('NombreProducto', 'like', '%'.$term.'%')->get();
         return response()->json($productos);
     }
+ 
     
+    public function GetPrueba(){
+        $productos = Consumo::with(['detalleconsumos',
+                                    'detalleconsumos.producto',
+                                    'detalleconsumos.modificadordetalleconsumo.detallemodificador',
+                                    'detalleconsumos.modificadordetalleconsumo.detallemodificador.producto'])->get();
+        return response()->json($productos);
+    }
 }

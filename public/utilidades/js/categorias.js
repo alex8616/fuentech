@@ -138,7 +138,6 @@ function MostrarTablaCategoria(){
             if (categorias.length > 0) {
                 actualizarCategoriaTabla();
                 function actualizarCategoriaTabla() {
-                    console.log(categorias)
                     var tablaCategorias = $('#tabla-categorias tbody');
                     tablaCategorias.empty();
                     $.each(categorias, function(index, categoria) {

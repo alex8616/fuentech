@@ -4,8 +4,6 @@ function MostrarCategoriaIngrediente(){
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            console.log("---> date ")
-            console.log(data)
             if (data.length > 0) {
                 var categoriasContainer = $('#listaringredientes');
                 var contenidoHTML = '';
@@ -47,7 +45,6 @@ function ListIngredientes(categoriaId){
             if (productos.length > 0) {
                 actualizarTabla();
                 function actualizarTabla() {
-                    console.log("date --> "+productos.length)
                     var tablaIngredientes = $('#tabla-ingredientes tbody');
                     tablaIngredientes.empty();
                     

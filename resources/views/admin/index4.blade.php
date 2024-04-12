@@ -711,7 +711,6 @@
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
-                            console.log(data)
                             InformacionProductoStock(data);
                         },
                         error: function(error) {
@@ -865,8 +864,36 @@
     }
     
 
+    function reloadScripts() {
+        document.querySelectorAll('script').forEach(function(script) {
+            script.remove();
+        });
+        
+        var scriptSources = [
+            "{{ asset('utilidades/js/productos.js') }}",
+            "{{ asset('utilidades/js/categorias.js') }}",
+            "{{ asset('utilidades/js/categoriasingredientes.js') }}",
+            "{{ asset('utilidades/js/ingredientes.js') }}",
+            "{{ asset('utilidades/js/modificador.js') }}"
+        ]; 
+        
+        scriptSources.forEach(function(scriptSrc) {
+            var script = document.createElement('script');
+            script.src = scriptSrc;
+            script.defer = true;
+            document.body.appendChild(script);
+        });
+    }
+
+
     $(document).ready(function() {  
         MostrarTablaProductStock();
+        document.querySelectorAll('.nav-link').forEach(function(tab) {
+            tab.addEventListener('click', function(event) {
+                event.preventDefault();
+                reloadScripts();
+            });
+        });
     });
 </script>
 @livewireScripts

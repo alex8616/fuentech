@@ -306,8 +306,6 @@ function cargarCategoriasProducto(){
         type: 'GET',
         dataType: 'json',
         success: function(data) {
-            console.log("cat cargar")
-            console.log(data)
             var select = $('#ProductoCategoria');
             select.empty();
             select.append($('<option></option>').attr('value', '').text('Seleccionar categoría'));

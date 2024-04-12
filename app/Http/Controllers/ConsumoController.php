@@ -8,6 +8,7 @@ use App\Models\ClienteTemporal;
 use App\Models\Consumo;
 use App\Models\DescuentoConsumo;
 use App\Models\DetalleConsumo;
+use App\Models\ModificadorDetalleConsumo;
 use App\Models\Pagos;
 use App\Models\Producto;
 use App\Models\StockDate;
@@ -47,7 +48,14 @@ class ConsumoController extends Controller
     }
 
     public function GetMesaOcupado($mesa){
-        $consumo = Consumo::with(['cliente','camarero','detalleconsumos.producto','descuentoconsumos'])->where('ambiente_mesa_id',$mesa)->where('ocupado','true')->where('TipoConsumo','Mesa')->get();
+        $consumo = Consumo::with(['cliente',
+                                    'camarero',
+                                    'detalleconsumos.producto',
+                                    'detalleconsumos.modificadordetalleconsumo',
+                                    'descuentoconsumos',
+                                    'detalleconsumos.modificadordetalleconsumo.detallemodificador',
+                                    'detalleconsumos.modificadordetalleconsumo.detallemodificador.producto'
+                                    ])->where('ambiente_mesa_id',$mesa)->where('ocupado','true')->where('TipoConsumo','Mesa')->get();
         return response()->json($consumo);
     }
 
@@ -69,6 +77,8 @@ class ConsumoController extends Controller
             
 
     public function RegistrarDetalleConsumo(Request $request){
+        $totalmodificador = 0;
+        //return response()->json($request->all());
         try {
             foreach ($request->all() as $producto) {
                 $consumoId = $producto['Idconsumo'];
@@ -76,6 +86,7 @@ class ConsumoController extends Controller
                 $cantidad = $producto['cantidad'];
                 $comentario = $producto['comentario'];
                 $precio = $producto['precio'];
+                $modificadores = $producto['Modificadores'];                         
                 
                 $ExiteProducto = Producto::where('id',$productoId)->first();
                 
@@ -120,9 +131,35 @@ class ConsumoController extends Controller
                         'comentarioeliminado' => '',
                     ]);
                 } 
-    
+
+                foreach ($modificadores as $modificador) {
+                    $ModificadorPrecio = $modificador['CostoDetalleModificador'];
+                    $ModificadorCantidad = $modificador['Cantidad'];
+                    
+                    // Verifica si el checkbox está marcado
+                    if ($modificador['Checkbox']) { 
+                        // Crea un registro utilizando los datos del modificador
+                        $detallemodificadore = ModificadorDetalleConsumo::create([
+                            'detalle_modificadore_id' => $modificador['id'],
+                            'detalle_consumo_id' => $detalleConsumo->id,
+                            'fecha_venta' => now(),
+                            'comentario' => "nada",
+                            'cantidad' => $modificador['Cantidad'],
+                            'precio' => $modificador['CostoDetalleModificador'],
+                            'total' => $modificador['Cantidad'] * $modificador['CostoDetalleModificador'],
+                            'eliminado' => 'false',
+                            'comentarioeliminado' => '',
+                        ]);
+                        // Aquí puedes realizar cualquier otra operación que necesites con $detallemodificadore
+                        
+                        // Suma el total de este modificador al total general
+                        $totalmodificador += $ModificadorPrecio * $ModificadorCantidad;
+                    }
+                }
+
                 $consumo = Consumo::findOrFail($consumoId);
                 $consumo->subTotal += $precio * $cantidad;
+                $consumo->subTotal += $totalmodificador;
                 $subTotal = $consumo->subTotal;
                 $consumo->total = $subTotal;
                 $consumo->save();
