@@ -1115,10 +1115,10 @@ $(document).ready(function() {
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function (consumo) {
-                                console.log("..........> datos del card")  
-                                console.log(consumo)
                                 DivPedidos.innerHTML = '';
                                 detalleconsumos.forEach(function (detalle, index) {
+                                    console.log("..........> datos del card")  
+                                    console.log(detalle.modificadordetalleconsumo)
                                     var nuevoDiv = document.createElement('div');
                                     nuevoDiv.className = 'row producto-row';
                                             if(detalle.eliminado == 'true'){
@@ -1153,40 +1153,96 @@ $(document).ready(function() {
                                                     </div>
                                                 `;
                                             }else{
-                                                nuevoDiv.innerHTML = `
-                                                    <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
-                                                        <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
-                                                            <div class="card-status-start bg-primary"></div>
-                                                            <div class="card-header" style="padding: 0px; margin: 0px; height: auto;">
-                                                                <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
-                                                                    <div class="col-md-12 col-lg-2" style="width: auto;">
-                                                                        <h3 class="card-title">${detalle.cantidad}</h3>
+                                                if (detalle.modificadordetalleconsumo.length === 0) {
+                                                    // Si está vacío, muestra el HTML correspondiente
+                                                    nuevoDiv.innerHTML = `
+                                                        <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
+                                                            <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
+                                                                <div class="card-status-start bg-primary"></div>
+                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto;">
+                                                                    <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
+                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
+                                                                            <h3 class="card-title">${detalle.cantidad}</h3>
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                            <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
+                                                                            <p style="font-size: 12px">${detalle.comentario}</p>
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-3" style="width: 50%;">
+                                                                            <h3 class="card-title">${detalle.total}</h3>                                                                    
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
+                                                                            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#ElminarDetalle" data-index="${index}">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                    <path d="M18 6l-12 12" />
+                                                                                    <path d="M6 6l12 12" />
+                                                                                </svg>
+                                                                            </a>
+                                                                        </div>                                                                    
                                                                     </div>
-                                                                    <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
-                                                                        <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
-                                                                        <p style="font-size: 12px">${detalle.comentario}</p>
-                                                                    </div>
-                                                                    <div class="col-md-12 col-lg-3" style="width: 50%;">
-                                                                        <h3 class="card-title">${detalle.total}</h3>                                                                    
-                                                                    </div>
-                                                                    <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
-                                                                        <a class="nav-link" data-bs-toggle="modal" data-bs-target="#ElminarDetalle" data-index="${index}">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                <path d="M18 6l-12 12" />
-                                                                                <path d="M6 6l12 12" />
-                                                                            </svg>
-                                                                        </a>
-                                                                    </div>                                                                    
-                                                                </div>
-                                                                //que este div no este en la fila sino se acomode abajo
-                                                                <div class="col-md-12 col-lg-2" style="width: auto;">
-                                                                    <h3 class="card-title">${detalle.cantidad}</h3>
-                                                                </div>
-                                                            </div>                                                            
+                                                                </div>    
+                                                                <div>                                                               
+                                                                </div>                                                        
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                `;
+                                                    `;
+                                                } else {
+                                                    // Si no está vacío, muestra el HTML correspondiente
+                                                    nuevoDiv.innerHTML = `
+                                                        <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
+                                                            <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
+                                                                <div class="card-status-start bg-primary"></div>
+                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto; border-bottom: 0px solid red;">
+                                                                    <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
+                                                                        <div class="col-md-12 col-lg-2" style="width: auto;">
+                                                                            <h3 class="card-title">${detalle.cantidad}</h3>
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                            <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
+                                                                            <p style="font-size: 12px">${detalle.comentario}</p>
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-3" style="width: 50%;">
+                                                                            <h3 class="card-title">${detalle.total}</h3>                                                                    
+                                                                        </div>
+                                                                        <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
+                                                                            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#ElminarDetalle" data-index="${index}">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                    <path d="M18 6l-12 12" />
+                                                                                    <path d="M6 6l12 12" />
+                                                                                </svg>
+                                                                            </a>
+                                                                        </div>                                                                    
+                                                                    </div>
+                                                                </div>    
+                                                                <div>
+                                                                    ${detalle.modificadordetalleconsumo.map(modificador => `
+                                                                        <div class="col-md-12" style="padding: 0px; margin: 0px; height: auto;">
+                                                                            <div class="card-header" style="padding: 0px; margin: 0px; height: auto; margin-left: 20%;">
+                                                                                <div style="width: 100%; padding-top: 0px; margin: 0px; display: flex; height: auto; background: #F7F7F7">
+                                                                                    <div class="col-md-12 col-lg-2" style="width: auto;">
+                                                                                        <h3 class="card-title">${modificador.cantidad}</h3>
+                                                                                    </div>
+                                                                                    <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                                        <p class="card-title">${modificador.detallemodificador.producto.NombreProducto}</p>
+                                                                                    </div>
+                                                                                    <div class="col-md-12 col-lg-3" style="width: 50%;">
+                                                                                        <h3 class="card-title">${modificador.total}</h3>                                                                    
+                                                                                    </div>
+                                                                                    <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
+                                                                                        <span class="badge badge-outline text-green" id="EditarDetalleModificador">E</span>
+                                                                                        <span class="badge badge-outline text-red" id="EliminarDetalleModificador">X</span>
+                                                                                    </div>                                                                    
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    `).join('')}
+                                                                </div>                                                        
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                                }
                                             }
                                             
                                             DivPedidos.appendChild(nuevoDiv);
