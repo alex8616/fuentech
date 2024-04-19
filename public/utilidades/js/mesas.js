@@ -1117,8 +1117,6 @@ $(document).ready(function() {
                                 success: function (consumo) {
                                 DivPedidos.innerHTML = '';
                                 detalleconsumos.forEach(function (detalle, index) {
-                                    console.log("..........> datos del card")  
-                                    console.log(detalle.modificadordetalleconsumo)
                                     var nuevoDiv = document.createElement('div');
                                     nuevoDiv.className = 'row producto-row';
                                             if(detalle.eliminado == 'true'){
@@ -1187,7 +1185,7 @@ $(document).ready(function() {
                                                             </div>
                                                         </div>
                                                     `;
-                                                } else {
+                                                } else {                                                    
                                                     // Si no está vacío, muestra el HTML correspondiente
                                                     nuevoDiv.innerHTML = `
                                                         <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
@@ -1213,10 +1211,19 @@ $(document).ready(function() {
                                                                                     <path d="M6 6l12 12" />
                                                                                 </svg>
                                                                             </a>
-                                                                        </div>                                                                    
+                                                                        </div>
                                                                     </div>
-                                                                </div>    
+                                                                </div>
                                                                 <div>
+                                                                    <div class="col-md-12" style="padding: 0px; margin: 0px; height: auto;">
+                                                                        <div class="card-header" style="padding: 0px; margin: 0px; height: auto; margin-left: 20%;">
+                                                                            <div style="width: 100%; padding-top: 0px; margin: 0px; display: flex; height: auto; background: #F7F7F7">
+                                                                                <select class="form-control" id="SelectModificadorProducto">
+                                                                                    
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                     ${detalle.modificadordetalleconsumo.map(modificador => `
                                                                         <div class="col-md-12" style="padding: 0px; margin: 0px; height: auto;">
                                                                             <div class="card-header" style="padding: 0px; margin: 0px; height: auto; margin-left: 20%;">
@@ -1224,16 +1231,15 @@ $(document).ready(function() {
                                                                                     <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                                         <h3 class="card-title">${modificador.cantidad}</h3>
                                                                                     </div>
-                                                                                    <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
+                                                                                    <div class="col-md-12 col-lg-5" style="text-align: left; width: 100%;">
                                                                                         <p class="card-title">${modificador.detallemodificador.producto.NombreProducto}</p>
                                                                                     </div>
                                                                                     <div class="col-md-12 col-lg-3" style="width: 50%;">
                                                                                         <h3 class="card-title">${modificador.total}</h3>                                                                    
                                                                                     </div>
                                                                                     <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
-                                                                                        <span class="badge badge-outline text-green" id="EditarDetalleModificador">E</span>
-                                                                                        <span class="badge badge-outline text-red" id="EliminarDetalleModificador">X</span>
-                                                                                    </div>                                                                    
+                                                                                        <span class="badge badge-outline text-red" id="EliminarModificador">X</span>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1242,6 +1248,25 @@ $(document).ready(function() {
                                                             </div>
                                                         </div>
                                                     `;
+
+                                                    $.ajax({
+                                                        url: '/api/get-modificador-seleccionado/1',
+                                                        type: 'GET',
+                                                        dataType: 'json',
+                                                        success: function(data) {
+                                                            console.log(data);
+                                                            const selectModificadorProducto = document.getElementById('SelectModificadorProducto');
+                                                            data.detallemodificador.forEach(detalle => {
+                                                                const option = document.createElement('option');
+                                                                option.value = detalle.producto.id;
+                                                                option.textContent = detalle.producto.NombreProducto;
+                                                                selectModificadorProducto.appendChild(option);
+                                                            });
+                                                        },
+                                                        error: function(error) {
+                                                            console.error('Error:', error);
+                                                        }
+                                                    });
                                                 }
                                             }
                                             
