@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\DetalleReceta;
 use App\Models\Ingrediente;
 use App\Models\Producto;
+use App\Models\StockDate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\IngredientesImport;
+use Carbon\Carbon;
 
 class IngredienteController extends Controller
 {
@@ -34,6 +38,11 @@ class IngredienteController extends Controller
     }
 
     public function RegistrarIngrediente(Request $request){
+        $registro = Ingrediente::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+
         $user = Auth::user(); 
     
         // Crear el producto
@@ -84,5 +93,62 @@ class IngredienteController extends Controller
             return response()->json(['error' => 'No se encontró el detalle de receta con el ID proporcionado'], 404);
         }
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xls,xlsx',
+        ]);
+
+        try {
+            Excel::import(new IngredientesImport, $request->file('file'));
+            return response()->json(['success' => 'Productos importados correctamente.']);
+        } catch (Exception $e) {
+            Log::error('Error al importar productos: ' . $e->getMessage());
+            $error = Log::error('Error al importar productos: ' . $e->getMessage());
+            return response()->json($error);
+        }
+    }
     
+    public function GetIngredienteStock(){
+        $ingredientes = Ingrediente::where('ControlStock','true')->get();
+        return response()->json($ingredientes);
+    }
+
+    public function GetIngredienteSeleccionado($ingrediente){
+        $productos = Ingrediente::with(['proveedor','categoriaingrediente'])->where('id',$ingrediente)->first();
+        return response()->json($productos);
+    }
+
+    public function ActualizarIngredienteStock(Request $request){
+        $registro = StockDate::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+
+        $ingrediente = Ingrediente::where('id',$request->id)->first();
+        $mistockanterior = $ingrediente->CantidadStock;
+
+        if($mistockanterior == NULL){
+            $mistockanterior = 0;
+        }
+
+        $stockdate = StockDate::create([
+            'Cantidad' => $request->input("cantidad"),
+            'TipoStock' => "Ajuste Manual",
+            'StockAnterior' => $mistockanterior,
+            'StockActual' => $request->input("cantidad"),
+            'Diferencia' => ($ingrediente->CantidadStock - $request->input("cantidad"))*(-1),
+            'NombreProducto' =>  $ingrediente->NombreIngrediente,
+            'DetalleStock' => "Ajuste Manual - Stock Anterior ".$mistockanterior." y estock actualizado ".$request->input("cantidad"),
+            'FechaStock' => now(),
+            'ingrediente_id' => $ingrediente->id,
+        ]);
+
+        $ingrediente->CantidadStock = $request->input("cantidad");
+        $ingrediente->ComentarioStock = $request->input("comentario");
+        $ingrediente->MinimoStock = $request->input("minimo");
+        $ingrediente->save();
+        return response()->json($stockdate);
+    }
 }

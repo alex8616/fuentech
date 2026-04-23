@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/Restaurante';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -29,12 +29,17 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
-            Route::middleware('api')
+            Route::middleware('api') // Usa el middleware 'api' en lugar de 'apihostal'
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
-
+    
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+    
+            // Cambia 'apihostal' a 'api', o usa un middleware válido
+            Route::middleware('api') 
+                ->prefix('apihostal') // Prefijo para las rutas del hostal
+                ->group(base_path('routes/apihostal.php'));
         });
     }
 }

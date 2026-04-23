@@ -16,6 +16,8 @@ return [
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
+        /*para pin borrar caso no*/
+        'login' => '/pin-login',
     ],
 
     /*

@@ -138,17 +138,17 @@ $(document).ready(function() {
 
             if(mesaEnPosicion.estado === 'libre'){
                 if (mesaEnPosicion.NombreMesas === 'circulo') {
-                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black; border-radius: 50%;">${mesaEnPosicion.id}</a>`);
+                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black; border-radius: 50%;">${mesaEnPosicion.Name}</a>`);
                 } else if (mesaEnPosicion.NombreMesas === 'cuadrado') {
-                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black;">${mesaEnPosicion.id}</a>`);
+                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; height: 100%; border: 2px solid black;">${mesaEnPosicion.Name}</a>`);
                 } else {
                     mesa.text(mesaEnPosicion.NombreMesas);
                 }
             }else{
                 if (mesaEnPosicion.NombreMesas === 'circulo') {
-                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; border-radius: 50%; background: #FF8080"><span style="color: white">${mesaEnPosicion.id}</span></a>`);
+                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; border-radius: 50%; background: #FF8080"><span style="color: white">${mesaEnPosicion.Name}</span></a>`);
                 } else if (mesaEnPosicion.NombreMesas === 'cuadrado') {
-                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; background: #FF8080"><span style="color: white">${mesaEnPosicion.id}</span></a>`);
+                    mesa.append(`<a class="btn btn-light btn-lg" id="mesa-btn-${mesaEnPosicion.id}" style="width: 100%; position: absolute; height: 100%; border: 2px solid black; background: #FF8080"><span style="color: white">${mesaEnPosicion.Name}</span></a>`);
                 } else {
                     mesa.text(mesaEnPosicion.NombreMesas);
                 } 
@@ -177,52 +177,83 @@ $(document).ready(function() {
                         }else{
                             var formTabsDiv = document.getElementById('form_tabs');
                             var DisponibleFormulario = generarFormularioDisponible(mesaId);
-                            formTabsDiv.innerHTML = DisponibleFormulario;                                
-                        }
-                        //Incrementar y Decrementar cantidad de personas
-                        const btnDecrementar = document.getElementById('btnDecrementar');
-                        const btnIncrementar = document.getElementById('btnIncrementar');
-                        const inputPersonas = document.getElementById('CantPersonas');
-                        btnDecrementar.addEventListener('click', decrementarPersonas);
-                        btnIncrementar.addEventListener('click', incrementarPersonas);
-                        function decrementarPersonas() {
-                            const valorActual = parseInt(inputPersonas.value);
-                            const nuevoValor = Math.max(1, valorActual - 1);
-                            inputPersonas.value = nuevoValor;
-                        }
+                            formTabsDiv.innerHTML = DisponibleFormulario;
+                            
+                            //Incrementar y Decrementar cantidad de personas
+                            const btnDecrementar = document.getElementById('btnDecrementar');
+                            const btnIncrementar = document.getElementById('btnIncrementar');
+                            const inputPersonas = document.getElementById('CantPersonas');
+                            btnDecrementar.addEventListener('click', decrementarPersonas);
+                            btnIncrementar.addEventListener('click', incrementarPersonas);
+                            
+                            function decrementarPersonas() {
+                                const valorActual = parseInt(inputPersonas.value);
+                                const nuevoValor = Math.max(1, valorActual - 1);
+                                inputPersonas.value = nuevoValor;
+                            }
 
-                        function incrementarPersonas() {
-                            const valorActual = parseInt(inputPersonas.value);
-                            const nuevoValor = valorActual + 1;
-                            inputPersonas.value = nuevoValor;
-                        }
+                            function incrementarPersonas() {
+                                const valorActual = parseInt(inputPersonas.value);
+                                const nuevoValor = valorActual + 1;
+                                inputPersonas.value = nuevoValor;
+                            }
+                            
+                            
+                            function convertirMayusculas() {
+                                const inputs = document.querySelectorAll('.convertmayusculas');
+                                inputs.forEach(function(input) {
+                                    input.addEventListener('input', function() {
+                                        input.value = input.value.toUpperCase();
+                                    });
+                                });
+                            }
+                            convertirMayusculas()
+                        }                        
 
                         //para el select cliente
-                        $.ajax({
-                            url: '/api/get-clientes',
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function (clientes) {
-                                $('#SeleccionarCliente').empty();
-
-                                $('#SeleccionarCliente').append($('<option>', {
-                                    value: '',
-                                    text: 'Seleccione un cliente',
-                                    selected: true,
-                                }));
-                                
-                                for (var i = 0; i < clientes.length; i++) {
-                                    var cliente = clientes[i];
-                                    $('#SeleccionarCliente').append($('<option>', {
-                                        value: cliente.id,
-                                        text: cliente.NombreCliente
-                                    }));
-                                }
+                        $('#SeleccionarCliente').select2({
+                            ajax: {
+                                url: '/api/get-clientes', // Ruta de tu controlador
+                                dataType: 'json',
+                                delay: 250, // Tiempo de espera antes de hacer la petición
+                                data: function (params) {
+                                    return {
+                                        search: params.term, // Término de búsqueda
+                                        page: params.page || 1 // Número de página
+                                    };
+                                },
+                                processResults: function (data, params) {
+                                    // Almacenar la página actual
+                                    params.page = params.page || 1;
+                
+                                    return {
+                                        results: data.data, // Datos que provienen de la respuesta
+                                        pagination: {
+                                            more: (params.page * data.per_page) < data.total // Verifica si hay más páginas
+                                        }
+                                    };
+                                },
+                                cache: true
                             },
-                            error: function (error) {
-                                console.error('Error al obtener clientes:', error);
-                            }
+                            minimumInputLength: 1, // Mínimo caracteres antes de buscar
+                            placeholder: 'Selecciona un cliente', // Placeholder
+                            templateResult: formatCliente, // Función para formatear el resultado
+                            templateSelection: formatClienteSelection // Función para formatear la selección
                         });
+                    
+                        // Formato de los resultados en el dropdown
+                        function formatCliente(cliente) {
+                            if (cliente.loading) {
+                                return cliente.text; // Muestra un texto de carga
+                            }
+                            // Formato del cliente a mostrar en el dropdown
+                            return $('<div>' + cliente.NombreCliente + ' (' + cliente.EmailCliente + ')</div>');
+                        }
+                    
+                        // Formato de la selección
+                        function formatClienteSelection(cliente) {
+                            return cliente.NombreCliente || cliente.text; // Muestra solo el nombre del cliente seleccionado
+                        }
 
                         //para el select camareros
                         $.ajax({
@@ -312,91 +343,144 @@ $(document).ready(function() {
     }
 
 
-    function MoverMesa(ambienteId,mesaId){
+    function MoverMesa(ambienteId, mesaId) {
         var messaID = mesaId;
         var SelectX = 0;
         var SelectY = 0;
-
+    
         $.ajax({
             url: 'api/get-ambiente-seleccionado/' + ambienteId,
             type: 'GET',
             dataType: 'json',
             success: function (ambiente) {
-                CanvasTime()
-                $('#div-editar').empty();                    
-                var rows= Fila;
-                var cols= Fila;
+                CanvasTime();
+                $('#div-editar').empty();
+    
+                // Contenedor para el input y botón
+                var inputContainer = $('<div class="mb-3 d-flex align-items-center">');
+                
+                // Input para el nombre de la mesa
+                var inputName = $('<input>')
+                    .attr('type', 'text')
+                    .attr('id', 'mesaName')
+                    .attr('name', 'mesaName')
+                    .addClass('form-control me-2')
+                    .attr('placeholder', 'Ingrese el nombre de la mesa');
+                
+                // Botón para cambiar el nombre
+                var btnChangeName = $('<button>')
+                    .attr('id', 'btnCambiarNombre')
+                    .addClass('btn btn-primary')
+                    .text('Cambiar Nombre');
+    
+                // Agregar input y botón al contenedor
+                inputContainer.append(inputName).append(btnChangeName);
+                $('#div-editar').append(inputContainer);
+    
+                var rows = Fila;
+                var cols = Fila;
                 var gridContainer = $('#div-editar');
                 $('#EditMesaId').val(messaID);
-
+    
+                // Manejar clic en el botón de cambiar nombre
+                btnChangeName.on('click', function (event) {
+                    event.preventDefault();
+                
+                    var mesaName = $('#mesaName').val();
+                    if (!mesaName.trim()) {
+                        alert('Por favor, ingrese un nombre válido.');
+                        return;
+                    }
+                
+                    $.ajax({
+                        url: '/api/actualizar-nombre-mesa',
+                        type: 'POST',
+                        data: {
+                            mesaId: messaID,
+                            mesaName: mesaName
+                        },
+                        success: function (response) {
+                            CanvasTime();
+                            //MesasActualizar(ambienteId);
+                            $('#ModalEditar').offcanvas('hide');
+                            MostrarMensaje('Nombre de la mesa actualizado correctamente.', 'success');
+                        },
+                        error: function (error) {
+                            console.error('Error al actualizar el nombre:', error);
+                            MostrarMensaje('Error al actualizar el nombre de la mesa.', 'error');
+                        }
+                    });
+                });
+    
                 $.ajax({
                     url: 'api/get-mesa-editar/' + messaID,
                     type: 'GET',
                     dataType: 'json',
                     success: function (mesaselect) {
+                        console.log("La mesa seleccionada es ");
+                        console.log(messaID);
+    
                         var SelectX = mesaselect[0].PosisionX;
                         var SelectY = mesaselect[0].PosisionY;
-
+    
                         for (var i = 0; i < rows; i++) {
-                        var row = $('<div>').addClass('row');
-
-                        for (var j = 0; j < cols; j++) {
-                            var posX = i;
-                            var posY = j;
-
-                            var ambientemesas = ambiente[0].ambientemesas || [];
-                            var mesaEnPosicion = ambientemesas.find(function (mesa) {
-                                return mesa.PosisionX == posX && mesa.PosisionY == posY;
-                            });
-
-                            if (mesaEnPosicion) {    
-                                if(posX == SelectX && posY == SelectY){
-                                    var mesa = $('<div">')
-                                    .addClass('editmesa col text-center')
-                                    .data('mesa-id', i * cols + j + 1)
-                                    .data('pos-x', posX)
-                                    .data('pos-y', posY)
-                                    .append('<p>aqui</>');
-                                }else{
-                                    var mesa = $('<div>')
-                                    .addClass('editmesa col text-center')
-                                    .data('mesa-id', i * cols + j + 1)
-                                    .data('pos-x', posX)
-                                    .data('pos-y', posY)
-                                    .append('<p>xxx</>');
-                                }  
-                            } else {
-                                var mesa = $('<div>')
-                                    .addClass('editmesa col text-center')
-                                    .data('mesa-id', i * cols + j + 1)
-                                    .data('pos-x', posX)
-                                    .data('pos-y', posY)
-                                    .append('<a style="width:100%; height:100%;" class="BtnMover"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checks" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 12l5 5l10 -10" /><path d="M2 12l5 5m5 -5l5 -5" /></svg></a>');
-                            }
-
-                            row.append(mesa);
+                            var row = $('<div>').addClass('row');
+    
+                            for (var j = 0; j < cols; j++) {
+                                var posX = i;
+                                var posY = j;
+    
+                                var ambientemesas = ambiente[0].ambientemesas || [];
+                                var mesaEnPosicion = ambientemesas.find(function (mesa) {
+                                    return mesa.PosisionX == posX && mesa.PosisionY == posY;
+                                });
+    
+                                var mesa;
+                                if (mesaEnPosicion) {
+                                    if (posX == SelectX && posY == SelectY) {
+                                        mesa = $('<div>')
+                                            .addClass('editmesa col text-center')
+                                            .data('mesa-id', i * cols + j + 1)
+                                            .data('pos-x', posX)
+                                            .data('pos-y', posY)
+                                            .append('<p>aqui</>');
+                                    } else {
+                                        mesa = $('<div>')
+                                            .addClass('editmesa col text-center')
+                                            .data('mesa-id', i * cols + j + 1)
+                                            .data('pos-x', posX)
+                                            .data('pos-y', posY)
+                                            .append('<p>xxx</>');
+                                    }
+                                } else {
+                                    mesa = $('<div>')
+                                        .addClass('editmesa col text-center')
+                                        .data('mesa-id', i * cols + j + 1)
+                                        .data('pos-x', posX)
+                                        .data('pos-y', posY)
+                                        .append('<a style="width:100%; height:100%;" class="BtnMover"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checks" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 12l5 5l10 -10" /><path d="M2 12l5 5m5 -5l5 -5" /></svg></a>');
+                                }
+    
+                                row.append(mesa);
                             }
                             gridContainer.append(row);
                         }
-
-
+    
                         gridContainer.on('click', '.BtnMover', function (event) {
                             event.preventDefault();
                             var posX = $(this).parent().data('pos-x');
                             var posY = $(this).parent().data('pos-y');
-                            
+    
                             $('.editmesa.selected-table').removeClass('selected-table');
-                            
                             $(this).parent().addClass('selected-table');
-                            
                             $('#EditPosicionX').val(posX);
                             $('#EditPosicionY').val(posY);
-
+    
                             $('#btnCambiarMesa').off('click').on('click', function () {
                                 var nuevaPosX = $('#EditPosicionX').val();
                                 var nuevaPosY = $('#EditPosicionY').val();
                                 var mesaId = $('#EditMesaId').val();
-
+    
                                 $.ajax({
                                     url: '/api/actualizar-posicion-mesa',
                                     type: 'POST',
@@ -406,7 +490,7 @@ $(document).ready(function() {
                                         nuevaPosY: nuevaPosY
                                     },
                                     success: function (response) {
-                                        MesasActualizar(ambienteId)
+                                        MesasActualizar(ambienteId);
                                         $('#ModalEditar').offcanvas('hide');
                                         MostrarMensaje('Se Cambió la Mesa Correctamente', 'success');
                                     },
@@ -415,22 +499,20 @@ $(document).ready(function() {
                                     }
                                 });
                             });
-
                         });
-
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.error('Error al recuperar datos del ambiente seleccionado:', error);
                     }
                 });
-                
             },
-
-            error: function(error) {
+            error: function (error) {
                 console.error('Error al recuperar datos del ambiente seleccionado:', error);
             }
         });
     }
+    
+    
 
     $.ajax({
         url: 'api/get-ambientes',
@@ -587,8 +669,6 @@ $(document).ready(function() {
                     });
                 });
 
-            } else {
-                ambientesContainer.html('<p class="text-muted">No se encontraron ambientes.</p>');
             }
         },
         error: function(error) {
@@ -616,6 +696,50 @@ $(document).ready(function() {
                             DivTotalConsumo(mesaId);
                             //favoriteDivsProductos();  
 
+                            $.ajax({
+                                url: '/api/get-productos-favorite',
+                                type: 'GET',
+                                dataType: 'json',
+                                success: function(response) {
+                                    $('#DivFavorite').empty();
+                                    var productos = Object.values(response);
+                                    productos.forEach(function(producto) {
+                                        var elementoHtml = `
+                                            <div class="elemento" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                <p style="display: flex; justify-content: space-between;">
+                                                    <span style="color: black; font-weight: bold;">${producto.PrecioProducto} Bs.</span>
+                                                    <span style="font-weight: bold; color: blue">${producto.stockdates[0]?.Cantidad || ''}</span>
+                                                </p>
+                                                <p style="display: inline; color: #3C4048;">${producto.NombreProducto}</p>
+                                            </div>
+                                        `;
+                                        $('#DivFavorite').append(elementoHtml);
+                                    });
+
+                                    $('#DivFavorite').on('click', '.elemento', function() {
+                                        var nombreProducto = $(this).find('p:eq(1)').text().trim();
+                                        var productoSeleccionado = productos.find(producto => producto.NombreProducto === nombreProducto);
+                                        if (productoSeleccionado) {
+                                            productosSeleccionados.push({
+                                                Idproducto: productoSeleccionado.id,
+                                                NombreProducto: productoSeleccionado.NombreProducto,
+                                                Cantidad: 1,
+                                                PrecioProducto: productoSeleccionado.PrecioProducto,
+                                                modificador: productoSeleccionado.modificadore
+                                            });                                            
+                                            actualizarDivsProductos();
+                                        } else {
+                                            console.error('No se encontró el producto seleccionado:', nombreProducto);
+                                        }
+                                    });
+
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error al cargar los datos:', error);
+                                }
+                            });
+
+                            
                             $('#BuscarProducto').autocomplete({
                                 source: productos.map(producto => ({
                                     label: `${producto.CodigoProducto} - ${producto.NombreProducto}`,
@@ -671,7 +795,7 @@ $(document).ready(function() {
                                         type: 'POST',
                                         contentType: 'application/json',
                                         data: JSON.stringify(productosParaGuardar),
-                                        success: function (response) {
+                                        success: function (response) {      
                                             btnGuardar.style.display = 'none';
                                             MostrarMensaje("Producto Agregado", "success");
                                             DivPedidos.innerHTML = '';
@@ -691,46 +815,50 @@ $(document).ready(function() {
                                 });
 
 
-                            function recuperarDatosProductos() {
-                                var productosRecuperados = [];
-
-                                productosSeleccionados.forEach(function (producto, index) {
-                                    var productoRecuperado = {
-                                        Idconsumo: consumo[0].id,
-                                        Idproducto: producto.Idproducto,
-                                        nombre: producto.NombreProducto,
-                                        cantidad: producto.Cantidad || 1,
-                                        precio: producto.PrecioProducto || 0,
-                                        comentario: producto.Comentario || '',
-                                        Modificadores: []
-                                    };
-
-                                    if (producto.modificador != null) {
-                                        var productosModificadoresDiv = document.getElementById('DivModificadores');
-                                        producto.modificador.detallemodificador.forEach(function (detalle, indexDetalle) {
-                                            var DetalleID = detalle.id; // Usar detalle.id directamente si es único
-                                            var cantidad = document.getElementById(`DivModificadorCantidad${indexDetalle}`).value;
-                                            var costo = document.getElementById(`DivModificadorCosto${indexDetalle}`).value;
-                                            var checkbox = document.getElementById(`ModificadorCheck${indexDetalle}`);
-                                            var valorCheckbox = checkbox.checked;
-                                        
-                                            var modificador = {
-                                                id: DetalleID,
-                                                NombreProducto: detalle.producto.NombreProducto,
-                                                CostoDetalleModificador: costo || 1,
-                                                Cantidad: cantidad || 1,
-                                                Checkbox: valorCheckbox
-                                            };
-                                            productoRecuperado.Modificadores.push(modificador);
-                                        });
-                                        
-                                    }
-
-                                    productosRecuperados.push(productoRecuperado);
-                                });
-
-                                return productosRecuperados;
-                            }
+                                function recuperarDatosProductos() {
+                                    var productosRecuperados = [];
+                                
+                                    productosSeleccionados.forEach(function (producto, index) {
+                                        var productoRecuperado = {
+                                            Idconsumo: consumo[0].id,
+                                            Idproducto: producto.Idproducto,
+                                            nombre: producto.NombreProducto,
+                                            cantidad: producto.Cantidad || 1,
+                                            precio: producto.PrecioProducto || 0,
+                                            comentario: producto.Comentario || '',
+                                            Modificadores: []
+                                        };
+                                
+                                        if (producto.modificador != null) {
+                                            producto.modificador.detallemodificador.forEach(function (detalle, indexDetalle) {
+                                                var DetalleID = detalle.id; // Usar detalle.id directamente si es único
+                                                var cantidadInputId = `DivModificadorCantidad${index}-${indexDetalle}`;
+                                                var costoInputId = `DivModificadorCosto${index}-${indexDetalle}`;
+                                                var checkboxId = `ModificadorCheck${index}-${indexDetalle}`;
+                                
+                                                var cantidad = document.getElementById(cantidadInputId).value;
+                                                var costo = document.getElementById(costoInputId).value;
+                                                var checkbox = document.getElementById(checkboxId);
+                                                var valorCheckbox = checkbox.checked;
+                                
+                                                var modificador = {
+                                                    id: DetalleID,
+                                                    NombreProducto: detalle.producto.NombreProducto,
+                                                    CostoDetalleModificador: costo || 1,
+                                                    Cantidad: cantidad || 1,
+                                                    Checkbox: valorCheckbox
+                                                };
+                                                productoRecuperado.Modificadores.push(modificador);
+                                            });
+                                        }
+                                
+                                        productosRecuperados.push(productoRecuperado);
+                                    });
+                                
+                                    return productosRecuperados;
+                                }
+                                
+                                
 
                             function actualizarDivsProductos() {                                    
                                 var AddProduct = document.getElementById('DivAddProduct');
@@ -792,24 +920,25 @@ $(document).ready(function() {
                                             var productoModificadorDiv = document.createElement('div');
                                             productoModificadorDiv.innerHTML = `
                                                 <div class="card" style="margin: 0px; padding: 10px; border-left: 6px solid orange">
-                                                    <div data-index="${indexDetalle}" style="display: flex; padding: 0px; margin: 0px;">
-                                                    <div style="width: 30%;" id="divdate1">
-                                                        <input type="text" id="IdDetalleModificador" class="form-control CantProduct" value="${detalle.id}" style="padding: 0px; text-align: center;" hidden>
-                                                        <div class="input-group" style="width: 100%">
-                                                            <button class="btn btn-outline-secondary btnDecrementar" type="button" style="width: 15px">-</button>
-                                                            <input type="text" name="CantProduct" class="form-control CantProduct" value="${productoModificador.Cantidad || 1}" style="padding: 0px; text-align: center;" id="DivModificadorCantidad${indexDetalle}">
-                                                            <button class="btn btn-outline-secondary btnIncrementar" type="button" style="width: 15px">+</button>
+                                                    <div data-index="${index}-${indexDetalle}" style="display: flex; padding: 0px; margin: 0px;">
+                                                        <div style="width: 30%;" id="divdate1">
+                                                            <input type="text" id="IdDetalleModificador" class="form-control CantProduct" value="${detalle.id}" style="padding: 0px; text-align: center;" hidden>
+                                                            <div class="input-group" style="width: 100%">
+                                                                <button class="btn btn-outline-secondary btnDecrementar" type="button" style="width: 15px">-</button>
+                                                                <input type="text" name="CantProduct" class="form-control CantProduct" value="${productoModificador.Cantidad || 1}" style="padding: 0px; text-align: center;" id="DivModificadorCantidad${index}-${indexDetalle}">
+                                                                <button class="btn btn-outline-secondary btnIncrementar" type="button" style="width: 15px">+</button>
+                                                            </div>
+                                                        </div>
+                                                        <div style="padding-left: 9px; padding-right: 9px; width: 35%;" id="divdate2">
+                                                            <a style="font-weight: bold; font-size: 13px; word-wrap: break-word;">${productoModificador.NombreProducto}</a>
+                                                        </div>
+                                                        <div style="width: 20%;" id="divdate3">
+                                                            <input type="number" class="form-control PrecioProduct" value="${detalle.CostoDetalleModificador || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px" id="DivModificadorCosto${index}-${indexDetalle}">
+                                                        </div>
+                                                        <div style="text-align: center; padding: 8px; margin: 0px;" id="divdate4">
+                                                            <input class="form-check" type="checkbox" style="width: 20px; height: 20px" id="ModificadorCheck${index}-${indexDetalle}" checked>
                                                         </div>
                                                     </div>
-                                                    <div style="padding-left: 9px; padding-right: 9px; width: 35%;" id="divdate2">
-                                                        <a style="font-weight: bold; font-size: 13px; word-wrap: break-word;">${productoModificador.NombreProducto}</a>
-                                                    </div>
-                                                    <div style="width: 20%;" id="divdate3">
-                                                        <input type="number" class="form-control PrecioProduct" value="${detalle.CostoDetalleModificador  || 1}" style="padding-right: 0px; padding-left: 0px; text-align: center; width: 55px" id="DivModificadorCosto${indexDetalle}">
-                                                    </div>
-                                                    <div style="text-align: center; padding: 8px; margin: 0px; id="divdate4">
-                                                        <input class="form-check" type="checkbox" style="width: 20px; height: 20px" id="ModificadorCheck${indexDetalle}">
-                                                    </div>   
                                                 </div>
                                             `;
                                             productosModificadoresDiv.appendChild(productoModificadorDiv);
@@ -1151,7 +1280,7 @@ $(document).ready(function() {
                                                     </div>
                                                 `;
                                             }else{
-                                                if (detalle.modificadordetalleconsumo.length === 0) {
+                                                if (detalle.modificadordetalleconsumo.length === 0) {                                                    
                                                     // Si está vacío, muestra el HTML correspondiente
                                                     nuevoDiv.innerHTML = `
                                                         <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
@@ -1163,7 +1292,12 @@ $(document).ready(function() {
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
                                                                         <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
-                                                                            <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
+                                                                            <p class="card-title detalleconsumocortesia" data-bs-toggle="modal" data-bs-target="#modal-cortesia-pensionado" style="cursor: pointer" data-name="${detalle.producto.NombreProducto}" data-iddetalle="${detalle.id}">
+                                                                                ${detalle.producto.NombreProducto} - ${detalle.precio}
+                                                                                ${detalle.cortesia === 'true' 
+                                                                                    ? '  - <span class="badge badge-outline text-red">No se Pagara</span>' 
+                                                                                    : ''}
+                                                                            </p>
                                                                             <p style="font-size: 12px">${detalle.comentario}</p>
                                                                         </div>
                                                                         <div class="col-md-12 col-lg-3" style="width: 50%;">
@@ -1185,20 +1319,53 @@ $(document).ready(function() {
                                                             </div>
                                                         </div>
                                                     `;
+
+                                                    $(document).off('click').on('click', '.detalleconsumocortesia', function () {
+                                                        var productName = $(this).attr('data-name');
+                                                        var iddetalle = $(this).attr('data-iddetalle');
+                                                        $('#product-name-modal').html(`De <strong>${productName}</strong> no se le cobrará ningún monto, ¿está seguro?`);
+
+                                                        
+                                                        $('#btn-registrar-cortesia').off('click').on('click', function(event) {
+                                                            event.preventDefault();
+                                                        
+                                                            $.ajax({
+                                                                url: '/api/registrar-cortesia-detalle-consumo/'+iddetalle,
+                                                                method: 'GET',
+                                                                success: function(response) {
+                                                                    MostrarMensaje("Se agrego detalle consumo a cortesia", "success");
+                                                                    DivPedidos.innerHTML = '';
+                                                                    AddProduct = document.getElementById('DivAddProduct');
+                                                                    AddProduct.innerHTML = '';
+                                                                    productosSeleccionados = [];
+                                                                    agregarDetallesConsumo(mesaId);
+                                                                    DivTotalConsumo(mesaId);
+                                                                },
+                                                                error: function(jqXHR, textStatus, errorThrown) {
+                                                                    MostrarMensaje("Para Eses horarios tienes reservado el salon!!!","error")
+                                                                }
+                                                            });
+                                                        });
+                                                    });
+            
                                                 } else {                                                    
                                                     // Si no está vacío, muestra el HTML correspondiente
+                                                    IdMod = detalle.producto.modificadore_id
                                                     nuevoDiv.innerHTML = `
                                                         <div class="col-md-12 col-lg-12" style="width: 100%; padding: 0px; margin: 0px;">
                                                             <div class="card" style="width: 100%; padding: 0px; margin: 0px;">
                                                                 <div class="card-status-start bg-primary"></div>
-                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto; border-bottom: 0px solid red;">
+                                                                <div class="card-header" style="padding: 0px; margin: 0px; height: auto; border-bottom: 0px solid black">
                                                                     <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
                                                                         <div class="col-md-12 col-lg-2" style="width: auto;">
                                                                             <h3 class="card-title">${detalle.cantidad}</h3>
                                                                         </div>
                                                                         <div class="col-md-12 col-lg-7" style="text-align: left; width: 100%;">
                                                                             <p class="card-title">${detalle.producto.NombreProducto} - ${detalle.precio}</p>
-                                                                            <p style="font-size: 12px">${detalle.comentario}</p>
+                                                                            <p style="font-size: 12px;">
+                                                                                ${detalle.comentario} 
+                                                                                <a id="AddModificador" style="color: blue" data-bs-toggle="modal" data-bs-target="#ModalAddModificador" data-IdModificador="${IdMod}" data-IdDetalle="${detalle.id}">Add</a>
+                                                                            </p>
                                                                         </div>
                                                                         <div class="col-md-12 col-lg-3" style="width: 50%;">
                                                                             <h3 class="card-title">${detalle.total}</h3>                                                                    
@@ -1214,32 +1381,25 @@ $(document).ready(function() {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div class="col-md-12" style="padding: 0px; margin: 0px; height: auto;">
-                                                                        <div class="card-header" style="padding: 0px; margin: 0px; height: auto; margin-left: 20%;">
-                                                                            <div style="width: 100%; padding-top: 0px; margin: 0px; display: flex; height: auto; background: #F7F7F7">
-                                                                                <select class="form-control" id="SelectModificadorProducto">
-                                                                                    
-                                                                                </select>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                <div style="margin-top: -30px; padding: 10px;">
                                                                     ${detalle.modificadordetalleconsumo.map(modificador => `
-                                                                        <div class="col-md-12" style="padding: 0px; margin: 0px; height: auto;">
-                                                                            <div class="card-header" style="padding: 0px; margin: 0px; height: auto; margin-left: 20%;">
-                                                                                <div style="width: 100%; padding-top: 0px; margin: 0px; display: flex; height: auto; background: #F7F7F7">
-                                                                                    <div class="col-md-12 col-lg-2" style="width: auto;">
-                                                                                        <h3 class="card-title">${modificador.cantidad}</h3>
-                                                                                    </div>
-                                                                                    <div class="col-md-12 col-lg-5" style="text-align: left; width: 100%;">
-                                                                                        <p class="card-title">${modificador.detallemodificador.producto.NombreProducto}</p>
-                                                                                    </div>
-                                                                                    <div class="col-md-12 col-lg-3" style="width: 50%;">
-                                                                                        <h3 class="card-title">${modificador.total}</h3>                                                                    
-                                                                                    </div>
-                                                                                    <div class="col-md-12 col-lg-1"  style="width: auto; text-aling: right;">
-                                                                                        <span class="badge badge-outline text-red" id="EliminarModificador">X</span>
-                                                                                    </div>
+                                                                        <div class="card-header" style="padding: 0px; margin: 0px; height: auto; border-bottom: 0px solid red;">
+                                                                            <div style="width: 100%; padding-top: 10px; margin: 0px; display: flex; height: auto;">
+                                                                                <div class="col-md-12 col-lg-2" style="width: 100%;">
+                                                                                    <h3 class="card-title" id="Cantidad${modificador.id}">${modificador.cantidad}</h3>
+                                                                                </div>
+                                                                                <div class="col-md-12 col-lg-5" style="text-align: left; width: 100%;">
+                                                                                    <p class="card-title">${modificador.detallemodificador.producto.NombreProducto} - ${modificador.precio}</p>
+                                                                                    
+                                                                                </div>
+                                                                                <div class="col-md-12 col-lg-3" style="width: 100%;">
+                                                                                    <h3 class="card-title">${modificador.total}</h3>                                                                    
+                                                                                </div>
+                                                                                <div class="col-md-12 col-lg-1" style="margin: 0px; padding: 0px">
+                                                                                    <span class="badge badge-outline text-green" data-bs-toggle="modal" data-bs-target="#ModalEditarModificador" data-IdEditModif="${modificador.id}" style="padding: 0px; padding-top: 5px; height: 21px; width: 100%;">E</span>
+                                                                                </div>
+                                                                                <div class="col-md-12 col-lg-1" style="margin: 0px; padding: 0px">
+                                                                                    <span class="badge badge-outline text-red" data-bs-toggle="modal" data-bs-target="#ModalEliminarModificador" data-IdEliminarModif="${modificador.id}" style="padding: 0px; padding-top: 5px; height: 21px; width: 100%;">X</span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1248,29 +1408,246 @@ $(document).ready(function() {
                                                             </div>
                                                         </div>
                                                     `;
+                                                }
+                                                detalle.modificadordetalleconsumo.forEach(modificador => {
+                                                    var editButton = nuevoDiv.querySelector(`[data-IdEditModif="${modificador.id}"]`);
+                                                    if (editButton) {
+                                                        editButton.addEventListener('click', function() {
+                                                            var modalBody = document.querySelector('#ModalEditarModificador .modal-body');
+                                                            modalBody.innerHTML = '';
+                                                    
+                                                            var cantidad = modificador.cantidad;
+                                                            var precio = modificador.precio;
+                                                    
+                                                            function calcularTotal() {
+                                                                var cantidadInput = document.getElementById('EditCantidad');
+                                                                var totalInput = document.getElementById('EditTotal');
+                                                                var nuevaCantidad = parseInt(cantidadInput.value);
+                                                                var nuevoTotal = nuevaCantidad * precio;
+                                                                totalInput.value = nuevoTotal;
+                                                            }
+                                                    
+                                                            var productoHtml = `
+                                                                <div class="row row-cards">
+                                                                    <div class="col-sm-6 col-md-3">
+                                                                        <input type="text" class="form-control" id="EditId" value="${modificador.id}" hidden>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label">Nombre Producto</label>
+                                                                            <input type="text" class="form-control" value="${modificador.detallemodificador.producto.NombreProducto}" disabled>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-md-3">
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label">Precio</label>
+                                                                            <input type="text" class="form-control" id="EditPrecio" value="${precio}" disabled>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-md-3">
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label">Cantidad</label>
+                                                                            <input type="text" class="form-control" id="EditCantidad" value="${cantidad}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-md-2">
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label">Total</label>
+                                                                            <input type="text" class="form-control" id="EditTotal" value="${cantidad * precio}" readonly>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+                                                            modalBody.insertAdjacentHTML('beforeend', productoHtml);
+                                                            calcularTotal();
+                                                            var cantidadInput = document.getElementById('EditCantidad');
+                                                            cantidadInput.addEventListener('input', calcularTotal);
+                                                    
+                                                        });
+                                                    }
+                                                });
 
+                                                detalle.modificadordetalleconsumo.forEach(modificador => {
+                                                    var eliminarButton = nuevoDiv.querySelector(`[data-IdEliminarModif="${modificador.id}"]`);
+                                                    if (eliminarButton) {
+                                                        eliminarButton.addEventListener('click', function() {
+                                                            var modalBody = document.querySelector('#ModalEliminarModificador .modal-body');
+                                                            modalBody.innerHTML = '';
+                                                    
+                                                            var productoHtml = `
+                                                                <div class="row row-cards">
+                                                                    <div class="col-sm-12 col-md-12">
+                                                                        <input type="text" class="form-control" id="EliminarId" value="${modificador.id}" hidden>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label">ESTAS SEGURO QUE DESEAS ELIMINAR?</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+                                                            modalBody.insertAdjacentHTML('beforeend', productoHtml);
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            DivPedidos.appendChild(nuevoDiv);     
+                                            
+                                            var addButton = nuevoDiv.querySelector('#AddModificador');
+                                            if (addButton) {
+                                                addButton.addEventListener('click', function() {
+                                                    var idModificador = addButton.getAttribute('data-IdModificador');
+                                                    var IdDetalle = addButton.getAttribute('data-IdDetalle');
                                                     $.ajax({
-                                                        url: '/api/get-modificador-seleccionado/1',
+                                                        url: '/api/get-modificador-seleccionado/'+idModificador,
                                                         type: 'GET',
                                                         dataType: 'json',
                                                         success: function(data) {
-                                                            console.log(data);
-                                                            const selectModificadorProducto = document.getElementById('SelectModificadorProducto');
-                                                            data.detallemodificador.forEach(detalle => {
-                                                                const option = document.createElement('option');
-                                                                option.value = detalle.producto.id;
-                                                                option.textContent = detalle.producto.NombreProducto;
-                                                                selectModificadorProducto.appendChild(option);
+                                                            var modalBody = document.querySelector('#ModalAddModificador .modal-body');
+                                                            modalBody.innerHTML = '';
+                                                            data.detallemodificador.forEach(function (detalle) {
+                                                                var productoHtml = `
+                                                                    <div class="row row-cards" id="productoDiv" style="padding: 20px; margin: 2px">
+                                                                        <div class="col-sm-6 col-md-1">
+                                                                            <input type="text" class="form-control" id="MIdproducto_${detalle.id}" value="${detalle.producto.id}" hidden>
+                                                                            <input type="text" class="form-control" id="MIdDetalle_${detalle.id}" value="${detalle.id}" hidden>
+                                                                            <div class="mb-3">
+                                                                                <label class="form-check" style="padding: 15px; margin: 20px">
+                                                                                    <input class="form-check-input" type="checkbox" id="ChexInput_${detalle.id}" style="border: 4px solid black; width: 20px; height: 20px">
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-3">
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Nombre Producto</label>
+                                                                                <input type="text" class="form-control" value="${detalle.producto.NombreProducto}">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-3">
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Precio</label>
+                                                                                <input type="text" class="form-control" id="MPrecio_${detalle.id}" value="${detalle.CostoDetalleModificador}" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-2">
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Cantidad</label>
+                                                                                <input type="text" class="form-control" id="MCantidad_${detalle.id}" value="1">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-3">
+                                                                            <div class="mb-3">
+                                                                                <label class="form-label">Total</label>
+                                                                                <input type="text" id="MTotal_${detalle.id}" class="form-control" readonly>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
+                                                                modalBody.insertAdjacentHTML('beforeend', productoHtml);
+                                                            
+                                                                var checkboxId = `ChexInput_${detalle.id}`;
+                                                                var cantidadId = `MCantidad_${detalle.id}`;
+                                                                var precioId = `MPrecio_${detalle.id}`;
+                                                                var totalId = `MTotal_${detalle.id}`;
+
+                                                                var cantidadInput = document.getElementById(cantidadId);
+                                                                var precioInput = document.getElementById(precioId);
+                                                                var totalInput = document.getElementById(totalId);
+
+                                                                function calcularTotal() {
+                                                                    var cantidad = parseInt(cantidadInput.value);
+                                                                    var precio = parseFloat(precioInput.value);
+                                                                    var total = cantidad * precio;
+                                                                    totalInput.value = total.toFixed(2);
+                                                                }
+
+                                                                calcularTotal();
+
+                                                                cantidadInput.addEventListener('input', calcularTotal);
+                                                                precioInput.addEventListener('input', calcularTotal);
+                                                                
+
+                                                                var checkboxId = `ChexInput_${detalle.id}`;
+                                                                document.getElementById(checkboxId).addEventListener('change', function() {
+                                                                    var productoDiv = this.closest('.row-cards');
+                                                                    if (this.checked) {
+                                                                        productoDiv.style.backgroundColor = '';
+                                                                        productoDiv.style.opacity = '1';
+                                                                        productoDiv.style.backgroundImage = 'none';
+                                                                    } else {
+                                                                        productoDiv.style.backgroundColor = 'lightgray';
+                                                                        productoDiv.style.opacity = '0.6';
+                                                                        productoDiv.style.backgroundSize = '9px 9px';
+                                                                        productoDiv.style.backgroundImage = 'repeating-linear-gradient(45deg, #ff0000 0, #ff0000 0.8px, #ffffff 0, #ffffff 50%)'; // Restablecer la imagen de fondo
+                                                                    }
+                                                                });                                                                                                                        
                                                             });
+                                                            
+                                                            var addModfBtn = document.getElementById('btnAddMod');
+                                                            addModfBtn.addEventListener('click', function handleClick() {
+                                                                var detalles = data.detallemodificador;
+                                                                var datosArray = [];
+
+                                                                detalles.forEach(function(detalle) {
+                                                                    var cantidadElement = document.getElementById(`MCantidad_${detalle.id}`);
+                                                                    var precioElement = document.getElementById(`MPrecio_${detalle.id}`);
+                                                                    var totalElement = document.getElementById(`MTotal_${detalle.id}`);
+                                                                    var idElement = IdDetalle;
+                                                                    var idElement2 = document.getElementById(`MIdDetalle_${detalle.id}`);
+                                                                    var checkboxId = `ChexInput_${detalle.id}`;
+                                                                    var checkboxElement = document.getElementById(checkboxId);
+
+                                                                    if (cantidadElement && precioElement && totalElement && idElement && checkboxElement) {
+                                                                        var cantidad = parseInt(cantidadElement.value);
+                                                                        var precio = parseFloat(precioElement.value);
+                                                                        var total = parseFloat(totalElement.value);
+                                                                        var idproducto = parseFloat(idElement);
+                                                                        var idDetalle = parseFloat(idElement2.value);
+                                                                        var checkboxValue = checkboxElement.checked;
+
+                                                                        var data = {
+                                                                            iddetalleconsumo: idproducto,
+                                                                            iddetallemodificadore: idDetalle,
+                                                                            cantidad: cantidad,
+                                                                            precio: precio,
+                                                                            total: total,
+                                                                            checkboxValue: checkboxValue
+                                                                        };
+
+                                                                        datosArray.push(data);
+                                                                    }
+                                                                });
+
+                                                                $.ajax({
+                                                                    url: '/api/registrar-modificador-consumo',
+                                                                    type: 'POST',
+                                                                    contentType: 'application/json',
+                                                                    data: JSON.stringify(datosArray),
+                                                                    success: function(response) {
+                                                                        var modalAdd = document.getElementById('ModalAddModificador');
+                                                                        $(modalAdd).modal('hide');
+                                                                        DivPedidos.innerHTML = '';
+                                                                        AddProduct = document.getElementById('DivAddProduct');
+                                                                        AddProduct.innerHTML = '';
+                                                                        productosSeleccionados = [];
+                                                                        agregarDetallesConsumo(mesaId);
+                                                                        DivTotalConsumo(mesaId);
+                                                                        MostrarMensaje('Se agrego exitosamente','success')
+                                                                    },
+                                                                    error: function(xhr, status, error) {
+                                                                        MostrarMensaje('Error al enviar los datos','error')
+                                                                    }
+                                                                });
+
+                                                                // Remover el evento de clic después de hacer clic una vez
+                                                                addModfBtn.removeEventListener('click', handleClick);
+                                                            });
+
+
                                                         },
                                                         error: function(error) {
                                                             console.error('Error:', error);
                                                         }
                                                     });
-                                                }
+                                                });
                                             }
-                                            
-                                            DivPedidos.appendChild(nuevoDiv);
+
                                         });
 
                                         $('#ElminarDetalle').on('show.bs.modal', function (event) {
@@ -1307,46 +1684,130 @@ $(document).ready(function() {
                                                 }
                                             });
                                         });
-
                                     },
                                     error: function (error) {
                                         console.error('Error:', error);
                                     }
-                                });
+                                });                                
                             }
 
-                            
+                            var btnActualizaMod = document.getElementById('btnActualizaMod');
+                            btnActualizaMod.addEventListener('click', function() {                                                
+                                var cantidad = parseInt(document.getElementById('EditCantidad').value);
+                                var precio = parseFloat(document.getElementById('EditPrecio').value);
+                                var total = parseFloat(document.getElementById('EditTotal').value);
+                                var id = parseFloat(document.getElementById('EditId').value);
 
+                                var data = {
+                                    id: id,
+                                    cantidad: cantidad,
+                                    precio: precio,
+                                    total: total
+                                };
+
+                                $.ajax({
+                                    url: '/api/actualizar-modificador-consumo',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(data),
+                                    success: function(response) {
+                                        DivPedidos.innerHTML = '';
+                                        AddProduct = document.getElementById('DivAddProduct');
+                                        AddProduct.innerHTML = '';
+                                        productosSeleccionados = [];
+                                        agregarDetallesConsumo(mesaId);
+                                        DivTotalConsumo(mesaId);
+                                        MostrarMensaje('Se actualizo exitosamente','success')
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error al enviar los datos:', error);
+                                    }
+                                });
+                                $(this).off('click');
+                            });
+
+                            var eliminarModfBtn = document.getElementById('EliminarModf');
+                            eliminarModfBtn.addEventListener('click', function() {
+                                var id = document.getElementById('EliminarId').value;
+                                var data = {
+                                    id: id,
+                                    total: total
+                                };
+                                $.ajax({
+                                    url: '/api/eliminar-modificador-consumo',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(data),
+                                    success: function(response) {
+                                        DivPedidos.innerHTML = '';
+                                        AddProduct = document.getElementById('DivAddProduct');
+                                        AddProduct.innerHTML = '';
+                                        productosSeleccionados = [];
+                                        agregarDetallesConsumo(mesaId);
+                                        DivTotalConsumo(mesaId);
+                                        MostrarMensaje('Se elimino exitosamente','success')
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error al enviar los datos:', error);
+                                    }
+                                });
+                                $(this).off('click');
+                            });                            
                         },
                         error: function (error) {
                             console.error('Error al obtener productos:', error);
-                        }                            
+                        }
                     });
                     resolve(`
                         <form>
-                            <div class="card-header" style="background: #FF8080">
+                            <div class="card-header" style="background: #FF8080; padding: 0px; padding-right: 6px; padding-left: 6px;">
                                 <div class="d-flex align-items-center" style="width: 100%">
                                     <h3 class="card-title" style="color: white; margin: 0">Mesa #${mesaId}</h3>
-                                    <div class="ms-auto">
-                                        <a class="badge bg-blue-lt" data-id="${mesaId}" id="ImprimirMesa" onclick="generarPDF()" style="color: white; text-decoration: underline;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-printer"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" /></svg>
-                                        </a>
-                                        <a class="badge bg-red-lt" style="color: white; text-decoration: underline;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-color-picker"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11 7l6 6" /><path d="M4 16l11.7 -11.7a1 1 0 0 1 1.4 0l2.6 2.6a1 1 0 0 1 0 1.4l-11.7 11.7h-4v-4z" /></svg>
-                                        </a>
+                                    <div class="ms-auto" style="display: flex; justify-content: flex-start; align-items: center;">
+                                       <div class="row g-2 align-items-center">                                            
+                                            <div class="col-6 col-sm-4 col-md-2 col-xl-auto py-3">
+                                                <a href="#" class="btn w-100 btn-icon" data-id="${mesaId}" id="CambiarConsumoHabitacion" onclick="CambiarAHabitacionConsumo()" data-bs-toggle="modal" data-bs-target="#modal-cambiar-mesa-habitacion" style="padding: 14px; text-align: center; display: flex; justify-content: center; align-items: center; margin-right: 10px;" data-bs-toggle="tooltip" title="Cambiar Consumo a Habitacion" >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrows-left-right">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                        <path d="M21 17l-18 0" />
+                                                        <path d="M6 10l-3 -3l3 -3" />
+                                                        <path d="M3 7l18 0" />
+                                                        <path d="M18 20l3 -3l-3 -3" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                            <div class="col-6 col-sm-4 col-md-2 col-xl-auto py-3">
+                                                <a href="#" class="btn w-100 btn-icon" data-id="${mesaId}" id="ImprimirMesa" onclick="generarPDF()" style="padding: 14px; text-align: center; display: flex; justify-content: center; align-items: center; margin-right: 10px;" data-bs-toggle="tooltip" title="Mandar Directamente a Impresora" >
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-printer">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                        <path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" />
+                                                        <path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" />
+                                                        <path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                            <div class="col-6 col-sm-4 col-md-2 col-xl-auto py-3">
+                                                <a href="#" class="btn w-100 btn-icon" href="#" class="btn" data-id="${mesaId}" id="VerImprimirMesa" onclick="generarPDFver()" style="padding-right: 6px; padding-left: 6px;" data-bs-toggle="tooltip" title="Ver PDF" >
+                                                    VerPDF
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div> 
                             </div>
                     
                     
-                            <div class="card-body" style="padding: 0px; margin: 0px">
-                                <div class="col-md-12">
+                            <div class="card-body" style="padding: 0px; margin: 0px;">
+                                <div class="col-md-12" style="padding: 0px; margin: 0px;">
                                     <form class="card">
                                         <div class="card-header">
-                                        <h3 class="card-title">${consumo[0].CantidadPersonas ? consumo[0].CantidadPersonas + ' personas,' : ''}</h3>
-                                                                ${consumo[0].cliente ? consumo[0].cliente.NombreCliente : ''} 
-                                                                ${consumo[0].camarero ? consumo[0].camarero.NombreCamarero : ''} 
-                                                                ${consumo[0].fecha_venta ? consumo[0].fecha_venta : ''}
+                                            <strong style="color: red">
+                                                ${consumo[0].Comentario ? consumo[0].Comentario + ' - ' : ''}
+                                            </strong>
+                                            ${consumo[0].CantidadPersonas ? consumo[0].CantidadPersonas + ' personas,' : ''}
+                                            ${consumo[0].cliente ? consumo[0].cliente.NombreCliente + ',' : ''}
+                                            ${consumo[0].camarero ? consumo[0].camarero.NombreCamarero + ',' : ''} 
+                                            ${consumo[0].fecha_venta ? formatarFecha(consumo[0].fecha_venta) : ''}
                                         </div>
                                         <div class="card-body">
                                         <div class="mb-3 row">
@@ -1363,12 +1824,12 @@ $(document).ready(function() {
                                                     </div>                                                        
                                                 </div>
                                             </div>
-                                            <div class="row" id="DivFavorite" style="width: 100%">
+                                            <div class="contenedor" id="DivFavorite" style="width: 100%; margin: 0px; padding: 0px;">
                                                 
                                             </div>
                                         </div>
-                                        <div class="mb-3 row">
-                                            <div class="mb-3" id="DivAddProduct">
+                                        <div>
+                                            <div id="DivAddProduct">
                                                 
                                             </div>
                                             <button id="btnGuardar" class="btn btn-primary" style="display: none">Guardar</button>
@@ -1544,7 +2005,7 @@ $(document).ready(function() {
                                 </select>
                                 </div>
                             </div>
-                            <div class="mb-3 row">
+                            <div class="mb-3 row" hidden>
                                 <label class="col-3 col-form-label">Camarero</label>
                                 <div class="col">
                                 <select class="form-select" id="SeleccionarCamarero" name="SeleccionarCamarero"> 
@@ -1555,7 +2016,7 @@ $(document).ready(function() {
                             <div class="row">
                                 <label class="col-3 col-form-label pt-0">Comentario</label>
                                 <div class="col">
-                                <textarea class="form-control" rows="5" id="Comentario" name="Comentario"></textarea>
+                                <textarea class="form-control convertmayusculas" rows="5" id="Comentario" name="Comentario"></textarea>
                                 </div>
                             </div>
                             </div>
@@ -1566,13 +2027,14 @@ $(document).ready(function() {
                     </div>
                 </div>                    
             </form>
-        `;
-    }
+        `;        
+    }    
 
+    
     document.getElementById('BorrarDiv').addEventListener('click', function() {
         var divPadre = this.closest('.row');
         divPadre.remove();
-    });
+    });    
 });
 
 function ListarDescuentos(id) {
@@ -1679,22 +2141,7 @@ function total(id){
     
 }
 
-function CanvasTime(){
-    var TotalProduct = document.getElementById('form_tabs');
-    TotalProduct.innerHTML = `
-        <div class="col-md-6 col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                <h3 class="card-title" style="color: #424769">Sin Seleccionar Nada, En Espera ...</h3>
-                </div>
-                <div class="img-responsive img-responsive-21x21 card-img-bottom" style="background-image: url('/utilidades/svg/espera.svg')"></div>
-            </div>
-        </div>
-    `;        
-}
-
 $('#ModalCerrarMesa').on('shown.bs.modal', function () {
-    $('#btnPorcentaje').off('click').on('click', DescuentoDiv);
     $('#btnCerrarMesa').off('click').on('click', guardarCambios);
 });
 
@@ -1859,14 +2306,11 @@ function guardarCambios() {
             }
 
             $('#btnConfirmarPago').off('click').on('click', function (event) {
-
                 $(this).prop('disabled', true);
-
                 event.preventDefault();
-                
                 var elementosPagos = $('#ListPagos > div');
                 var pagos = [];
-
+                var isChecked = document.getElementById('EnviarCaja').checked;
                 elementosPagos.each(function () {
                     var tipoPago = $(this).find('.form-control').val();
                     var montoPago = parseFloat($(this).find('.montoPagoInput').val()) || 0;
@@ -1876,14 +2320,14 @@ function guardarCambios() {
                         cantidad: montoPago
                     });
                 });
-
                 var token = $('meta[name="csrf-token"]').attr('content');
                 $.ajax({
                     url: '/api/cerrar-mesa/' + id,
                     type: 'POST',
                     data: {
                         _token: token,
-                        pagos: pagos 
+                        pagos: pagos,
+                        isChecked: isChecked 
                     },
                     success: function (consumo) {
                         $('#ModalCerrarMesa').modal('hide');
@@ -1893,6 +2337,7 @@ function guardarCambios() {
                         ('lisDescuento').innerHTML = '';
                         document.getElementById('listTotal').innerHTML = '';
                         document.getElementById('listVuelto').innerHTML = '';
+                        document.getElementById('EnviarCaja').checked = false;
 
                         MostrarMensaje("Mesa Cerrada Correctamente", "success");
                         CanvasTime()
@@ -1927,15 +2372,17 @@ function generarPDF() {
             $.ajax({
                 url:'/api/print-name',
                 type: 'GET',
-                success: function(impresora) {
-                    let printerName = impresora.NombreImpresora;
+                success: function(data) {
+                    let IpImpresor = data.DireccionIp;
+                    let printerName = data.NombreImpresora;
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'http://localhost:8080/imprimir/' + printerName, true);
+                    xhr.open('POST', 'https://'+IpImpresor+'/imprimir/'+printerName, true);
                     xhr.setRequestHeader('Content-Type', 'application/json');
                     xhr.onload = function () {
                         if (xhr.status === 200) {
-                            alert('El archivo PDF se envió correctamente para imprimir.');
+                            MostrarMensaje("Se envio a la impresora "+printerName, "success");
                         } else {
+                            MostrarMensaje("Error en impresora "+printerName, "error");
                             alert('Hubo un error al enviar el archivo PDF para imprimir.');
                         }
                     };
@@ -1953,105 +2400,96 @@ function generarPDF() {
     });
 }
 
+function generarPDFver() {
+    var mesaId = document.getElementById('VerImprimirMesa').getAttribute('data-id');
+    var pdfUrl = '/api/get-mesa-comanda/' + mesaId;
+
+    // Configura el iframe con la URL del PDF
+    document.getElementById('pdfViewer').src = pdfUrl;
+
+    // Muestra el modal
+    var pdfModalMesa = new bootstrap.Modal(document.getElementById('pdfModalMesa'));
+    pdfModalMesa.show();
+}
 
 
+function formatarFecha(fechaString) {
+    const fecha = new Date(fechaString);
 
-/*
- public function RegistrarDetalleConsumo(Request $request){
-        //return response()->json($request->all());
-        try {
-            foreach ($request->all() as $producto) {
-                $consumoId = $producto['Idconsumo'];
-                $productoId = $producto['Idproducto'];
-                $cantidad = $producto['cantidad'];
-                $comentario = $producto['comentario'];
-                $precio = $producto['precio'];
-                $modificadores = $producto['Modificadores'];                         
-                
-                $ExiteProducto = Producto::where('id',$productoId)->first();
-                
-                if ($ExiteProducto->ControlStock == "true"){
-                    $detalleConsumo = DetalleConsumo::create([
-                        'producto_id' => $productoId,
-                        'consumo_id' => $consumoId,
-                        'fecha_venta' => now(),
-                        'comentario' => $comentario,
-                        'cantidad' => $cantidad,
-                        'precio' => $precio,
-                        'total' => $precio * $cantidad,
-                        'eliminado' => 'false',
-                        'comentarioeliminado' => '',
-                    ]);
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1; // Los meses comienzan desde 0
+    const anio = fecha.getFullYear();
+    const hora = fecha.getHours();
+    const minutos = fecha.getMinutes();
+    const segundos = fecha.getSeconds();
 
-                    $stockdate = StockDate::create([
-                        'Cantidad' => $cantidad,
-                        'TipoStock' => "Salida",
-                        'StockAnterior' => $ExiteProducto->CantidadStock,
-                        'StockActual' => $ExiteProducto->CantidadStock - $cantidad,
-                        'Diferencia' => $cantidad,
-                        'NombreProducto' =>  $ExiteProducto->NombreProducto,
-                        'DetalleStock' => "Ajuste Manual - Stock Anterior ".$ExiteProducto->CantidadStock." y estock actualizado ".$cantidad,
-                        'FechaStock' => now(),
-                        'producto_id' => $ExiteProducto->id,
-                    ]);
+    // Agregar ceros delante si es necesario
+    const diaStr = (dia < 10 ? '0' : '') + dia;
+    const mesStr = (mes < 10 ? '0' : '') + mes;
+    const horaStr = (hora < 10 ? '0' : '') + hora;
+    const minutosStr = (minutos < 10 ? '0' : '') + minutos;
+    const segundosStr = (segundos < 10 ? '0' : '') + segundos;
 
-                    $nuevostock = $ExiteProducto->CantidadStock - $cantidad;
-                    $ExiteProducto->CantidadStock = $nuevostock;
-                    $ExiteProducto->save();
-                }else{
-                    $detalleConsumo = DetalleConsumo::create([
-                        'producto_id' => $productoId,
-                        'consumo_id' => $consumoId,
-                        'fecha_venta' => now(),
-                        'comentario' => $comentario,
-                        'cantidad' => $cantidad,
-                        'precio' => $precio,
-                        'total' => $precio * $cantidad,
-                        'eliminado' => 'false',
-                        'comentarioeliminado' => '',
-                    ]);
-                } 
+    return `${diaStr}/${mesStr}/${anio} ${horaStr}:${minutosStr}:${segundosStr}`;
+}
 
-                foreach ($modificadores as $modificador) {
-                    if ($modificador['Checkbox']) { 
-
-                        $detallemodificadore = ModificadorDetalleConsumo::create([
-                            'detalle_modificadore_id' => $modificador->id,
-                            'detalle_consumo_id' => $detalleConsumo->id,
-                            'fecha_venta' => now(),
-                            'comentario' => "nada",
-                            'cantidad' => $modificador->Cantidad,
-                            'precio' => $modificador->CostoDetalleModificador,
-                            'total' => 10,
-                            'eliminado' => 'false',
-                            'comentarioeliminado' => '',
-                        ]);
-                    }
-                }
-    
-                $consumo = Consumo::findOrFail($consumoId);
-                $consumo->subTotal += $precio * $cantidad;
-                $subTotal = $consumo->subTotal;
-                $consumo->total = $subTotal;
-                $consumo->save();
-
-                $descuentoPorcentaje = DescuentoConsumo::where('consumo_id',$consumoId)->get();
-                foreach ($descuentoPorcentaje as $descuento) {
-                    if($descuento->TipoDescuento == 'porcentaje'){
-                        $totalDescuento = ($subTotal * $descuento->MontoDescuento) / 100;
-                        $descuento->TotalDescuento = $totalDescuento;
-                        $descuento->save();
-                    }
-                }
-                
+function CambiarAHabitacionConsumo() {
+    var mesaId = document.getElementById('CambiarConsumoHabitacion').getAttribute('data-id');
+    $.ajax({
+        url: '/apihostal/get-habitaciones-ocupadas',
+        type: 'GET',
+        dataType: 'json',
+        success: function (HabitacionesOcupadas) {
+            console.log(HabitacionesOcupadas);
+            if (HabitacionesOcupadas.length > 0) {
+                $('#habitaciones-select').empty();
+                $('#habitaciones-select').append('<option value="">Selecciona una habitación</option>');
+                HabitacionesOcupadas.forEach(function(habitacion) {
+                    $('#habitaciones-select').append('<option value="' + habitacion.id + '">' + habitacion.Nombre_habitacion + '</option>');
+                });
+            } else {
+                alert('No hay habitaciones ocupadas disponibles.');
             }
-            $SumDescuentoSubtotal = $descuentoPorcentaje->sum('TotalDescuento');
-            $valorfinal = $consumo->total - $SumDescuentoSubtotal;
-            Consumo::where('id', $consumoId)->update(['total' => $valorfinal]);
-    
-            return response()->json(['message' => 'Detalles del consumo registrados correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            alert('Hubo un error al obtener las habitaciones ocupadas.');
         }
+    });
+}
+
+$('#habitaciones-select').on('change', function() {
+    var selectedHabitacion = $(this).val();
+    if (selectedHabitacion) {
+        $('#btn-registrar-cambio-mesa-habitacion').prop('disabled', false);
+    } else {
+        $('#btn-registrar-cambio-mesa-habitacion').prop('disabled', true);
     }
-*/
+});
+
+$('#btn-registrar-cambio-mesa-habitacion').on('click', function() {
+    var mesaId = document.getElementById('CambiarConsumoHabitacion').getAttribute('data-id');
+    var habitacionId = $('#habitaciones-select').val();
+    console.log("mesa " + mesaId)
+    console.log("habitacion " + habitacionId)
+    $.ajax({
+        url: '/apihostal/cambiar-consumo-habitacion',
+        type: 'POST',
+        data: {
+            mesaId: mesaId,
+            habitacionId: habitacionId,
+        },
+        success: function(response) {
+            console.log(response)
+            CanvasTime()
+            var mesaSeleccionada = $('.mesa a.selected-btn');
+            mesaSeleccionada.removeClass('selected-btn');
+            mesaSeleccionada.css('background', 'white');
+            mesaSeleccionada.css('color', 'black');
+            MostrarMensaje("Mesa Creada Exitosamente","success");
+        },
+        error: function(error) {
+            console.error('Error al registrar la mesa:', error);
+        }
+    });
+});

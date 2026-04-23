@@ -17,9 +17,14 @@ return new class extends Migration
             $table->unsignedBigInteger('empresa_id')->nullable();
             $table->foreign('empresa_id')->references('id')->on('empresas')->onDelete('cascade')->nullable();
 
-            $table->string('documento');
+            $table->string('documento')->nullable();
             $table->string('name');
-            
+            $table->string('email')->nullable();
+            $table->string('telefono')->nullable();
+            $table->string('direccion')->nullable();
+            $table->string('comentario')->nullable();
+            $table->string('estado')->nullable();
+            $table->string('Total')->nullable();
             $table->timestamps();
         });
     }

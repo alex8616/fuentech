@@ -31,4 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'huggingface' => [
+        'token' => env('HUGGINGFACE_TOKEN'),
+        'model' => 'microsoft/trocr-base-handwritten', // Puedes cambiar el modelo
+    ],
+    
+    /*'huggingface' => [
+        'token' => env('HUGGINGFACE_TOKEN'),
+        'model' => 'microsoft/layoutlmv3-base', // Prueba este modelo
+    ],*/
+
 ];

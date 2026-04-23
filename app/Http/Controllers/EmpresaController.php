@@ -11,25 +11,33 @@ use Illuminate\Support\Facades\DB;
 
 class EmpresaController extends Controller
 {
-   
-    public function vista(){
-        return view('admin.index');
+
+    public function Restaurante(){
+        return view('admin.Restaurante');
     }
 
-    public function vista2(){
-        return view('admin.index2');
+    public function Gastos(){
+        return view('admin.Gastos');
     }
 
-    public function vista3(){
-        return view('admin.index3');
+    public function Clientes(){
+        return view('admin.Clientes');
     }
 
-    public function vista4(){
-        return view('admin.index4');
+    public function Productos(){
+        return view('admin.Productos');
     }
 
-    public function vista1(){
-        return view('admin.index1');
+    public function Ventas(){
+        return view('admin.Ventas');
+    }
+
+    public function Proveedores(){
+        return view('admin.Proveedores');
+    }
+
+    public function Indicadores(){
+        return view('admin.Indicadores');
     }
 
     public function GetUserLogin(){
@@ -37,17 +45,12 @@ class EmpresaController extends Controller
         return response()->json($user);
     }
 
-    public function ConfigImpresora(){
-        $user = Auth::user(); 
+    public function Kardex(){
+        return view('admin.kardex.Kardex');
+    }
 
-        if ($user) {
-            $CountImpresora = Configuracion::where('empresa_id',$user->empresa_id)->count();
-            $impresora = Configuracion::where('empresa_id',$user->empresa_id)->first();
-            return view('admin.Configuracion.ConfiguracionImpresora',compact('CountImpresora','impresora'));
-        } else {
-            return response()->json("user No INICIADO SESSION");
-        } 
-        
+    public function MenuDigital(){
+        return view('admin.MenuOnline.online');
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CategoriaIngrediente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CategoriaIngredienteController extends Controller
 {
@@ -20,6 +21,11 @@ class CategoriaIngredienteController extends Controller
     }
 
     public function RegistrarCategoria(Request $request){
+        $registro = CategoriaIngrediente::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+        
         $user = Auth::user(); 
         $categoria = CategoriaIngrediente::create([
             'NombreCategoria' => $request->Nombre,

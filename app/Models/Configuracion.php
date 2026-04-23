@@ -10,11 +10,13 @@ class Configuracion extends Model
     use HasFactory;
     protected $fillable = [
         'NombreImpresora',
-        'empresa_id'
+        'user_id',
+        'DireccionIpLocal',
+        'Activo'
     ];
 
-    public function empresas(){
-        return $this->hasMany(Empresa::class, 'empresa_id');
+    public function users(){
+        return $this->hasMany(User::class, 'user_id');
     }
     
 }

@@ -1,3 +1,316 @@
+$(document).ready(function() {
+    $('#modal-ingredientes').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var productId = button.data('selectproduct-id');
+        $.ajax({
+            url: '/api/get-ingrediente',
+            method: 'GET',
+            success: function(data) {
+                $("#BuscarReceta").autocomplete({
+                    source: function(request, response) {
+                        var searchTerm = request.term.toLowerCase();
+                        var filteredData = data.filter(function(ingrediente) {
+                            return ingrediente.NombreIngrediente.toLowerCase().includes(searchTerm);
+                        });
+                        response(filteredData);
+                    },
+                    appendTo: "#modal-ingredientes",
+                    select: function(event, ui) {
+                        var ingredienteSeleccionado = ui.item;
+                        agregarDivIngrediente(ingredienteSeleccionado,productId);
+                    },
+                    create: function() {
+                        $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                            return $("<li>")
+                                .append("<div>" + item.NombreIngrediente + "</div>")
+                                .appendTo(ul);
+                        };
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al obtener las opciones:", error);
+            }
+        });
+    });
+    
+
+    // Evitar que el modal se cierre cuando se hace clic fuera de él
+    $('#modal-ingredientes').modal({ backdrop: 'static', keyboard: false });
+
+    // Cuando se haga clic en el botón Registrar
+    $('#BtnRegistrarReceta').on('click', function() {
+        var Id = $('#productoID').val(); // Obtener el Id una sola vez fuera del bucle
+        var ingredientes = []; // Array para almacenar todos los ingredientes
+        
+        $('.row-cards').each(function() {
+            var row = $(this);
+            var ingrediente = {
+                Id: row.find('#productoID').val(),
+                ingredienteId: row.find('#ingredienteID').val(), 
+                nombreIngrediente: row.find('#RecuperarNombreIngrediente').text(),
+                cantidadNeta: row.find('#CantidadNeta').val(),
+                unidadNeta: row.find('#UnidadNeta').val(),
+                merma: row.find('#RecuperarMermaIngrediente').text(),
+                cantidadBruta: row.find('#CantidadBruta').val(),
+                costoIngrediente: row.find('#TotalIngrediente').text()
+            };
+            ingredientes.push(ingrediente); 
+        });
+    
+        // Enviar todos los ingredientes juntos en una sola solicitud AJAX
+        $.ajax({
+            url: '/api/registrar-receta',
+            method: 'POST',
+            data: {
+                Id: Id, 
+                ingredientes: ingredientes
+            },
+            success: function(response) {
+                $('#BuscarModificador').val('');
+                $('#contenedor-modificador').empty();
+                $('.row-cards').remove(); 
+                MostrarMensaje("Agregado Exitosamente", "success");
+                actualizarTablaDetallesReceta(response)
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al registrar ingredientes:', error);
+            }
+        });
+    });
+    
+    function agregarDivIngrediente(ingredienteSeleccionado, productId) {
+        var divIngrediente = `
+        <br><div class="row row-cards">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Ingrediente</label>
+                        <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
+                        <input type="text" readonly class="form-control" id="ingredienteID" value="${ingredienteSeleccionado.id}" hidden>  
+                        <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Cant. Neta</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="CantidadNeta">
+                            </div>
+                            <div class="col">
+                                <select class="form-control form-select" id="UnidadNeta">
+                                    <option value="Unid">Unid.</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Gramos">Gramos</option>
+                                    <option value="Onza">Onza</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Merma</label>
+                        <span id="RecuperarMermaIngrediente">
+                            ${ingredienteSeleccionado.CantidadIngrediente ? ingredienteSeleccionado.CantidadIngrediente : 0}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Cant. Bruta</label>
+                        <div class="row">
+                            <div class="col" style="margin: 0px;">
+                                <input type="text" class="form-control" id="CantidadBruta" readonly>
+                            </div>
+                            <div class="col" style="margin: 0px;">
+                                <select class="form-control form-select" id="UnidadBruta" disabled>
+                                    <option value="Unid">Unid.</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Gramos">Gramos</option>
+                                    <option value="Onza">Onza</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold">Costo</label>
+                        <div class="row">
+                            <div class="col-auto">
+                                <span id="TotalIngrediente">${ingredienteSeleccionado.CostoIngrediente}</span>
+                            </div>
+                            <div class="col-auto">
+                                <a href="#" class="badge bg-red-lt" id="EliminarFila">X</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        $("#contenedor-ingrediente").append(divIngrediente);
+
+        function calcularCantidadBrutaYTotal(event) {
+            var row = $(event.target).closest('.row-cards');
+            var cantidadNeta = parseFloat(row.find('#CantidadNeta').val());
+            var merma = parseFloat(row.find('#RecuperarMermaIngrediente').text());
+            var costoIngrediente = 0,
+            costoIngrediente = parseFloat(row.find('#TotalIngrediente').text());
+            if (!isNaN(cantidadNeta) && !isNaN(merma) && !isNaN(costoIngrediente)) {
+                var cantidadBruta = cantidadNeta / (1 - (merma / 100));
+                var total = cantidadBruta * costoIngrediente;
+
+                row.find('#CantidadBruta').val(cantidadBruta.toFixed(2));
+                row.find('#TotalIngrediente').text(total.toFixed(2));
+            } else {
+                if(merma == null){
+                    var cantidadBruta = cantidadNeta / (1 - (cantidadNeta / 100));
+                    var total = cantidadBruta * costoIngrediente;
+
+                    row.find('#CantidadBruta').val(cantidadBruta.toFixed(2));
+                    row.find('#TotalIngrediente').text(total.toFixed(2));
+                }
+            }
+        }
+
+        $('#contenedor-ingrediente').off('change', '.row-cards').on('change', '.row-cards', calcularCantidadBrutaYTotal);
+
+        calcularCantidadBrutaYTotal({ target: $('#contenedor-ingrediente').children().last().find('#CantidadNeta')[0] });
+
+        $('#contenedor-ingrediente').on('click', '#EliminarFila', function() {
+            $(this).closest('.row-cards').remove();
+        });
+    }
+});
+
+$(document).on('change', '.DetectarMenuCheck', function() {
+    const checkbox = $(this);
+    const categoriaId = checkbox.attr('id').replace('DetectarMenuCheck-', '');
+    const nuevoEstado = checkbox.is(':checked'); // true o false
+
+    // Actualiza visualmente el texto activo/inactivo
+    const $link = checkbox.closest('.form-check').find('a');
+    const $estadoTexto = $link.find('small');
+    $estadoTexto.text(nuevoEstado ? 'activo' : 'inactivo');
+
+    // Enviar al backend con AJAX
+    $.ajax({
+        url: 'api/categorias/actualizar-estado',
+        method: 'POST',
+        data: {
+            id: categoriaId,
+            menuOnline: nuevoEstado,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            MostrarMensaje("Estado actualizado con éxito", "success");
+        },
+        error: function(xhr) {
+            MostrarMensaje("Error al actualizar el estado", "error");
+            checkbox.prop('checked', !nuevoEstado);
+            $estadoTexto.text(!nuevoEstado ? 'activo' : 'inactivo');
+        }
+    });
+});
+
+$(document).ready(function() {
+    $('#modal-grupos').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var productId = button.data('selectproduct-id');
+        $.ajax({
+            url: '/api/get-modificadores',
+            method: 'GET',
+            success: function(data) {
+                $("#BuscarModificador").autocomplete({
+                    source: function(request, response) {
+                        var searchTerm = request.term.toLowerCase();
+                        var filteredData = data.filter(function(modificadore) {
+                            return modificadore.NombreModificador.toLowerCase().includes(searchTerm);
+                        });
+                        response(filteredData);
+                    },
+                    appendTo: "#modal-grupos",
+                    select: function(event, ui) {                        
+                        var modificadoreSeleccionado = ui.item;
+                        agregarDivModificadore(modificadoreSeleccionado,productId);
+                    },
+                    create: function() {
+                        $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                            return $("<li>")
+                                .append("<div>" + item.NombreModificador + "</div>")
+                                .appendTo(ul);
+                        };
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al obtener las opciones:", error);
+            }
+        });
+    });
+    
+
+    $('#modal-grupos').modal({ backdrop: 'static', keyboard: false });
+
+    $('#BtnRegistrarModificador').on('click', function() {
+        var Id = $('#productoID').val();
+        var modificadores = [];
+        
+        $('.row-cards').each(function() {
+            var row = $(this);
+            var modificadore = {
+                Id: row.find('#productoID').val(),
+                IdMod: row.find('#modificadorID').val(),
+            };
+            modificadores.push(modificadore); 
+        });
+    
+        $.ajax({
+            url: '/api/producto-modificador-update/'+Id,
+            method: 'GET',
+            data: {
+                Id: Id, 
+                modificadores: modificadores
+            },
+            success: function(response) {
+                actualizarTablaModificador(response)
+                MostrarMensaje("Agregado Exitosamente", "success");
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al registrar ingredientes:', error);
+            }
+        });
+    });
+    
+    function agregarDivModificadore(modificadoreSeleccionado, productId) {
+        var divIngrediente = `
+        <br><br><div class="row row-cards" style="background: #F0F0F0; padding-left: 10px; padding-right: 10px">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
+                        <input type="text" readonly class="form-control" id="modificadorID" value="${modificadoreSeleccionado.id}" hidden>  
+                        <span id="RecuperarNombreIngrediente">${modificadoreSeleccionado.NombreModificador}</span>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <span id="RecuperarNombreIngrediente">${modificadoreSeleccionado.NombreModificador}</span>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <a href="#" class="badge bg-red-lt" id="EliminarFila">X</a>
+                </div>
+            </div>
+        `;
+        $("#contenedor-modificador").append(divIngrediente);
+
+        $('#contenedor-modificador').on('click', '#EliminarFila', function() {
+            $(this).closest('.row-cards').remove();
+        });
+    }
+});
+
 function MostrarCategoria(){
     $.ajax({
         url: 'api/get-categorias',
@@ -8,13 +321,20 @@ function MostrarCategoria(){
                 var categoriasContainer = $('#listarcategorias');
                 var contenidoHTML = '';
                 $.each(data, function(index, categoria) {
-                    contenidoHTML += '<div>'
-                    contenidoHTML += '<a class="list-group-item list-group-item-action d-flex align-items-center" href="#" data-id="' + categoria.id + '" style="color: white; font-weight: bold;">';
+                    contenidoHTML += '<div class="mb-2">';
+                    
+                    contenidoHTML += '<div class="form-check form-switch d-flex align-items-center">';
+                    contenidoHTML += '<input class="form-check-input me-2 DetectarMenuCheck" type="checkbox" id="DetectarMenuCheck-' + categoria.id + '" ' + (categoria.MenuOnline === 'true' ? 'checked' : '') + '>';
+                    
+                    contenidoHTML += '<a class="list-group-item list-group-item-action d-flex align-items-center w-100" href="#" data-id="' + categoria.id + '" style="color: white; font-weight: bold;">';
                     contenidoHTML += categoria.Nombre_categoria;
                     contenidoHTML += '<small class="text ms-auto" style="color: white;">' + (categoria.Estado === 'true' ? 'activo' : 'inactivo') + '</small>';
                     contenidoHTML += '</a>';
-                    contenidoHTML += '</div>'
+                    
+                    contenidoHTML += '</div>';
+                    contenidoHTML += '</div>';
                 });
+                
                 categoriasContainer.html(contenidoHTML);
                 $('#listarcategorias').on('click', '.list-group-item', function() {
                     var $listItem = $(this);
@@ -128,22 +448,6 @@ function ListProductos(categoriaId){
                         });
                     });
 
-                    $('#SearchProduct').on('input', function() {
-                        var searchText = $(this).val().toLowerCase();
-                        $('#tabla-productos tbody tr').each(function() {
-                            var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                            var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                            var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                            var margen = $(this).find('td:nth-child(4)').text().toLowerCase();
-                            var precio = $(this).find('td:nth-child(5)').text().toLowerCase();
-                            if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
-
                     $('.boton-registrar-favorito-sip').on('click', function() {
                         var productoId = $(this).closest('tr').data('producto-id');
                         $.ajax({
@@ -189,6 +493,137 @@ function ListProductos(categoriaId){
         }
     });
 }
+
+////INICIO
+    // Fetch and display products initially
+    fetchAndDisplayProducts();
+
+    // Set up the input event listener for the search
+    $('#SearchProduct').on('input', function() {
+        fetchAndDisplayProducts($(this).val().toLowerCase());
+    });
+
+    // Set up the change event listener for the select dropdown
+    $('.form-select').on('change', function() {
+        var selectedValue = $(this).val();
+        if (selectedValue === 'FAVOTIROS') {
+            fetchAndDisplayFavoriteProducts();
+        } else {
+            fetchAndDisplayProducts();
+        }
+    });
+
+    function fetchAndDisplayProducts(searchText = '') {
+        $.ajax({
+            url: '/api/get-productos',
+            type: 'GET',
+            dataType: 'json',
+            success: function(productos) {
+                actualizarTabla(productos, searchText);
+            },
+            error: function(error) {
+                console.error('Error al recuperar datos de productos:', error);
+            }
+        });
+    }
+
+    function fetchAndDisplayFavoriteProducts(searchText = '') {
+        $.ajax({
+            url: '/api/get-productos-favorite',
+            type: 'GET',
+            dataType: 'json',
+            success: function(productos) {
+                actualizarTabla(productos, searchText);
+            },
+            error: function(error) {
+                console.error('Error al recuperar datos de productos favoritos:', error);
+            }
+        });
+    }
+
+    function actualizarTabla(productos, searchText) {
+        var tablaProductos = $('#tabla-productos tbody');
+        tablaProductos.empty();
+
+        if (productos.length > 0) {
+            $.each(productos, function(index, producto) {
+                var margen = parseFloat(producto.PrecioProducto) - parseFloat(producto.CostoProducto);
+                var filaClass = producto.EstadoProducto === "false" ? "fila-tachada" : "";
+
+                // Check if the product matches the search text
+                if (producto.CodigoProducto.toLowerCase().includes(searchText) ||
+                    producto.NombreProducto.toLowerCase().includes(searchText) ||
+                    margen.toFixed(2).toLowerCase().includes(searchText) ||
+                    producto.PrecioProducto.toLowerCase().includes(searchText)) {
+                    
+                    tablaProductos.append('<tr class="producto-fila ' + filaClass + '" data-producto-id="' + producto.id + '">' +
+                        '<td style="font-weight: bold;">' + producto.CodigoProducto + '</td>' +
+                        '<td>' + producto.NombreProducto + '</td>' +
+                        '<td> Bs.' + parseFloat(producto.CostoProducto).toFixed(2) + '</td>' +
+                        '<td> Bs.' + margen.toFixed(2) + '</td>' +
+                        '<td style="font-weight: bold;"> Bs.' + parseFloat(producto.PrecioProducto).toFixed(2) + '</td>' +
+                        (producto.FavoritoProducto === "true" ? '<td class="w-1 boton-registrar-favorito-sip"><span class="gl-star-rating--stars"><span data-index="0" data-value="1" class="gl-active"><svg xmlns="http://www.w3.org/2000/svg" class="icon gl-star-full icon-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" stroke-width="0" fill="currentColor"></path></svg></span><span data-index="1" data-value="2" class="gl-active"></svg></span></span></td>' : '<td class="w-1 boton-registrar-favorito-nop"><span class="gl-star-rating--stars"><span data-index="0" data-value="1" class="gl-active"><svg xmlns="http://www.w3.org/2000/svg" class="icon gl-star-full icon-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" stroke-width="0" fill="currentColor"></path></svg></span><span data-index="1" data-value="2" class="gl-active"></svg></span></span></td>') +
+                        '</tr>');
+                }
+            });
+
+            $('.producto-fila').on('click', function() {
+                $('.producto-fila').removeClass('seleccionado');
+                $(this).addClass('seleccionado');
+                var productoId = $(this).data('producto-id');
+                $.ajax({
+                    url: '/api/get-productos-seleccionado/' + productoId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        InformacionProducto(data);
+                        ActualizarProductoImagen(productoId);
+                    },
+                    error: function(error) {
+                        console.error('Error al recuperar datos de producto:', error);
+                    }
+                });
+            });
+
+            $('.boton-registrar-favorito-sip').on('click', function() {
+                var productoId = $(this).closest('tr').data('producto-id');
+                $.ajax({
+                    url: '/api/producto-register-true/'+ productoId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        MostrarMensaje("Se Quito De Favoritos", "success");
+                        fetchAndDisplayProducts();
+                    },
+                    error: function(error) {
+                        console.error('Error al recuperar datos de categorías:', error);
+                    }
+                });
+            });
+
+            $('.boton-registrar-favorito-nop').on('click', function() {
+                var productoId = $(this).closest('tr').data('producto-id');
+                $.ajax({
+                    url: '/api/producto-register-false/'+ productoId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        MostrarMensaje("Se Agrego a Favoritos", "success");
+                        fetchAndDisplayProducts();
+                    },
+                    error: function(error) {
+                        console.error('Error al recuperar datos de categorías:', error);
+                    }
+                });
+            });
+
+        } else {
+            tablaProductos.append('<tr>' +
+                '<td colspan="5" style="text-align: center">LA CATEGORIA NO TIENE REGISTROS AUN</td>' +
+                '</tr>');
+        }
+    }
+////FIN
 
 function ListProductoSubCategoria(subcategoriaId){
     $.ajax({
@@ -238,21 +673,7 @@ function ListProductoSubCategoria(subcategoriaId){
                         });
                     });
 
-                    $('#SearchProduct').on('input', function() {
-                        var searchText = $(this).val().toLowerCase();
-                        $('#tabla-productos tbody tr').each(function() {
-                            var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                            var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                            var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                            var margen = $(this).find('td:nth-child(4)').text().toLowerCase();
-                            var precio = $(this).find('td:nth-child(5)').text().toLowerCase();
-                            if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
+                 
 
                     $('.boton-registrar-favorito-sip').on('click', function() {
                         var productoId = $(this).closest('tr').data('producto-id');
@@ -427,19 +848,14 @@ function InformacionProducto(data){
                         <div class="col-auto">
                             <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-ingredientes" data-selectproduct-id="${data.id}">Agregar Ingredientes</button>
                         </div>
+                        <div class="col-auto">
+                            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal-grupos" data-selectproduct-id="${data.id}">Agregar Grupos</button>
+                        </div>
                     </div> <br>
                     <div class="mb-12 row">
                         <div class="table-responsive" id="TableDetalle" style="display: none">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Ingrediente</th>
-                                        <th>Cant. Neta</th>
-                                        <th>Merma</th>
-                                        <th>Cant. Bruta</th>
-                                        <th>Costo</th>
-                                    </tr>
-                                </thead>
+                            <div style="background: #182433; padding: 12px; color: white">PRODUCTOS</div>
+                            <table class="table table-striped">                                
                                 <tbody id="detalleRecetaBody">
                                     <!-- Aquí se llenarán los detalles de la receta -->
                                 </tbody>
@@ -451,13 +867,22 @@ function InformacionProducto(data){
                                 </tfoot>
                             </table>
                         </div>
+                    </div> <br>
+                    <div class="mb-12 row">
+                        <div class="table-responsive" id="TableDetalleModificadore" style="display: none">
+                            <div style="background: #182433; padding: 12px; color: white">GRUPOS</div>
+                            <table class="table table-striped">
+                                 <tbody id="detalleModificadorBody">
+                                    <!-- Aquí se llenarán los detalles de la receta -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     `;   
         
-
     $('#EditarProducto').on('click', function() {
         TotalProduct.innerHTML = ``;
         TotalProduct.innerHTML = `
@@ -707,6 +1132,7 @@ function InformacionProducto(data){
                 success: function (producto) {
                     ListProductos(IdCategoriaUpdate);
                     CanvasTime();
+                    MostrarTablaProductStock()
                     MostrarMensaje("Se Actualizo El Producto Exitosamente", "success");
                 },
                 error: function (error) {
@@ -718,7 +1144,8 @@ function InformacionProducto(data){
     });
     
     actualizarTablaDetallesReceta(data);
-    
+    actualizarTablaModificador(data);
+
     $('#editar-receta').off('click').on('click', function() {
         const editarRecetaLink = document.getElementById('editar-receta');
         const productoId = editarRecetaLink.getAttribute('data-producto-id');
@@ -858,9 +1285,8 @@ function InformacionProducto(data){
                                 }
                             });
                         } else {
-                            console.log("La acción ha sido cancelada.");
                         }                        
-                    });                                    
+                    });
                 });
                 
             },
@@ -869,7 +1295,6 @@ function InformacionProducto(data){
             }
         });
     });
-    
 }
 
 function ActualizarProductoImagen(productoId){
@@ -898,10 +1323,12 @@ function ActualizarProductoImagen(productoId){
 }
 
 $(document).ready(function() {  
-    MostrarCategoria();
+    MostrarCategoria();   
+
     document.getElementById('addproductos').addEventListener('click', function() {
         cargarCategoriasProducto();
         var formTabsDiv = document.getElementById('form_tabs');
+        
         formTabsDiv.innerHTML = `
         <form id="form-register-product">
             <div class="card-header">
@@ -912,8 +1339,15 @@ $(document).ready(function() {
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Nombre</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="ProductoNombre" name="ProductoNombre">
+                        <input type="text" class="form-control convertmayuscula" id="ProductoNombre" name="ProductoNombre">
                         </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-3 col-form-label"></label>
+                        <div class="col">
+                            <div id="sugerencias-nombre" class="mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; display: none;">
+                            </div>
+                        </div>                        
                     </div>
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Categoria</label>
@@ -943,13 +1377,13 @@ $(document).ready(function() {
                         <input type="number" class="form-control" id="ProductoCosto" name="ProductoCosto">
                         </div>
                     </div>
-                    <div class="mb-3 row">
+                    <div class="mb-3 row" hidden>
                         <label class="col-3 col-form-label required">Codigo</label>
                         <div class="col">
                         <input type="text" class="form-control" id="ProductoCodigo" name="ProductoCodigo">
                         </div>
                     </div>
-                    <div class="mb-3 row">
+                    <div class="mb-3 row" hidden>
                         <label class="col-3 col-form-label">Cocina</label>
                         <div class="col">
                         <select class="form-select">
@@ -957,7 +1391,7 @@ $(document).ready(function() {
                         </select>
                         </div>
                     </div>
-                    <div class="mb-3 row">
+                    <div class="mb-3 row" hidden>
                         <label class="col-3 col-form-label">Proveedor</label>
                         <div class="col">
                         <select class="form-select" id="ProductoProveedor" name="ProductoProveedor">
@@ -968,7 +1402,7 @@ $(document).ready(function() {
                     <div class="mb-3 row">
                         <label class="col-3 col-form-label required">Descripcion</label>
                         <div class="col">
-                        <input type="text" class="form-control" id="ProductoDescripcion" name="ProductoDescripcion">
+                        <input type="text" class="form-control convertmayuscula" id="ProductoDescripcion" name="ProductoDescripcion">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -1003,7 +1437,17 @@ $(document).ready(function() {
             </div>
         </form>
         `;
-
+             
+        convertirAMayusculas();
+        function convertirAMayusculas() {
+            const inputs = document.querySelectorAll('.convertmayuscula');
+            inputs.forEach(function(input) {
+                input.addEventListener('input', function() {
+                    input.value = input.value.toUpperCase();
+                });
+            });
+        }
+        
         $.ajax({
             url: '/api/get-proveedor',
             type: 'GET',
@@ -1031,8 +1475,49 @@ $(document).ready(function() {
             }
         });
 
+        $('#ProductoNombre').keyup(function() {
+            var nombre = $(this).val();
+            var inputsYBoton = $('#ProductoCategoria, #ProductoSubCategoria, #ProductoPrecio, #ProductoCosto, #ProductoCodigo, #ProductoProveedor, #ProductoDescripcion, #ProductoImagen, #btn-registrar-producto');
+            
+            if (nombre.length > 2) {
+                $.ajax({
+                    url: '/api/verificar-nombre-similar',
+                    type: 'POST',
+                    data: JSON.stringify({ Nombre: nombre }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        var sugerenciasDiv = $('#sugerencias-nombre');
+                        sugerenciasDiv.empty();
+        
+                        if (response.length > 0) {
+                            sugerenciasDiv.show();
+                            inputsYBoton.prop('disabled', true);
+                            $.each(response, function(index, producto) {
+                                sugerenciasDiv.append(`
+                                    <div class="sugerencia-item">
+                                        <strong>${producto.NombreProducto}</strong>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            sugerenciasDiv.hide();
+                            inputsYBoton.prop('disabled', false);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error al verificar nombres similares:', error);
+                    }
+                });
+            } else {
+                $('#sugerencias-nombre').hide();
+                inputsYBoton.prop('disabled', false);
+            }
+        });
+        
+
         $('#btn-registrar-producto').off('click').on('click', function(event) {
-            // Obtener los valores de los otros campos del formulario
+            event.preventDefault();
+        
             var Nombre = $("#ProductoNombre").val();
             var Categoria = $("#ProductoCategoria").val();
             var SubCategoria = $("#ProductoSubCategoria").val();
@@ -1043,47 +1528,51 @@ $(document).ready(function() {
             var Descripcion = $("#ProductoDescripcion").val();
             var activo = $("#CheckActivo").prop('checked');
             var controlStock = $("#CheckStock").prop('checked');
-
-            // Capturar el archivo seleccionado por el usuario
-            var imagen = $('#ProductoImagen')[0].files[0]; // Aquí estamos obteniendo el primer archivo seleccionado
-
-            // Crear un objeto FormData para enviar los datos del formulario
-            var formData = new FormData();
-            formData.append('Nombre', Nombre);
-            formData.append('Categoria', Categoria);
-            formData.append('SubCategoria', SubCategoria);
-            formData.append('Precio', Precio);
-            formData.append('Costo', Costo);
-            formData.append('Codigo', Codigo);
-            formData.append('proveedor', proveedor);
-            formData.append('Descripcion', Descripcion);
-            formData.append('activo', activo);
-            formData.append('controlStock', controlStock);
-            formData.append('imagen', imagen); // Agregar la imagen al objeto FormData
-
-            // Realizar la solicitud AJAX
+            var imagen = $('#ProductoImagen')[0].files[0]; 
+        
+            // Verificar si el nombre del producto ya existe
             $.ajax({
-                url: '/api/registrar-producto',
+                url: '/api/verificar-nombre-producto',
                 type: 'POST',
-                data: formData, // Enviar el objeto FormData en lugar de un objeto JSON
-                contentType: false,
-                processData: false, // Es importante establecer processData como false
-                success: function (producto) {
-                    ListProductos(Categoria);
-                    MostrarMensaje("Producto Creada Exitosamente", "success");
-                    $("#ProductoNombre").val("");
-                    $("#ProductoCategoria").val("");
-                    $("#ProductoSubCategoria").val("");
-                    $("#ProductoPrecio").val("");
-                    $("#ProductoCosto").val("");
-                    $("#ProductoCodigo").val("");
-                    $("#ProductoProveedor").val("");
-                    $("#ProductoDescripcion").val("");
-                    $("#CheckActivo").prop('checked', false);
-                    $("#CheckStock").prop('checked', false);
+                data: JSON.stringify({ Nombre: Nombre }),
+                contentType: 'application/json',
+                success: function(existe) {
+                    if (existe) {
+                        MostrarMensaje("El nombre del producto ya está en uso. Por favor, elige otro.", "warning");
+                    } else {
+                        // Si el nombre no existe, proceder con el registro
+                        var formData = new FormData();
+                        formData.append('Nombre', Nombre);
+                        formData.append('Categoria', Categoria);
+                        formData.append('SubCategoria', SubCategoria);
+                        formData.append('Precio', Precio);
+                        formData.append('Costo', Costo);
+                        formData.append('Codigo', Codigo);
+                        formData.append('proveedor', proveedor);
+                        formData.append('Descripcion', Descripcion);
+                        formData.append('activo', activo);
+                        formData.append('controlStock', controlStock);
+                        formData.append('imagen', imagen);
+        
+                        $.ajax({
+                            url: '/api/registrar-producto',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(producto) {
+                                ListProductos(Categoria);
+                                MostrarMensaje("Producto Creado Exitosamente", "success");
+                                $("#form-register-product")[0].reset();
+                            },
+                            error: function(error) {
+                                console.error('Error al registrar:', error);
+                            }
+                        });
+                    }
                 },
-                error: function (error) {
-                    console.error('Error al registrar:', error);
+                error: function(error) {
+                    console.error('Error al verificar el nombre:', error);
                 }
             });
         });
@@ -1105,204 +1594,31 @@ function CanvasTime(){
     `;        
 }
 
-$(document).ready(function() {
-    $('#modal-ingredientes').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget);
-        var productId = button.data('selectproduct-id');
-        $.ajax({
-            url: '/api/get-ingrediente',
-            method: 'GET',
-            success: function(data) {
-                $("#BuscarReceta").autocomplete({
-                    source: function(request, response) {
-                        var searchTerm = request.term.toLowerCase();
-                        var filteredData = data.filter(function(ingrediente) {
-                            return ingrediente.NombreIngrediente.toLowerCase().includes(searchTerm);
-                        });
-                        response(filteredData);
-                    },
-                    appendTo: "#modal-ingredientes",
-                    select: function(event, ui) {                        
-                        var ingredienteSeleccionado = ui.item;
-                        agregarDivIngrediente(ingredienteSeleccionado,productId);
-                    },
-                    create: function() {
-                        $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
-                            return $("<li>")
-                                .append("<div>" + item.NombreIngrediente + "</div>")
-                                .appendTo(ul);
-                        };
-                    }
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Error al obtener las opciones:", error);
-            }
-        });
-    });
-    
-
-    // Evitar que el modal se cierre cuando se hace clic fuera de él
-    $('#modal-ingredientes').modal({ backdrop: 'static', keyboard: false });
-
-    // Cuando se haga clic en el botón Registrar
-    $('#BtnRegistrarReceta').on('click', function() {
-        var Id = $('#productoID').val(); // Obtener el Id una sola vez fuera del bucle
-        var ingredientes = []; // Array para almacenar todos los ingredientes
-        
-        $('.row-cards').each(function() {
-            var row = $(this);
-            var ingrediente = {
-                Id: row.find('#productoID').val(),
-                ingredienteId: row.find('#ingredienteID').val(), 
-                nombreIngrediente: row.find('#RecuperarNombreIngrediente').text(),
-                cantidadNeta: row.find('#CantidadNeta').val(),
-                unidadNeta: row.find('#UnidadNeta').val(),
-                merma: row.find('#RecuperarMermaIngrediente').text(),
-                cantidadBruta: row.find('#CantidadBruta').val(),
-                costoIngrediente: row.find('#TotalIngrediente').text()
-            };
-            ingredientes.push(ingrediente); 
-        });
-    
-        // Enviar todos los ingredientes juntos en una sola solicitud AJAX
-        $.ajax({
-            url: '/api/registrar-receta',
-            method: 'POST',
-            data: {
-                Id: Id, 
-                ingredientes: ingredientes
-            },
-            success: function(response) {
-                MostrarMensaje("Agregado Exitosamente", "success");
-                actualizarTablaDetallesReceta(response)
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al registrar ingredientes:', error);
-            }
-        });
-    });
-    
-    function agregarDivIngrediente(ingredienteSeleccionado, productId) {
-        var divIngrediente = `
-        <br><div class="row row-cards">
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: bold">Ingrediente</label>
-                        <input type="text" readonly class="form-control" id="productoID" value="${productId}" hidden>  
-                        <input type="text" readonly class="form-control" id="ingredienteID" value="${ingredienteSeleccionado.id}" hidden>  
-                        <span id="RecuperarNombreIngrediente">${ingredienteSeleccionado.NombreIngrediente}</span>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: bold">Cant. Neta</label>
-                        <div class="row">
-                            <div class="col">
-                                <input type="text" class="form-control" id="CantidadNeta">
-                            </div>
-                            <div class="col">
-                                <select class="form-control form-select" id="UnidadNeta">
-                                    <option value="Unid">Unid.</option>
-                                    <option value="Kilos">Kilos</option>
-                                    <option value="Gramos">Gramos</option>
-                                    <option value="Onza">Onza</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: bold">Merma</label>
-                        <span id="RecuperarMermaIngrediente">${ingredienteSeleccionado.CantidadIngrediente}</span>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: bold">Cant. Bruta</label>
-                        <div class="row">
-                            <div class="col" style="margin: 0px;">
-                                <input type="text" class="form-control" id="CantidadBruta" readonly>
-                            </div>
-                            <div class="col" style="margin: 0px;">
-                                <select class="form-control form-select" id="UnidadBruta" disabled>
-                                    <option value="Unid">Unid.</option>
-                                    <option value="Kilos">Kilos</option>
-                                    <option value="Gramos">Gramos</option>
-                                    <option value="Onza">Onza</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="mb-3">
-                        <label class="form-label" style="font-weight: bold">Costo</label>
-                        <div class="row">
-                            <div class="col-auto">
-                                <span id="TotalIngrediente">${ingredienteSeleccionado.CostoIngrediente}</span>
-                            </div>
-                            <div class="col-auto">
-                                <a href="#" class="badge bg-red-lt" id="EliminarFila">X</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        $("#contenedor-ingrediente").append(divIngrediente);
-
-        function calcularCantidadBrutaYTotal(event) {
-            var row = $(event.target).closest('.row-cards');
-            var cantidadNeta = parseFloat(row.find('#CantidadNeta').val());
-            var merma = parseFloat(row.find('#RecuperarMermaIngrediente').text());
-            var costoIngrediente = parseFloat(row.find('#TotalIngrediente').text());
-            if (!isNaN(cantidadNeta) && !isNaN(merma) && !isNaN(costoIngrediente)) {
-                var cantidadBruta = cantidadNeta / (1 - (merma / 100));
-                var total = cantidadBruta * costoIngrediente;
-
-                row.find('#CantidadBruta').val(cantidadBruta.toFixed(2));
-                row.find('#TotalIngrediente').text(total.toFixed(2));
-            } else {
-                console.error('Uno o más valores no son números válidos.');
-            }
-        }
-
-        $('#contenedor-ingrediente').off('change', '.row-cards').on('change', '.row-cards', calcularCantidadBrutaYTotal);
-
-        calcularCantidadBrutaYTotal({ target: $('#contenedor-ingrediente').children().last().find('#CantidadNeta')[0] });
-
-        $('#contenedor-ingrediente').on('click', '#EliminarFila', function() {
-            $(this).closest('.row-cards').remove();
-        });
-    }
-});
-
 function actualizarTablaDetallesReceta(data) {
     var detalleRecetaBody = document.getElementById('detalleRecetaBody');
     var totalCosto = 0;
 
-    // Vaciar la tabla antes de agregar nuevas filas
     detalleRecetaBody.innerHTML = '';
 
-    if (data.receta && data.receta[0].detallerecetas.length > 0 && data.receta[0].detallerecetas) {
+    if (data.receta && data.receta.length > 0) {
         const tablaDetalle = document.getElementById('TableDetalle');
         tablaDetalle.style.display = 'block';
-        data.receta[0].detallerecetas.forEach(function (detalle) {
-            var row = `
-                <tr style="font-size: 13px">
-                    <td>${detalle.ingrediente.NombreIngrediente}</td>
-                    <td>${detalle.cantidadneta} ${detalle.unidad}</td>
-                    <td>${detalle.ingrediente.CantidadIngrediente}</td>
-                    <td>${detalle.cantidadbruta} ${detalle.unidad}</td>
-                    <td>${detalle.costo}</td>
-                </tr>
-            `;
-            detalleRecetaBody.insertAdjacentHTML('beforeend', row);
+        
+        data.receta.forEach(function (receta) {
+            receta.detallerecetas.forEach(function (detalle) {                
+                var row = `
+                    <tr style="font-size: 13px">
+                        <td>${detalle.ingrediente.NombreIngrediente}</td>
+                        <td>${detalle.cantidadneta} ${detalle.unidad}</td>
+                        <td>${detalle.ingrediente.CantidadIngrediente}</td>
+                        <td>${detalle.cantidadbruta} ${detalle.unidad}</td>
+                        <td>${detalle.costo}</td>
+                    </tr>
+                `;
+                detalleRecetaBody.insertAdjacentHTML('beforeend', row);
 
-            totalCosto += parseFloat(detalle.costo);
-
+                totalCosto += parseFloat(detalle.costo);
+            });
         });
 
         var totalDetalleReceta = document.getElementById('TotalDetalleReceta');
@@ -1312,8 +1628,55 @@ function actualizarTablaDetallesReceta(data) {
         tablaDetalle.style.display = 'none';
         detalleRecetaBody.innerHTML = '<tr><td colspan="5">No se encontraron detalles de receta</td></tr>';
     }
-
 }
+
+
+function actualizarTablaModificador(data) {
+    var detalleModificadorBody = document.getElementById('detalleModificadorBody');
+    detalleModificadorBody.innerHTML = '';
+
+    if (data.modificadore) {
+        const tablaDetallemodificador = document.getElementById('TableDetalleModificadore');
+        tablaDetallemodificador.style.display = 'block';
+        var row = `
+            <tr style="font-size: 13px">
+                <td>${data.modificadore.id}</td>
+                <td>${data.modificadore.NombreModificador}</td>
+                <td>${data.modificadore.CantidadMinimaModificador} Min</td>
+                <td>${data.modificadore.CantidadMaximaModificador} Max</td>
+                <td>
+                    <span class="badge badge-outline text-red eliminar-grupo">X</span>
+                </td>
+            </tr>
+        `;
+        detalleModificadorBody.insertAdjacentHTML('beforeend', row);
+        detalleModificadorBody.querySelector('.eliminar-grupo').addEventListener('click', function() {
+            const Idproducto = data.id
+            var $this = $(this);
+            mostrarConfirmacion("¿Estás seguro de que deseas realizar esta acción?", function(esConfirmado) {
+                if (esConfirmado) {
+                    const rowId = $this.closest('tr').find('td:first-child').text().trim();
+                    $.ajax({
+                        url: '/api/eliminar-grupomodificador',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { id: rowId, Idproducto: Idproducto},
+                        success: function(response) {
+                            actualizarTablaModificador(response);
+                            MostrarMensaje("Eliminado Exitosamente", "success");
+                        },
+                        error: function(error) {
+                            console.error('Error al eliminar . . . ', error);
+                        }
+                    });
+                } else {
+                }
+            });
+        });
+    } else {
+    }
+}
+
 
 function TablaDetalleRecetas(data){
     const detallesReceta = data.receta[0].detallerecetas;
@@ -1338,3 +1701,5 @@ function TablaDetalleRecetas(data){
         tableBody.innerHTML += row;
     });
 }
+
+

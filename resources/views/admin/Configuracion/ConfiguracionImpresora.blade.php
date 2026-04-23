@@ -2,25 +2,65 @@
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="card-body" style="padding-left: 90px; padding-right: 90px;">
-        <ul class="steps steps-green steps-counter my-4">
-            <li class="step-item" id="step-seleccionar-impresora">SELECCIONAR IMPRESORA</li>
-            <li class="step-item" id="step-completado">COMPLETADO</li>
-        </ul>
-
-        <div class="row" id="impresoras-container">
-
+<div class="row">
+    <div class="col-12 col-sm-8">
+        <div class="card">
+            <div class="card-header" style="width: 100%; background-color: #1d2736">
+                <div class="row" style="width: 100%;">
+                    <div class="col-12 col-sm-8">
+                        <h3 class="card-title" style="color: white; font-weight: bold;">Registros De Impresora</h3>
+                    </div>
+                    <div class="col-12 col-sm-4" style="text-align: right;">
+                        <a class="btn" id="addprint" style="padding-left: 25px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder-share" width="24" height="64" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 19h-8a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v4" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <table class="table table-vcenter card-table" id="table-print">
+                        <thead>
+                            <tr>
+                            <th>Nombre Impresora</th>
+                            <th>Direccion IP</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
     </div>
+    <div class="col-12 col-sm-4">
+        <div class="card" id="form_tabs">
+            <div class="card-header">
+                <h3 class="card-title">. . .</h3>
+            </div>
+            <div class="card-body">
+                <div class="datagrid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-
+<style>
+    .tableproducseleccionado{
+        background-color: #fd7;
+    }
+    .tableingredienteseleccionado{
+        background-color: #fd7;
+    }
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js"></script>
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -28,188 +68,355 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        AllImpresora();
-    });
+    MostrarTablaPrint()
 
-    function AllImpresora(){
-        const impresorasContainer = document.getElementById('impresoras-container');
+    function MostrarTablaPrint(){
         $.ajax({
-            url: '/api/obtener-count-impresoras',
+            url: 'api/get-list-print',
             type: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.length > 0) {
-                const stepElementSI = document.getElementById('step-seleccionar-impresora');
-                const stepElementSP = document.getElementById('step-preferencias');
-                const stepElementSC = document.getElementById('step-completado');
-                stepElementSI.classList.remove('active');
-                stepElementSC.classList.add('active');
+            success: function(data) {  
+                $('#table-print tbody').empty();                
+                $.each(data, function(index, impresora) {
+                    var estado = impresora.Activo === "true" ? '<span class="badge bg-lime text-lime-fg" id="btnCambiarEstado">Habilitado</span>' : '<span class="badge bg-red text-red-fg" id="btnCambiarEstado">Deshabilitado</span>';
+                    var row = '<tr>' +
+                        '<td hidden>' + impresora.id + '</td>' +
+                        '<td>' + impresora.NombreImpresora + '</td>' +
+                        '<td>' + impresora.DireccionIpLocal + '</td>' +
+                        '<td>' + estado + '</td>' +
+                        '<td>' + formatDate(impresora.created_at) + '</td>' +
+                        '</tr>';
+                    
+                    $('#table-print tbody').append(row);
+                });
 
-                impresorasContainer.innerHTML = '';
-                const card = document.createElement('div');
-                card.classList.add('col-md-12', 'col-lg-5');
-                card.innerHTML = `
-                <div class="page-body">
-                    <div class="container-xl">
-                        <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card">
-                            <div class="list-group card-list-group">
-                                <div class="list-group-item">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-auto fs-3">
-                                    1
-                                    </div>
-                                    <div class="col-auto">
-                                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-51.2 -51.2 614.40 614.40" xml:space="preserve" width="81px" height="81px" fill="#000000" stroke="#000000" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="53.248000000000005"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#4D4D4D;" d="M421.978,118.159H256v163.154h199.736V151.917C455.736,133.35,440.545,118.159,421.978,118.159z"></path> <path style="fill:#737373;" d="M90.022,118.159c-18.567,0-33.758,15.191-33.758,33.758v129.395H256V118.159H90.022z"></path> <polygon style="fill:#DCDCDC;" points="399.473,0.016 399.473,281.313 286.945,281.313 365.714,0.016 "></polygon> <rect x="112.527" y="0.006" style="fill:#EEEEEE;" width="253.187" height="281.296"></rect> <path style="fill:#02ACAB;" d="M466.989,236.302h-33.758v135.033L512,326.323v-45.011C512,256.556,491.745,236.302,466.989,236.302z "></path> <path style="fill:#42C8C6;" d="M478.242,281.313v123.78L0,326.323v-45.011c0-24.756,20.255-45.011,45.011-45.011h388.22 C457.987,236.302,478.242,256.556,478.242,281.313z"></path> <polygon style="fill:#B9B9B9;" points="512,326.323 512,511.994 478.242,511.994 455.736,419.159 478.242,326.323 "></polygon> <polygon style="fill:#DCDCDC;" points="478.242,326.323 478.242,511.994 433.231,511.994 256,427.598 78.769,511.994 0,511.994 0,326.323 "></polygon> <polygon style="fill:#4D4D4D;" points="433.231,393.84 433.231,427.598 365.714,467.782 399.473,393.84 "></polygon> <g> <polygon style="fill:#737373;" points="399.473,393.84 399.473,427.598 239.121,461.356 78.769,427.598 78.769,393.84 "></polygon> <polygon style="fill:#737373;" points="433.231,427.598 433.231,511.994 399.473,511.994 365.714,469.796 399.473,427.598 "></polygon> </g> <rect x="78.769" y="427.598" style="fill:#969696;" width="320.703" height="84.396"></rect> <g> <path style="fill:#4D4D4D;" d="M326.33,81.587H185.67c-4.661,0-8.44-3.778-8.44-8.44c0-4.662,3.779-8.44,8.44-8.44H326.33 c4.662,0,8.44,3.778,8.44,8.44C334.769,77.81,330.992,81.587,326.33,81.587z"></path> <path style="fill:#4D4D4D;" d="M326.33,126.598H185.67c-4.661,0-8.44-3.778-8.44-8.44s3.779-8.44,8.44-8.44H326.33 c4.662,0,8.44,3.778,8.44,8.44S330.992,126.598,326.33,126.598z"></path> <path style="fill:#4D4D4D;" d="M272.506,171.609H185.67c-4.661,0-8.44-3.778-8.44-8.44s3.779-8.44,8.44-8.44h86.835 c4.662,0,8.44,3.778,8.44,8.44S277.168,171.609,272.506,171.609z"></path> </g> <path style="fill:#FFFFFF;" d="M444.484,289.752h-11.253c-4.662,0-8.44-3.778-8.44-8.44s3.778-8.44,8.44-8.44h11.253 c4.662,0,8.44,3.778,8.44,8.44S449.146,289.752,444.484,289.752z"></path> </g></svg>
-                                    </div>
-                                    <div class="col">
-                                        ${response[0].NombreImpresora}
-                                    <div class="text-muted">
-                                        ${response[0].NombreImpresora} <br>
-                                        <a href="#" class="link-secondary btnImprimirPrueba" data-name="${response[0].NombreImpresora}">
-                                            <span class="switch-icon-a" style="color: blue">
-                                                Impresion De Prueba
-                                            </span>
-                                        </a>
-                                    </div>
-                                    </div>
-                                    <div class="col-auto" style="text-align: center;">
-                                    <a href="#" class="link-secondary btnEliminarImpresora" data-id="${response[0].id}">
-                                        <span class="switch-icon-a" style="color: #D80032">
-                                                Eliminar <br> Impresora
-                                        </span>
-                                    </a>
-                                    </div>
-                                </div>
+                agregarEventosPrintTabla();
+
+                $('#table-print tbody').on('click', 'tr', function() {
+                    var id = $(this).find('td:first').text();
+                    $.ajax({
+                        url: '/api/get-print-seleccionado/' + id,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            InformacionPrint(data);
+                            //DeleteMovimiento()
+                        },
+                        error: function(error) {
+                            console.error('Error al recuperar datos de la impresora:', error);
+                        }
+                    });
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    function agregarEventosPrintTabla() {
+        $('#table-print tbody tr').hover(function() {
+            $(this).addClass('hovered');
+        }, function() {
+            $(this).removeClass('hovered');
+        });
+        $('#table-print tbody tr').click(function() {
+            $('#table-print tbody tr').removeClass('tableproducseleccionado');
+            $(this).addClass('tableproducseleccionado').siblings().removeClass('tableproducseleccionado');
+        });
+    }
+
+
+    function InformacionPrint(data){
+        var TotalProduct = document.getElementById('form_tabs');
+        var estado = data[0].Activo === "true" ? '<span class="badge bg-lime text-lime-fg" id="btnCambiarEstado">Habilitado</span>' : '<span class="badge bg-red text-red-fg" id="btnCambiarEstado">Deshabilitado</span>';
+
+        TotalProduct.innerHTML = `
+        <div class="col-md-6 col-lg-12">
+            <div class="card">
+                <div class="card-header" style="background: #1d2736; color: white; font-weight: bold;">
+                    <h3 class="card-title">VENTA ${data[0].id}</h3>
+                        <div class="card-actions"> <a href="#" class="btn" data-print-id="${data[0].id}" id="EditarImpresora">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil-minus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M16 19h6" /></svg>
+                        </a>
+                        <a href="#" class="btn" data-movimientocaja-id="${data[0].id}" id="DeleteMovimientoCaja" data-bs-toggle="modal" data-bs-target="#modal-danger">
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 11V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 11V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-12" style="height: 100%">
+                    <div class="row">
+                        <div class="col-12 col-md-12">
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Fecha</label>
+                                <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${formatDate(data[0].created_at)}</label>
                                 </div>
                             </div>
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Nombre Impresora</label>
+                                <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${data[0].NombreImpresora}</label>
+                                </div>
                             </div>
-                        </div>
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Direccion IP</label>
+                                <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${((data[0].DireccionIpLocal))} </label>
+                                </div>
+                            </div>
+                            <div class="mb-12 row">
+                                <label class="col-4 col-form-label" style="font-weight: bold">Estado</label>
+                                <div class="col">
+                                    <label class="col-8 col-form-label" style="color: #61677A">${estado} </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                `;
-                impresorasContainer.appendChild(card);
-                EliminarImpresora(response[0].id);
-                btnImprimirPrueba(response[0].id);
-            }else{
-                const stepElementSI = document.getElementById('step-seleccionar-impresora');
-                const stepElementSP = document.getElementById('step-preferencias');
-                const stepElementSC = document.getElementById('step-completado');
-                stepElementSI.classList.add('active');
+            </div>
+        </div>`;
 
-                impresorasContainer.innerHTML = '';
-                    fetch('/api/get-list-print')
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(impresora => {
-                            const card = document.createElement('div');
-                            card.classList.add('col-md-6', 'col-lg-2');
-                            card.innerHTML = `
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title"><strong>${impresora}</strong></h3>
-                                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-51.2 -51.2 614.40 614.40" xml:space="preserve" width="177px" height="177px" fill="#000000" stroke="#000000" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="53.248000000000005"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#4D4D4D;" d="M421.978,118.159H256v163.154h199.736V151.917C455.736,133.35,440.545,118.159,421.978,118.159z"></path> <path style="fill:#737373;" d="M90.022,118.159c-18.567,0-33.758,15.191-33.758,33.758v129.395H256V118.159H90.022z"></path> <polygon style="fill:#DCDCDC;" points="399.473,0.016 399.473,281.313 286.945,281.313 365.714,0.016 "></polygon> <rect x="112.527" y="0.006" style="fill:#EEEEEE;" width="253.187" height="281.296"></rect> <path style="fill:#02ACAB;" d="M466.989,236.302h-33.758v135.033L512,326.323v-45.011C512,256.556,491.745,236.302,466.989,236.302z "></path> <path style="fill:#42C8C6;" d="M478.242,281.313v123.78L0,326.323v-45.011c0-24.756,20.255-45.011,45.011-45.011h388.22 C457.987,236.302,478.242,256.556,478.242,281.313z"></path> <polygon style="fill:#B9B9B9;" points="512,326.323 512,511.994 478.242,511.994 455.736,419.159 478.242,326.323 "></polygon> <polygon style="fill:#DCDCDC;" points="478.242,326.323 478.242,511.994 433.231,511.994 256,427.598 78.769,511.994 0,511.994 0,326.323 "></polygon> <polygon style="fill:#4D4D4D;" points="433.231,393.84 433.231,427.598 365.714,467.782 399.473,393.84 "></polygon> <g> <polygon style="fill:#737373;" points="399.473,393.84 399.473,427.598 239.121,461.356 78.769,427.598 78.769,393.84 "></polygon> <polygon style="fill:#737373;" points="433.231,427.598 433.231,511.994 399.473,511.994 365.714,469.796 399.473,427.598 "></polygon> </g> <rect x="78.769" y="427.598" style="fill:#969696;" width="320.703" height="84.396"></rect> <g> <path style="fill:#4D4D4D;" d="M326.33,81.587H185.67c-4.661,0-8.44-3.778-8.44-8.44c0-4.662,3.779-8.44,8.44-8.44H326.33 c4.662,0,8.44,3.778,8.44,8.44C334.769,77.81,330.992,81.587,326.33,81.587z"></path> <path style="fill:#4D4D4D;" d="M326.33,126.598H185.67c-4.661,0-8.44-3.778-8.44-8.44s3.779-8.44,8.44-8.44H326.33 c4.662,0,8.44,3.778,8.44,8.44S330.992,126.598,326.33,126.598z"></path> <path style="fill:#4D4D4D;" d="M272.506,171.609H185.67c-4.661,0-8.44-3.778-8.44-8.44s3.779-8.44,8.44-8.44h86.835 c4.662,0,8.44,3.778,8.44,8.44S277.168,171.609,272.506,171.609z"></path> </g> <path style="fill:#FFFFFF;" d="M444.484,289.752h-11.253c-4.662,0-8.44-3.778-8.44-8.44s3.778-8.44,8.44-8.44h11.253 c4.662,0,8.44,3.778,8.44,8.44S449.146,289.752,444.484,289.752z"></path> </g></svg>
+        $('#EditarImpresora').on('click', function() {
+            TotalProduct.innerHTML = ``;
+            TotalProduct.innerHTML = `
+            <div class="col-md-6 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"> EDITANDO ${data[0].NombreImpresora}</h3>
+                        <div class="card-actions">
+                        </div>
+                    </div>
+                    <div class="card-body p-12" style="height: 100%">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Nombre</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control" id="UpdateDireccionIp" name="UpdateDireccionIp" value="${data[0].DireccionIpLocal}">
                                     </div>
-                                    <div class="card-footer" style="margin: 0px; padding: 0px">
-                                        <button class="btn btn-primary" onclick="seleccionarImpresora('${impresora}')" style="width: 100%">Seleccionar impresora</button>
+                                </div><br>
+                                <div class="mb-12 row">
+                                    <label class="col-4 col-form-label" style="font-weight: bold">Estado</label>
+                                    <div class="col">
+                                        <select id="UpdateEstado" class="form-control">
+                                            <option value="true">Habilitado</option>
+                                            <option value="false">Deshabilitado</option>
+                                        </select>
                                     </div>
-                                </div>
-                            `;
-                            impresorasContainer.appendChild(card);
-                        });
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-            }
-        });
-    }
+                                </div><br>
+                                <button id="EditBtnGuardar" class="btn btn-primary ms-auto">Actualizar</button>
+                                <button id="EditBtnCancelar" class="btn btn-danger ms-auto">Cancelar</button>
+                            </div>
+                        </div>                                                                                                
+                    </div>
+                </div>
+            </div>`; 
 
+            var estadoActual = data[0].Activo;
+            $('#UpdateEstado').val(estadoActual);  
 
-    function EliminarImpresora(id){
-        $(".btnEliminarImpresora").click(function(e) {
-            e.preventDefault();
-            var idImpresora = $(this).data('id');
-            if (confirm("¿Estás seguro de que quieres eliminar esta impresora?")) {
+            var IdUpdate = `${data[0].id}`;
+            $('#EditBtnGuardar').off('click').on('click', function(event) {
+                var EditDireccionIp = $("#UpdateDireccionIp").val();
+                var EditEstado = $("#UpdateEstado").val();
+
+                var datosRecogidos = {
+                    id: IdUpdate,
+                    direccion: EditDireccionIp,
+                    estado: EditEstado,
+                };
+
                 $.ajax({
-                    url: '/api/eliminar-impresora/' + idImpresora,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    url: '/api/actualizar-impresora',
+                    type: 'POST',
+                    data: datosRecogidos,
+                    success: function (impresora) {
+                        CanvasTime();
+                        MostrarTablaPrint()
+                        MostrarMensaje("Se Actualizo El Producto Exitosamente", "success");
                     },
-                    success: function(response) {
-                        if (response.success) {
-                            AllImpresora();
-                            alert(response.message);
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
+                    error: function (error) {
+                        console.error('Error al registrar:', error);
                     }
                 });
-            }
-        });
-    }
-
-
-    function btnImprimirPrueba(id){
-        $(".btnImprimirPrueba").click(function(e) {
-            e.preventDefault();
-            let urlPdf;
-            let nombreImpresora = $(this).data('name');
-            $.ajax({
-                url: window.location.origin + '/api/generar-pdf',
-                type: 'GET',
-                beforeSend: function(xhr, settings) {
-                    urlPdf = settings.url;
-                },
-                success: function(data) {
-                    const url = `http://localhost:8080/url?urlPdf=${urlPdf}&impresora=${nombreImpresora}`;
-                    fetch(url)
-                    .then(respuesta => {
-                        if (respuesta.status === 200) {
-                            console.log("Impresión OK");
-                        } else {
-                            respuesta.json()
-                            .then(mensaje => {
-                                console.log("Error: " + mensaje);
-                            });
-                        }
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                }
+            });
+            $('#EditBtnCancelar').off('click').on('click', function(event) {
+                CanvasTime();
             });
         });
     }
 
 
-    function seleccionarImpresora(nombreImpresora) {
-        $.ajax({
-            url: '/api/registrar-impresora',
-            type: 'POST',
-            data: { nombreImpresora: nombreImpresora },
-            success: function(data) {
-                AllImpresora();
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addprint').addEventListener('click', function() {
+            LoginUser()
+            var formTabsDiv = document.getElementById('form_tabs');
+            formTabsDiv.innerHTML = `
+            <form id="form-register-product">
+                <div class="card-header">
+                    <h3 class="card-title">NUEVA IMPRESORA</h3>
+                </div>
+                <div class="card-body">
+                    <div class="card-body">
+                        <div class="mb-3 row">
+                            <label class="col-3 col-form-label required">Impresora</label>
+                            <div class="col" >
+                                <div class="form-selectgroup" id="ListPrint">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-3 col-form-label required">Direccion IP / Enlace</label>
+                            <div class="col">
+                                <input type="text" class="form-control" id="DireccionIp" name="DireccionIp" placeholder="Ej. 192.168.0.1">
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex" style="text-align: right">
+                        <button type="button" class="btn me-auto">CANCELAR</button>
+                        <button type="button" class="btn btn-primary" id="btn-registrar-print">GUARDAR</button>
+                    </div>
+                </div>
+            </form>
+            `;
+            
+            $('#btn-registrar-print').off('click').on('click', function(event) {
+                var NombreImpresora = $("input[name='printer']:checked").val();
+                var DireccionIp = $("#DireccionIp").val();
+                
+                var formData = new FormData();
+                formData.append('Print', NombreImpresora);
+                formData.append('DireccionIp', DireccionIp);
 
-                console.log('Impresora registrada:', data);
+                $.ajax({
+                    url: '/api/registrar-impresora',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (configuracion) {
+                        console.log("Impresora Agregado Exitosamente", configuracion);
+                        $("#DireccionIp").val("");
+                        MostrarTablaPrint()
+                        MostrarMensaje("Se registro exitosamente ", "success");
+                    },
+                    error: function (error) {
+                        console.error('Error al registrar:', error);
+                    }
+                });
+            });
+        });
+    });
+
+    function LoginUser(){
+        const url = 'api/user';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin' 
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la petición: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                SolicituIP(data.user)
+            } else {
+                console.log('No hay usuario logueado.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener el usuario logueado:', error);
+        });
+    }
+
+    function SolicituIP(DireccionIp) {
+        const URL = 'https://' + DireccionIp + '/device-list-print';
+        $.ajax({
+            url: URL,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+                console.log('Respuesta del servidor:', data);
+                if (data.printers && data.printers.length > 0) {
+                    CargarImpresora(data.printers);
+                } else {
+                    console.log('No hay impresoras.');
+                }
             },
             error: function(xhr, status, error) {
-                console.error('Error:', error);
+                console.error('Error al obtener las impresoras:', error);
             }
         });
     }
 
+    function CargarImpresora(printers) {
+        var listPrintDiv = $('#ListPrint');
+        listPrintDiv.empty(); // Limpia el contenido anterior
+
+        printers.forEach(function(printer, index) {
+            var printerLabel = `
+                <label class="form-selectgroup-item">
+                    <input type="radio" name="printer" value="` + printer + `" class="form-selectgroup-input">
+                    <span class="form-selectgroup-label">
+                        <svg width="256px" height="256px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path d="M192 234.666667h640v64H192z" fill="#424242"></path>
+                                <path d="M85.333333 533.333333h853.333334v-149.333333c0-46.933333-38.4-85.333333-85.333334-85.333333H170.666667c-46.933333 0-85.333333 38.4-85.333334 85.333333v149.333333z" fill="#616161"></path>
+                                <path d="M170.666667 768h682.666666c46.933333 0 85.333333-38.4 85.333334-85.333333v-170.666667H85.333333v170.666667c0 46.933333 38.4 85.333333 85.333334 85.333333z" fill="#424242"></path>
+                                <path d="M853.333333 384m-21.333333 0a21.333333 21.333333 0 1 0 42.666667 0 21.333333 21.333333 0 1 0-42.666667 0Z" fill="#00E676"></path>
+                                <path d="M234.666667 85.333333h554.666666v213.333334H234.666667z" fill="#90CAF9"></path>
+                                <path d="M800 661.333333h-576c-17.066667 0-32-14.933333-32-32s14.933333-32 32-32h576c17.066667 0 32 14.933333 32 32s-14.933333 32-32 32z" fill="#242424"></path>
+                                <path d="M234.666667 661.333333h554.666666v234.666667H234.666667z" fill="#90CAF9"></path>
+                                <path d="M234.666667 618.666667h554.666666v42.666666H234.666667z" fill="#42A5F5"></path>
+                                <path d="M341.333333 704h362.666667v42.666667H341.333333zM341.333333 789.333333h277.333334v42.666667H341.333333z" fill="#1976D2"></path>
+                            </g>
+                        </svg>
+                        ` + printer + `
+                    </span>
+                </label>
+            `;
+            listPrintDiv.append(printerLabel);
+        });
+    }
+
+    function formatDate(dateString) {
+        var fechaOriginal = new Date(dateString);
+        var dia = fechaOriginal.getDate();
+        var mes = fechaOriginal.getMonth() + 1; // Los meses en JavaScript son base cero (0-11)
+        var anio = fechaOriginal.getFullYear();
+        return dia + '-' + mes + '-' + anio;
+    }
+
+    function CanvasTime(){
+        var TotalProduct = document.getElementById('form_tabs');
+        TotalProduct.innerHTML = `
+            <div class="col-md-6 col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                    <h3 class="card-title" style="color: #424769">Sin Seleccionar Nada, En Espera ...</h3>
+                    </div>
+                    <div class="img-responsive img-responsive-21x21 card-img-bottom" style="background-image: url('/utilidades/svg/espera.svg')"></div>
+                </div>
+            </div>
+        `;        
+    }
 </script>
+
 @livewireStyles
 
 @livewireScripts

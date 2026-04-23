@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('configuracions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('empresa_id')->nullable();
-            $table->foreign('empresa_id')->references('id')->on('empresas')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->nullable();
+            $table->string('DireccionIpLocal');
             $table->string('NombreImpresora');
+            $table->enum('Activo', ['true', 'false'])->default('false');
             $table->timestamps();
         });
     }

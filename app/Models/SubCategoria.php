@@ -15,7 +15,9 @@ class SubCategoria extends Model
         'MenuOnline',
         'CartaQR',
         'cocina_id',
-        'categoria_id'
+        'categoria_id',
+        'mayordeedad',
+        'promosionesdiarias',
     ];
 
     //Relacion de uno a muchos inversa
@@ -26,5 +28,10 @@ class SubCategoria extends Model
     public function cocina(){
         return $this->belongsTo(Cocina::class);
     }
+
+    public function productos(){
+        return $this->hasMany(Producto::class, 'sub_categoria_id');
+    }
+
 }
 

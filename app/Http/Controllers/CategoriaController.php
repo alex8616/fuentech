@@ -7,6 +7,7 @@ use App\Models\SubCategoria;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CategoriaController extends Controller
 {
@@ -34,6 +35,11 @@ class CategoriaController extends Controller
     }
 
     public function RegistrarCategoria(Request $request){
+        $registro = Categoria::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+
         $user = Auth::user(); 
         $categoria = Categoria::create([
             'Nombre_categoria' => $request->Nombre,
@@ -48,6 +54,11 @@ class CategoriaController extends Controller
     }
 
     public function RegistrarSubCategoria(Request $request){
+        $registro = SubCategoria::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+
         $user = Auth::user(); 
         $subcategoria = SubCategoria::create([
             'Nombre_subcategoria' => $request->Nombre,
@@ -67,8 +78,42 @@ class CategoriaController extends Controller
         $categoria->AppComensal = $request->input("appcomensal");
         $categoria->MenuOnline = $request->input("menuonline");
         $categoria->CartaQR = $request->input("cartaqr");
+        $categoria->mayordeedad = $request->input("mayordeedad");
+        $categoria->promosionesdiarias = $request->input("promociondia");
         $categoria->cocina_id = $request->input("cocina_id");
         $categoria->save();
         return response()->json($categoria);
     }
+
+    public function actualizarEstado(Request $request){
+        $categoria = Categoria::findOrFail($request->id);
+        if($request->menuOnline == 'true'){
+            $categoria->MenuOnline = 'true';
+            $categoria->save();
+        }else{
+            $categoria->MenuOnline = 'false';
+            $categoria->save();
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function GetPorCategoriaMenuOnline(){
+        $fullmenu = Categoria::where('menuOnline', 'true')
+            ->with([
+                'productos' => function ($query) {
+                    $query->where('FavoritoProducto', 'true');
+                },
+                'subcategorias' => function ($query) {
+                    $query->where('MenuOnline', 'true');
+                },
+                'subcategorias.productos' => function ($query) {
+                    $query->where('FavoritoProducto', 'true');
+                },
+            ])
+            ->get();
+    
+        return response()->json($fullmenu);
+    }
+    
+
 }

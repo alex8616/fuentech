@@ -12,7 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Ejecutar el backup diario a las 03:00 AM
+        //$schedule->command('backup:enviar-diario')->dailyAt('03:00');
+        //$schedule->command('backup:enviar-diario')->everyFiveMinutes();
+        $schedule->command('backup:enviar-diario')->twiceDaily(0, 12);
     }
 
     /**
@@ -24,4 +27,11 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    /**
+     * Registro explícito del comando personalizado (opcional pero recomendado)
+     */
+    protected $commands = [
+        \App\Console\Commands\EnviarBackupDiario::class,
+    ];
 }

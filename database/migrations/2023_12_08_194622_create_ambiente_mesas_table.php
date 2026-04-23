@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('ambiente_mesas', function (Blueprint $table) {
             $table->id();
             $table->string('NombreMesas');
+            $table->string('Name')->nullable();;
             $table->string('PosisionX');
             $table->string('PosisionY');
             $table->enum('estado', ['ocupado', 'libre'])->default('libre');

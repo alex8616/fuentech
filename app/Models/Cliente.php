@@ -17,13 +17,20 @@ class Cliente extends Model
         'PisoCliente',
         'BarrioCliente',
         'Comentario',
+        'MedioDePagoGasto',
+        'Descuento',
         'NitDni',
         'EstadoCliente',
-        'CuentaCorrienteCliente'
+        'CuentaCorrienteCliente',
+        'Total'
     ];
 
     //Relacion de uno a muchos inversa
     public function consumos(){
         return $this->belongsTo(Consumo::class, 'empresa_id');
+    }
+
+    public function cuentacorrientes(){
+        return $this->hasMany(CuentaCorriente::class);
     }
 }

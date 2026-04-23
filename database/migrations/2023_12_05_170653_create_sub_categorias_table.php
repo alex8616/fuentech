@@ -15,6 +15,10 @@ return new class extends Migration
             $table->string('AppComensal')->nullable();
             $table->string('MenuOnline')->nullable();
             $table->string('CartaQR')->nullable();
+
+            $table->string('mayordeedad')->nullable();
+            $table->string('promosionesdiarias')->nullable();
+            
             $table->unsignedBigInteger('cocina_id')->nullable();
             $table->foreign('cocina_id')->references('id')->on('cocinas')->onDelete('cascade')->nullable();
             $table->unsignedBigInteger('categoria_id');

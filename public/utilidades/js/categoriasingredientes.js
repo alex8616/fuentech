@@ -166,19 +166,7 @@ function MostrarTablaCategoriaIngrediente(){
                         });
                     });
 
-                    $('#SearchProduct').on('input', function() {
-                        var searchText = $(this).val().toLowerCase();
-                        $('#tabla-categorias tbody tr').each(function() {
-                            var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                            var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                            var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                            if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
+                    
                 }                    
             } else {
                 var tablaCategorias = $('#tabla-productos tbody');

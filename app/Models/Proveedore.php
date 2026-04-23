@@ -12,7 +12,13 @@ class Proveedore extends Model
     protected $fillable = [
         'name',
         'documento',
-        'empresa_id'
+        'empresa_id',
+        'email',
+        'telefono',
+        'direccion',
+        'comentario',
+        'estado',
+        'Total'
     ];
 
     //Relacion de uno a muchos
@@ -28,5 +34,19 @@ class Proveedore extends Model
     //Relacion de uno a muchos
     public function ingredientes(){
         return $this->hasMany(Ingrediente::class);
+    }
+
+    //Relacion de uno a muchos
+    public function gastos(){
+        return $this->hasMany(Gasto::class);
+    }
+
+    public function cuentacorrienteproveedores(){
+        return $this->hasMany(CuentaCorrienteProveedor::class);
+    }
+
+    // Relación de uno a muchos
+    public function detalleStockDates(){
+        return $this->hasMany(DetalleStockDate::class, 'proveedor_id');
     }
 }

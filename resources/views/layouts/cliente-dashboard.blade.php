@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Makalu</title>
+    <title>ASISTENCIA BIOMETRICO</title>
     <script defer data-api="/stats/api/event" data-domain="preview.tabler.io" src="/stats/js/script.js"></script>
     <meta name="msapplication-TileColor" content="#0054a6"/>
     <meta name="theme-color" content="#0054a6"/>
@@ -57,13 +57,41 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-            <a href="." style="display: flex; flex-direction: column; align-items: center;">
+            <a href="#" style="display: flex; flex-direction: column; align-items: center;">
                 <div>
-                    <img src="/dashboard/static/a.png" width="100" height="52" alt="Tabler">
+                  <div class="col-sm-3" id="FechaDiv" style="text-align: center;"></div>
+                  <div class="col-sm-3" id="HoraDiv" style="text-align: center;"></div>
                 </div>
-                
+                <div>
+                </div>
             </a>
-        </h1>
+          </h1>
+          <div class="navbar-nav flex-row order-md-last">
+            <div class="d-none d-md-flex" style="margin-top: -10px">
+              <div class="nav-item dropdown d-none d-md-flex me-3">
+                <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                  <a href="#" class="btn btn-outline-success w-100" id="TomarFotoIngreso">
+                    INGRESO
+                  </a>
+                </div>
+              </div>
+              <div class="nav-item dropdown d-none d-md-flex me-3">
+                <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                  <a href="#"" id="TomarFotoSalida" class="btn btn-outline-danger w-100">
+                    SALIDA
+                  </a>
+                </div>
+              </div>
+              <div class="nav-item dropdown d-none d-md-flex me-3">
+                <div class="col-6 col-sm-4 col-md-2 col-xl py-3">
+                  <a class="btn btn-outline-warning w-100" hidden>
+                    PIN
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </header>
       <div class="page-wrapper" style="background: white">
         <div class="page-body" style="width: 98%; margin-left: 1%; margin-right: 1%; margin-top: 1%">
@@ -84,7 +112,7 @@
                     <li class="list-inline-item">
                         Copyright &copy; 2023
                         <a href="." class="link-secondary">Alejandro Ventura Fuentes</a>.
-                        All rights reserved.
+                        All rights reserved <a href="#"" data-bs-toggle="modal" data-bs-target="#modal-ingreso-salida">PIN</a>
                     </li>
                     </ul>
                 </div>

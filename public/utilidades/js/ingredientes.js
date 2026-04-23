@@ -108,6 +108,72 @@ function ListIngredientes(categoriaId){
     });
 }
 
+////INICIO
+    // Fetch and display products initially
+    fetchAndDisplayIngrediente();
+
+    // Set up the input event listener for the search
+    $('#SearchIngrediente').on('input', function() {
+        fetchAndDisplayIngrediente($(this).val().toLowerCase());
+    });
+
+    function fetchAndDisplayIngrediente(searchText = '') {
+        $.ajax({
+            url: '/api/get-ingrediente',
+            type: 'GET',
+            dataType: 'json',
+            success: function(ingredientes) {
+                actualizarTablaIngrediente(ingredientes, searchText);
+            },
+            error: function(error) {
+                console.error('Error al recuperar datos de productos:', error);
+            }
+        });
+    }
+
+    function actualizarTablaIngrediente(ingredientes, searchText) {
+        var tablaIngredientes = $('#tabla-ingredientes tbody');
+        tablaIngredientes.empty();
+
+        if (ingredientes.length > 0) {
+            $.each(ingredientes, function(index, ingrediente) {
+                // Check if the product matches the search text
+                if (ingrediente.NombreIngrediente.toLowerCase().includes(searchText) ||
+                    ingrediente.UnidadIngrediente.toLowerCase().includes(searchText)) {
+                    
+                    tablaIngredientes.append('<tr class="ingrediente-fila" data-ingrediente-id="' + ingrediente.id + '">' +
+                        '<td style="font-weight: bold;">' + ingrediente.NombreIngrediente + '</td>' +
+                        '<td>' + ingrediente.UnidadIngrediente + '</td>' +
+                        '<td> Bs.' + parseFloat(ingrediente.CostoIngrediente).toFixed(2) + '</td>' +
+                        '<td> Bs.' + parseFloat(ingrediente.CantidadIngrediente).toFixed(2) + '</td>' +
+                        '</tr>');
+                }
+            });
+
+            $('.ingrediente-fila').on('click', function() {
+                $('.ingrediente-fila').removeClass('seleccionado');
+                $(this).addClass('seleccionado');
+                var ingredienteId = $(this).data('ingrediente-id');
+                $.ajax({
+                    url: '/api/get-ingrediente-seleccionado/' + ingredienteId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        InformacionIngrediente(data);
+                    },
+                    error: function(error) {
+                        console.error('Error al recuperar datos de producto:', error);
+                    }
+                });
+            });
+
+        } else {
+            tablaIngredientes.append('<tr>' +
+                '<td colspan="5" style="text-align: center">LA CATEGORIA NO TIENE REGISTROS AUN</td>' +
+                '</tr>');
+        }
+    }
+////FIN
 
 function cargarCategorias(){
     $.ajax({

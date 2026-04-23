@@ -17,7 +17,10 @@ return new class extends Migration
             $table->unsignedBigInteger('empresa_id')->nullable();
             $table->foreign('empresa_id')->references('id')->on('empresas')->onDelete('cascade')->nullable();
 
-
+            $table->string('DirecionIpPrincipal')->nullable();
+            
+            $table->enum('estado', ['true', 'false'])->default('true');
+            $table->string('pin')->nullable(); 
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

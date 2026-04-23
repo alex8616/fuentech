@@ -7,10 +7,17 @@ use App\Models\Producto;
 use App\Models\Receta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class RecetaController extends Controller
 {
     public function RegistrarReceta(Request $request){
+        //return response()->json($request);
+        $registro = Receta::where('created_at', '>', Carbon::now()->subSeconds(3))->first();
+        if ($registro) {
+            return response()->json(['message' => 'Ya has enviado este formulario recientemente. Por favor, espera unos segundos antes de intentarlo de nuevo.'], 429);
+        }
+
         $ingredientes = $request->input('ingredientes');
         $Id = $request->Id;
         $existeReceta = Receta::where('producto_id', $Id)->exists();

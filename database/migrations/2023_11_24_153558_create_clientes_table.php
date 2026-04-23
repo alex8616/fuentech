@@ -20,8 +20,11 @@ return new class extends Migration
             $table->string('BarrioCliente')->nullable();
             $table->string('Comentario')->nullable();
             $table->string('NitDni')->nullable();
+            $table->string('MedioDePagoGasto')->nullable();
+            $table->string('Descuento')->nullable();
             $table->string('EstadoCliente')->nullable();
             $table->string('CuentaCorrienteCliente')->nullable();
+            $table->string('Total')->nullable();
             $table->timestamps();
         });
     }

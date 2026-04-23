@@ -17,11 +17,14 @@ class Categoria extends Model
         'CartaQR',
         'cocina_id',
         'empresa_id',
+        'mayordeedad',
+        'promosionesdiarias',
     ];
 
     //Relacion de uno a muchos
     public function productos(){
-        return $this->hasMany(Producto::class);
+        //return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class)->whereNull('sub_categoria_id');
     }
 
     //Relacion de uno a muchos

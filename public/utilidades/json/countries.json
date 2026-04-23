@@ -1,0 +1,644 @@
+{
+"countries": [
+    {
+        "id" : 144,
+        "name" : "Afganistán",
+        "nationality" : "afgano/na"
+    },
+    {
+        "id" : 114,
+        "name" : "Albania",
+        "nationality" : "albanés/sa"
+    },
+    {
+        "id" : 18,
+        "name" : "Alemania",
+        "nationality" : "alemán/na"
+    },
+    {
+        "id" : 98,
+        "name" : "Algeria",
+        "nationality" : "argelino/na"
+    },
+    {
+        "id" : 145,
+        "name" : "Andorra",
+        "nationality" : "andorrano/na"
+    },
+    {
+        "id" : 119,
+        "name" : "Angola",
+        "nationality" : "angoleño/ña"
+    },
+    {
+        "id" : 91,
+        "name" : "Arabia Saudita",
+        "nationality" : "saudí o saudita"
+    },
+    {
+        "id" : 5,
+        "name" : "Argentina",
+        "nationality" : "argentino/na"
+    },
+    {
+        "id" : 6,
+        "name" : "Armenia",
+        "nationality" : "armenio/nia"
+    },
+    {
+        "id" : 1,
+        "name" : "Australia",
+        "nationality" : "australiano/na"
+    },
+    {
+        "id" : 2,
+        "name" : "Austria",
+        "nationality" : "austriaco/ca"
+    },
+    {
+        "id" : 80,
+        "name" : "Bahamas",
+        "nationality" : "bahameño/ña"
+    },
+    {
+        "id" : 128,
+        "name" : "Barbados",
+        "nationality" : "barbadense"
+    },
+    {
+        "id" : 9,
+        "name" : "Bélgica",
+        "nationality" : "belga"
+    },
+    {
+        "id" : 8,
+        "name" : "Belice",
+        "nationality" : "beliceño/ña"
+    },
+    {
+        "id" : 7,
+        "name" : "Bielorrusia",
+        "nationality" : "bielorruso/sa"
+    },
+    {
+        "id" : 123,
+        "name" : "Bolivia",
+        "nationality" : "boliviano/na"
+    },
+    {
+        "id" : 100,
+        "name" : "Botsuana",
+        "nationality" : "botsuano/na"
+    },
+    {
+        "id" : 12,
+        "name" : "Brasil",
+        "nationality" : "brasilero/ra"
+    },
+    {
+        "id" : 11,
+        "name" : "Bulgaria",
+        "nationality" : "búlgaro/ra"
+    },
+    {
+        "id" : 152,
+        "name" : "Bután",
+        "nationality" : "butanés/sa"
+    },
+    {
+        "id" : 159,
+        "name" : "Cabo Verde",
+        "nationality" : "caboverdiano/na"
+    },
+    {
+        "id" : 158,
+        "name" : "Camboya",
+        "nationality" : "camboyano/na"
+    },
+    {
+        "id" : 31,
+        "name" : "Camerún",
+        "nationality" : "camerunés/sa"
+    },
+    {
+        "id" : 32,
+        "name" : "Canadá",
+        "nationality" : "canadiense"
+    },
+    {
+        "id" : 81,
+        "name" : "Chile",
+        "nationality" : "chileno/na"
+    },
+    {
+        "id" : 35,
+        "name" : "China",
+        "nationality" : "chino/na"
+    },
+    {
+        "id" : 33,
+        "name" : "Chipre",
+        "nationality" : "chipriota"
+    },
+    {
+        "id" : 82,
+        "name" : "Colombia",
+        "nationality" : "colombiano/na"
+    },
+    {
+        "id" : 165,
+        "name" : "Congo",
+        "nationality" : "congoleño/ña"
+    },
+    {
+        "id" : 84,
+        "name" : "Corea del Norte",
+        "nationality" : "norcoreano/na"
+    },
+    {
+        "id" : 69,
+        "name" : "Corea del Sur",
+        "nationality" : "surcoreano/na"
+    },
+    {
+        "id" : 168,
+        "name" : "Costa de Marfil",
+        "nationality" : "marfileño/ña"
+    },
+    {
+        "id" : 36,
+        "name" : "Costa Rica",
+        "nationality" : "costarricense"
+    },
+    {
+        "id" : 71,
+        "name" : "Croacia",
+        "nationality" : "croata"
+    },
+    {
+        "id" : 113,
+        "name" : "Cuba",
+        "nationality" : "cubano/na"
+    },
+    {
+        "id" : 22,
+        "name" : "Dinamarca",
+        "nationality" : "danés/sa"
+    },
+    {
+        "id" : 103,
+        "name" : "Ecuador",
+        "nationality" : "ecuatoriano/na"
+    },
+    {
+        "id" : 23,
+        "name" : "Egipto",
+        "nationality" : "egipcio/cia"
+    },
+    {
+        "id" : 51,
+        "name" : "El Salvador",
+        "nationality" : "salvadoreño/ña"
+    },
+    {
+        "id" : 52,
+        "name" : "Eslovaquia",
+        "nationality" : "eslovaco/ca"
+    },
+    {
+        "id" : 53,
+        "name" : "Eslovenia",
+        "nationality" : "esloveno/na"
+    },
+    {
+        "id" : 28,
+        "name" : "España",
+        "nationality" : "español/la"
+    },
+    {
+        "id" : 55,
+        "name" : "Estados Unidos",
+        "nationality" : "estadounidense"
+    },
+    {
+        "id" : 68,
+        "name" : "Estonia",
+        "nationality" : "estonio/nia"
+    },
+    {
+        "id" : 90,
+        "name" : "Filipinas",
+        "nationality" : "filipino/na"
+    },
+    {
+        "id" : 63,
+        "name" : "Finlandia",
+        "nationality" : "finlandés/sa"
+    },
+    {
+        "id" : 176,
+        "name" : "Fiyi",
+        "nationality" : "fiyiano/na"
+    },
+    {
+        "id" : 64,
+        "name" : "Francia",
+        "nationality" : "francés/sa"
+    },
+    {
+        "id" : 180,
+        "name" : "Gabón",
+        "nationality" : "gabonés/sa"
+    },
+    {
+        "id" : 181,
+        "name" : "Gambia",
+        "nationality" : "gambiano/na"
+    },
+    {
+        "id" : 21,
+        "name" : "Georgia",
+        "nationality" : "georgiano/na"
+    },
+    {
+        "id" : 105,
+        "name" : "Ghana",
+        "nationality" : "ghanés/sa"
+    },
+    {
+        "id" : 184,
+        "name" : "Granada",
+        "nationality" : "granadino/na"
+    },
+    {
+        "id" : 20,
+        "name" : "Grecia",
+        "nationality" : "griego/ga"
+    },
+    {
+        "id" : 185,
+        "name" : "Guatemala",
+        "nationality" : "guatemalteco/ca"
+    },
+    {
+        "id" : 189,
+        "name" : "Guyana",
+        "nationality" : "guyanés/sa"
+    },
+    {
+        "id" : 16,
+        "name" : "Haiti",
+        "nationality" : "haitiano/na"
+    },
+    {
+        "id" : 137,
+        "name" : "Honduras",
+        "nationality" : "hondureño/ña"
+    },
+    {
+        "id" : 14,
+        "name" : "Hungría",
+        "nationality" : "húngaro/ra"
+    },
+    {
+        "id" : 25,
+        "name" : "India",
+        "nationality" : "indio/dia"
+    },
+    {
+        "id" : 74,
+        "name" : "Indonesia",
+        "nationality" : "indonesio/sia"
+    },
+    {
+        "id" : 140,
+        "name" : "Irak",
+        "nationality" : "iraquí"
+    },
+    {
+        "id" : 26,
+        "name" : "Irán",
+        "nationality" : "iraní"
+    },
+    {
+        "id" : 27,
+        "name" : "Irlanda",
+        "nationality" : "irlandés/sa"
+    },
+    {
+        "id" : 83,
+        "name" : "Islandia",
+        "nationality" : "islandés/sa"
+    },
+    {
+        "id" : 24,
+        "name" : "Israel",
+        "nationality" : "israelí"
+    },
+    {
+        "id" : 29,
+        "name" : "Italia",
+        "nationality" : "italiano/na"
+    },
+    {
+        "id" : 132,
+        "name" : "Jamaica",
+        "nationality" : "jamaicano/na"
+    },
+    {
+        "id" : 70,
+        "name" : "Japón",
+        "nationality" : "japonés/sa"
+    },
+    {
+        "id" : 75,
+        "name" : "Jordania",
+        "nationality" : "jordano/na"
+    },
+    {
+        "id" : 97,
+        "name" : "Kenia",
+        "nationality" : "keniano/na"
+    },
+    {
+        "id" : 38,
+        "name" : "Letonia",
+        "nationality" : "letón/na"
+    },
+    {
+        "id" : 99,
+        "name" : "Líbano",
+        "nationality" : "libanés/sa"
+    },
+    {
+        "id" : 39,
+        "name" : "Libia",
+        "nationality" : "libio/bia"
+    },
+    {
+        "id" : 40,
+        "name" : "Lituania",
+        "nationality" : "lituano/na"
+    },
+    {
+        "id" : 41,
+        "name" : "Luxemburgo",
+        "nationality" : "luxemburgués/sa"
+    },
+    {
+        "id" : 134,
+        "name" : "Madagascar",
+        "nationality" : "malgache"
+    },
+    {
+        "id" : 76,
+        "name" : "Malasia",
+        "nationality" : "malasio/sia"
+    },
+    {
+        "id" : 200,
+        "name" : "Maldivas",
+        "nationality" : "maldivo/va"
+    },
+    {
+        "id" : 133,
+        "name" : "Malí",
+        "nationality" : "maliense"
+    },
+    {
+        "id" : 86,
+        "name" : "Malta",
+        "nationality" : "maltés/sa"
+    },
+    {
+        "id" : 104,
+        "name" : "Marruecos",
+        "nationality" : "marroquí"
+    },
+    {
+        "id" : 42,
+        "name" : "México",
+        "nationality" : "mexicano/na"
+    },
+    {
+        "id" : 43,
+        "name" : "Moldavia",
+        "nationality" : "moldavo/va"
+    },
+    {
+        "id" : 44,
+        "name" : "Mónaco",
+        "nationality" : "monegasco/ca"
+    },
+    {
+        "id" : 139,
+        "name" : "Mongolia",
+        "nationality" : "mongol/la"
+    },
+    {
+        "id" : 117,
+        "name" : "Mozambique",
+        "nationality" : "mozambiqueño/ña"
+    },
+    {
+        "id" : 102,
+        "name" : "Namibia",
+        "nationality" : "namibio/bia"
+    },
+    {
+        "id" : 107,
+        "name" : "Nepal",
+        "nationality" : "nepalés/sa"
+    },
+    {
+        "id" : 209,
+        "name" : "Nicaragua",
+        "nationality" : "nicaragüense"
+    },
+    {
+        "id" : 210,
+        "name" : "Níger",
+        "nationality" : "nigerino/na"
+    },
+    {
+        "id" : 115,
+        "name" : "Nigeria",
+        "nationality" : "nigeriano/na"
+    },
+    {
+        "id" : 46,
+        "name" : "Noruega",
+        "nationality" : "noruego/ga"
+    },
+    {
+        "id" : 45,
+        "name" : "Nueva Zelanda",
+        "nationality" : "neozelandés/sa"
+    },
+    {
+        "id" : 19,
+        "name" : "Países Bajos, Holanda",
+        "nationality" : "neerlandés/sa"
+    },
+    {
+        "id" : 87,
+        "name" : "Pakistán",
+        "nationality" : "pakistaní"
+    },
+    {
+        "id" : 124,
+        "name" : "Panamá",
+        "nationality" : "panameño/ña"
+    },
+    {
+        "id" : 110,
+        "name" : "Paraguay",
+        "nationality" : "paraguayo/ya"
+    },
+    {
+        "id" : 89,
+        "name" : "Perú",
+        "nationality" : "peruano/na"
+    },
+    {
+        "id" : 47,
+        "name" : "Polonia",
+        "nationality" : "polaco/ca"
+    },
+    {
+        "id" : 48,
+        "name" : "Portugal",
+        "nationality" : "portugués/sa"
+    },
+    {
+        "id" : 246,
+        "name" : "Puerto Rico",
+        "nationality" : "puertorriqueño/ña"
+    },
+    {
+        "id" : 216,
+        "name" : "Qatar",
+        "nationality" : "qatarí"
+    },
+    {
+        "id" : 13,
+        "name" : "Reino Unido",
+        "nationality" : "británico"
+    },
+    {
+        "id" : 65,
+        "name" : "República Checa",
+        "nationality" : "checo/ca"
+    },
+    {
+        "id" : 138,
+        "name" : "República Dominicana",
+        "nationality" : "dominicano/na"
+    },
+    {
+        "id" : 72,
+        "name" : "Rumanía",
+        "nationality" : "rumano/na"
+    },
+    {
+        "id" : 50,
+        "name" : "Rusia",
+        "nationality" : "ruso/sa"
+    },
+    {
+        "id" : 135,
+        "name" : "Senegal",
+        "nationality" : "senegalés/sa"
+    },
+    {
+        "id" : 226,
+        "name" : "Serbia y Montenegro",
+        "nationality" : "serbio/a"
+    },
+    {
+        "id" : 109,
+        "name" : "Seychelles",
+        "nationality" : "seychellense"
+    },
+    {
+        "id" : 77,
+        "name" : "Singapur",
+        "nationality" : "singapurense"
+    },
+    {
+        "id" : 106,
+        "name" : "Siria",
+        "nationality" : "sirio/ria"
+    },
+    {
+        "id" : 229,
+        "name" : "Somalia",
+        "nationality" : "somalí"
+    },
+    {
+        "id" : 141,
+        "name" : "Sudáfrica",
+        "nationality" : "sudafricano/na"
+    },
+    {
+        "id" : 232,
+        "name" : "Sudán",
+        "nationality" : "sudanés/sa"
+    },
+    {
+        "id" : 67,
+        "name" : "Suecia",
+        "nationality" : "sueco/ca"
+    },
+    {
+        "id" : 66,
+        "name" : "Suiza",
+        "nationality" : "suizo/za"
+    },
+    {
+        "id" : 92,
+        "name" : "Tailandia",
+        "nationality" : "tailandés/sa"
+    },
+    {
+        "id" : 59,
+        "name" : "Turquía",
+        "nationality" : "turco/ca"
+    },
+    {
+        "id" : 62,
+        "name" : "Ucrania",
+        "nationality" : "ucraniano/na"
+    },
+    {
+        "id" : 111,
+        "name" : "Uruguay",
+        "nationality" : "uruguayo/ya"
+    },
+    {
+        "id" : 95,
+        "name" : "Venezuela",
+        "nationality" : "venezolano/na"
+    },
+    {
+        "id" : 15,
+        "name" : "Vietnam",
+        "nationality" : "vietnamita"
+    },
+    {
+        "id" : 243,
+        "name" : "Yemen",
+        "nationality" : "yemení"
+    },
+    {
+        "id" : 116,
+        "name" : "Zambia",
+        "nationality" : "zambiano/na"
+    },
+    {
+        "id" : 96,
+        "name" : "Zimbabwe",
+        "nationality" : "zimbabuense"
+    }
+]}
+    

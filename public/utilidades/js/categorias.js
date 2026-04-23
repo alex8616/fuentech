@@ -48,7 +48,7 @@ $(document).ready(function() {
                             <input class="form-check-input" type="checkbox" id="CheckCartaQR" name="CheckCartaQR">
                         </label>
                         </div>
-                    </div><br>
+                    </div><br>                    
                 </div>                    
             </div>
             <div class="card-footer">
@@ -188,33 +188,45 @@ function MostrarTablaCategoria(){
                                     <div class="card-body">
                                         <div class="card-body">
                                             <div class="mb-12 row">
-                                                <label class="col-3 col-form-label" style="font-weight: bold;">Nombre</label>
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Nombre</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.Nombre_categoria}</label>
+                                                <label class="col-7 col-form-label">${data.Nombre_categoria}</label>
                                                 </div>
                                             </div>
                                             <div class="mb-12 row">
-                                                <label class="col-3 col-form-label" style="font-weight: bold;">Cocina</label>
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Cocina</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.cocina_id != null ? data.cocina.Nombre_Cocina : 'sin cocina'}</label>
+                                                <label class="col-7 col-form-label">${data.cocina_id != null ? data.cocina.Nombre_Cocina : 'sin cocina'}</label>
                                                 </div>
                                             </div>
                                             <div class="mb-12 row">
-                                                <label class="col-3 col-form-label" style="font-weight: bold;">App Comensal</label>
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">App Comensal</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.AppComensal == 'true' ? 'Si' : 'No'}</label>
+                                                <label class="col-7 col-form-label">${data.AppComensal == 'true' ? 'Si' : 'No'}</label>
                                                 </div>
                                             </div>
                                             <div class="mb-12 row">
-                                                <label class="col-3 col-form-label" style="font-weight: bold;">Menu Online</label>
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Menu Online</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.MenuOnline == 'true' ? 'Si' : 'No'}</label>
+                                                <label class="col-7 col-form-label">${data.MenuOnline == 'true' ? 'Si' : 'No'}</label>
                                                 </div>
                                             </div>
                                             <div class="mb-12 row">
-                                                <label class="col-3 col-form-label" style="font-weight: bold;">Carta QR</label>
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Carta QR</label>
                                                 <div class="col">
-                                                <label class="col-9 col-form-label">${data.CartaQR == 'true' ? 'Si' : 'No'}</label>
+                                                <label class="col-7 col-form-label">${data.CartaQR == 'true' ? 'Si' : 'No'}</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Pertenece Bar</label>
+                                                <div class="col">
+                                                <label class="col-7 col-form-label">${data.mayordeedad == 'true' ? 'Si' : 'No'}</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-12 row">
+                                                <label class="col-5 col-form-label" style="font-weight: bold;">Promosiones Del Dia</label>
+                                                <div class="col">
+                                                <label class="col-7 col-form-label">${data.promosionesdiarias == 'true' ? 'Si' : 'No'}</label>
                                                 </div>
                                             </div>
                                         </div>                    
@@ -279,6 +291,24 @@ function MostrarTablaCategoria(){
                                                         </select>
                                                     </div>
                                                 </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-4 col-form-label" style="font-weight: bold, color: blue">Pertenece Bar</label>
+                                                    <div class="col">
+                                                        <select id="UpdateMayorEdad" name="UpdateMayorEdad" class="form-control">
+                                                            <option value="true">Habilitado</option>
+                                                            <option value="false">Deshabilitado</option>
+                                                        </select>
+                                                    </div>
+                                                </div><br>
+                                                <div class="mb-12 row">
+                                                    <label class="col-4 col-form-label" style="font-weight: bold, color: blue">Promociones Del Dia</label>
+                                                    <div class="col">
+                                                        <select id="UpdatePromocionDia" name="UpdatePromocionDia" class="form-control">
+                                                            <option value="true">Habilitado</option>
+                                                            <option value="false">Deshabilitado</option>
+                                                        </select>
+                                                    </div>
+                                                </div><br>
                                             </div>                    
                                         </div>
                                         <div class="card-footer">
@@ -315,6 +345,10 @@ function MostrarTablaCategoria(){
                                     $('#UpdateCartaQr').val(cartaqr).change();
                                     var menuonline = data.MenuOnline;
                                     $('#UpdateMenuOnline').val(menuonline).change();
+                                    var MayorEdad = data.mayordeedad;
+                                    $('#UpdateMayorEdad').val(MayorEdad).change();
+                                    var PromocionDia = data.promosionesdiarias;
+                                    $('#UpdatePromocionDia').val(PromocionDia).change();
 
                                     $('#btn-actualizar-categoria').off('click').on('click', function(event) {
                                         var EditNombre = $("#UpdateNombre_categoria").val();
@@ -322,6 +356,8 @@ function MostrarTablaCategoria(){
                                         var Editappcomensal = $("#UpdateAppComensal").val();
                                         var Editmenuonline = $("#UpdateMenuOnline").val();
                                         var Editcartaqr = $("#UpdateCartaQr").val();
+                                        var Editmayoredad = $("#UpdateMayorEdad").val();
+                                        var Editpromociondia = $("#UpdatePromocionDia").val();
 
                                         var datosRecogidos = {
                                             id: id,
@@ -329,7 +365,9 @@ function MostrarTablaCategoria(){
                                             cocina_id: Editcocina,
                                             appcomensal: Editappcomensal,
                                             menuonline: Editmenuonline,
-                                            cartaqr: Editcartaqr
+                                            cartaqr: Editcartaqr,
+                                            mayordeedad: Editmayoredad,
+                                            promociondia: Editpromociondia
                                         };
 
                                         $.ajax({
@@ -680,19 +718,7 @@ function MostrarTablaCategoria(){
                         });
                     });
 
-                    $('#SearchProduct').on('input', function() {
-                        var searchText = $(this).val().toLowerCase();
-                        $('#tabla-categorias tbody tr').each(function() {
-                            var codigo = $(this).find('td:nth-child(1)').text().toLowerCase();
-                            var nombre = $(this).find('td:nth-child(2)').text().toLowerCase();
-                            var costo = $(this).find('td:nth-child(3)').text().toLowerCase();
-                            if (codigo.includes(searchText) || nombre.includes(searchText) || costo.includes(searchText) || margen.includes(searchText) || precio.includes(searchText)) {
-                                $(this).show();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
-                    });
+                    
                 }                    
             } else {
                 var tablaCategorias = $('#tabla-productos tbody');

@@ -18,9 +18,15 @@ return new class extends Migration
             $table->string('CostoIngrediente')->nullable();
             $table->string('CantidadIngrediente')->nullable();
             $table->string('ControlStock')->nullable();
-
+            $table->Integer('CantidadStock')->nullable();
+            $table->string('ComentarioStock')->nullable();
+            $table->Integer('MinimoStock')->nullable();
+            
             $table->unsignedBigInteger('proveedor_id')->nullable();
             $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete('cascade')->nullable();
+
+            $table->unsignedBigInteger('ingrediente_id')->nullable();
+            $table->foreign('ingrediente_id')->references('id')->on('ingredientes')->onDelete('cascade')->nullable();
 
             $table->unsignedBigInteger('categoria_ingrediente_id')->nullable();
             $table->foreign('categoria_ingrediente_id')->references('id')->on('categoria_ingredientes')->onDelete('cascade')->nullable();

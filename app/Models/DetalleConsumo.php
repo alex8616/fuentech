@@ -17,7 +17,9 @@ class DetalleConsumo extends Model
         'consumo_id',
         'producto_id',
         'eliminado',
-        'comentarioeliminado'
+        'comentarioeliminado',
+        'cortesia',
+        'totalcortesia'
     ];
 
     public function consumo(){

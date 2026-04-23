@@ -47,8 +47,8 @@ class Producto extends Model
         return $this->hasMany(DetalleConsumo::class);
     }
 
-    public function stockdate(){
-        return $this->belongsTo(StockDate::class);
+    public function stockdates(){
+        return $this->hasMany(StockDate::class, 'producto_id');
     }
     
     public function ingredientes(){
@@ -65,5 +65,9 @@ class Producto extends Model
 
     public function detallemodificadore(){
         return $this->hasMany(DetalleModificadore::class);
+    }
+
+    public function detallegasto(){
+        return $this->hasMany(DetalleGasto::class);
     }
 }

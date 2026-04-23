@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    
+    public function up(): void
+    {
+        Schema::create('inventarios', function (Blueprint $table) {
+            $table->id();
+            $table->date('fecha')->nullable();
+            $table->string('totalnuevo')->nullable();
+            $table->string('totaldaniado')->nullable();
+            $table->string('totaldesechado')->nullable();
+            $table->string('totalperdido')->nullable();
+
+            $table->string('totalingreso')->nullable();
+            $table->string('totalsalida')->nullable();
+
+            $table->string('totalgeneral')->nullable();
+
+            $table->unsignedBigInteger('recursos_id')->nullable();
+            $table->foreign('recursos_id')->references('id')->on('recursos')->onDelete('cascade')->nullable();
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('inventarios');
+    }
+};

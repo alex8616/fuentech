@@ -10,6 +10,7 @@ class AmbienteMesa extends Model
     use HasFactory;
     protected $fillable = [
         'NombreMesas',
+        'Name',
         'PosisionX',
         'PosisionY',
         'ambiente_id',

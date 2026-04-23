@@ -14,9 +14,11 @@ class Ingrediente extends Model
         'CostoIngrediente',
         'CantidadIngrediente',
         'ControlStock',
+        'CantidadStock',
+        'ComentarioStock',
+        'MinimoStock',
         'proveedor_id',
         'categoria_ingrediente_id',
-        'producto_id'
     ];
 
     //Relacion de uno a muchos inversa
@@ -34,5 +36,9 @@ class Ingrediente extends Model
 
     public function detallereceta(){
         return $this->hasMany(DetalleReceta::class);
+    }
+
+    public function stockdate(){
+        return $this->belongsTo(StockDate::class);
     }
 }

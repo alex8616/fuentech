@@ -16,6 +16,7 @@ class Consumo extends Model
         'cliente_temporal_id',
         'camarero_id',
         'ambiente_mesa_id',
+        'servicio_consumo_id',
         'fecha_venta',
         'subTotal',
         'total',
@@ -24,7 +25,17 @@ class Consumo extends Model
         'TipoConsumo',
         'FechaCierre',
         'repartidor_id',
-        'EstadoDelivery'
+        'EstadoDelivery',
+        'DeliveryComentario',
+        'DeliveryCosto',
+        'DeliveryTiempo',
+        'turno_id',
+
+        'NroOrdenServicioPedido',
+        'NroPedidoServicioPedido',
+        'ClienteServicioPedido',
+        'TipoPagoServicioPedido',
+        'TipoServicioPedido'
     ];
 
     public function empresa(){
@@ -67,4 +78,13 @@ class Consumo extends Model
         return $this->belongsTo(ClienteTemporal::class, 'cliente_temporal_id');
     }
     
+    public function turno(){
+        return $this->belongsTo(Turno::class);
+    }
+
+    // Relación de uno a muchos inversa
+    public function consumoservicio(){
+        return $this->belongsTo(ServicioConsumo::class, 'servicio_consumo_id');
+    }
+
 }

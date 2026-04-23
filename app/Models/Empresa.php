@@ -30,11 +30,15 @@ class Empresa extends Model
         return $this->hasMany(AmbienteMesa::class);
     }
 
-    public function configuracions(){
-        return $this->hasMany(Configuracion::class);
-    }
-
     public function comsumos(){
         return $this->hasMany(Consumo::class);
+    }
+
+    public function movimientos(){
+        return $this->hasMany(Movimiento::class);
+    }
+
+    public function cajas(){
+        return $this->hasMany(Caja::class);
     }
 }

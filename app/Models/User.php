@@ -10,6 +10,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -21,9 +22,20 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'empresa_id'
+        'pin', 
+        'name', 
+        'email', 
+        'password', 
+        'empresa_id', 
+        'DirecionIpPrincipal',
+        'estado'
     ];
 
+    public function setPinAttribute($value)
+    {
+        $this->attributes['pin'] = Hash::make($value);
+    }   
+    
     protected $hidden = [
         'password',
         'remember_token',
@@ -47,5 +59,32 @@ class User extends Authenticatable
     //Relacion de uno a muchos inversa
     public function consumos(){
         return $this->belongsTo(Consumo::class, 'empresa_id');
+    }
+
+    // Relación de uno a muchos
+    public function movimientos(){
+        return $this->hasMany(Movimiento::class);
+    }
+
+    // Relación de uno a muchos
+    public function gastos(){
+        return $this->hasMany(Gasto::class);
+    }
+
+    public function configuracions(){
+        return $this->hasMany(Configuracion::class);
+    }
+
+    public function arqueocajas(){
+        return $this->hasMany(ArqueoCaja::class);
+    }
+
+    //Relacion de uno a muchos
+    public function detallecajas(){
+        return $this->hasMany(DetalleCaja::class);
+    }
+
+    public function problemakardex(){
+        return $this->hasMany(ProblemaKardex::class, 'user_id');
     }
 }
